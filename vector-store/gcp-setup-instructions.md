@@ -1,4 +1,6 @@
-To install pipenv, Docker, Python, and Git on a virtual machine instance on Google Cloud, we followed the steps below:
+# Instructions to get the vector store container up and running on Google Cloud
+
+#### These steps will take you through how we installed pipenv, Docker, Python, and Git on a virtual machine instance on Google Cloud. We then use a PAT to install the repository from GitHub, add our OpenAI API key as an environment variable, and docker compose with a custom YAML file to install Weaviate. Finally we open the Firewall to allow incoming connections to Weaviate.
 
 ### Step 1: Access the VM Instance
 
@@ -212,3 +214,18 @@ For example, at one point our instance's external URL was `34.31.93.155`, so acc
   ]
 }
 ```
+
+### Step 13: Try out the Weaviate Console
+
+Go to this link [https://console.weaviate.cloud/](https://console.weaviate.cloud/) to view the console login.
+
+You'll see the following:
+
+![](../img/weaviate-console1.jpg)
+
+Enter the URL from Step 12 (http://34.31.93.155:8080) and hit `Connect`. You'll see the console, which you can then begin to work with to set up Weaviate with your schema.
+
+![](../img/weaviate-console2.jpg)
+
+
+
