@@ -1,4 +1,4 @@
-
+#import libray
 import pandas as pd
 from bs4 import BeautifulSoup
 import requests
@@ -6,6 +6,12 @@ import datetime
 
 
 def scrape_sitemap(url):
+    """
+        This method extracts all the links from a companys sitemap.xml
+        input: url for a company sitemap.xml
+        output : pandas Series with all the links or None if no links found
+
+        """
     r = requests.get(url)
     bs = BeautifulSoup(r.text, 'lxml-xml')
     urlset = bs.find_all('loc')
@@ -34,6 +40,14 @@ def scrape_sitemap(url):
 
 
 def scrape_website(alllinks):
+    """
+        This method extracts all the the text data from webpages of a company
+        input: pandas series with all the links in the company's website
+        output : pandas dataframe with the columns , key (webpage link), text
+                 that includes the text of the webpage, and the timestamp when the data
+                 was scraped.
+
+        """
     text_dict = {}
 
     for link in alllinks.to_list():
@@ -53,18 +67,22 @@ def scrape_website(alllinks):
     df['timestamp'] = pd.to_datetime(datetime.date.today())
     return df
 
-
+# run the scraping engine, and save the extracted data to csv
 def main():
     print("Starting scraping :\n")
     sitemap = pd.read_csv("sitemap.csv")
     for item in sitemap['sitemap']:
         print(f"working on {item}")
         links = scrape_sitemap(item)
-        print(f"{links.shape[0]} webpages found for scraping. For demo scraping only the first 10 webpage \n")
+        if links is not None:
+            print(f"{links.shape[0]} webpages found for scraping. For demo scraping only the first 10 webpage \n")
 
-        df = scrape_website(links[:10])
-        df.to_csv('apple.csv', index=False)
-        print("\nFinished scraping. Data stored in apple.csv")
+            df = scrape_website(links[:10])
+            df.to_csv('apple.csv', index=False)
+            print("\nFinished scraping. Data stored in apple.csv")
+        else:
+            print(f"No links were found in {item}")
+
 
 
 if __name__ == "__main__":
