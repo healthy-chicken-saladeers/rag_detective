@@ -59,7 +59,7 @@ sudo apt-get install git -y
 
 ### Step 6: Install Docker
 
-To install Docker, you can follow the official installation instructions or run the following convenience script:
+To install Docker run the following script:
 
 ```sh
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -82,32 +82,40 @@ Once everything is installed, you should verify the installations:
 
 - For Python:
 
-    ```sh
-    python3 --version
-    ```
+```sh
+python3 --version
+```
 
 - For pip:
 
-    ```sh
-    pip3 --version
-    ```
+```sh
+pip3 --version
+```
 
 - For pipenv:
 
-    ```sh
-    pipenv --version
-    ```
+```sh
+pipenv --version
+```
 
 - For Git:
 
-    ```sh
-    git --version
-    ```
+```sh
+git --version
+```
 
 - For Docker:
 
-    ```sh
-    docker --version
-    ```
+```sh
+docker --version
+```
 
 This should show that pipenv, Docker, Python, and Git are installed on the Google Cloud VM instance.
+
+### Step 9: Add OpenAI key as environment variable
+
+This is to allow Weaviate to access the GPT models without sharing the secrets publicly
+
+```sh
+export OPENAI_APIKEY=my-key-here
+```
