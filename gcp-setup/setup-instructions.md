@@ -112,7 +112,21 @@ docker --version
 
 This should show that pipenv, Docker, Python, and Git are installed on the Google Cloud VM instance.
 
-### Step 9: Add OpenAI key as environment variable
+### Step 9: Get a PAT from GitHub and clone the RAG Detective repository
+
+Since the repository is private, to clone it you need to authenticate with GitHub. GitHub discontinued password access in 2021, so you need to create a "fine-grained access token". 
+
+This is done using this [guide on GitHub docs.](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token)
+
+Once you have created a token, save it somewhere safe and private, as it will not display again. Using the fictional token `abcdefghijklmnopqrstuvwxyz123456789`, this is how you would then clone the repo:
+
+```sh
+git clone -b milestone2 https://abcdefghijklmnopqrstuvwxyz123456789@github.com/healthy-chicken-saladeers/rag-detective.git
+```
+
+This will create the `rag-detective` folder.
+
+### Step 10: Add OpenAI key as environment variable
 
 This is to allow Weaviate to access the GPT models without sharing the secrets publicly
 
