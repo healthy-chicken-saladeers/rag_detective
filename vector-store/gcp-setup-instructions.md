@@ -73,6 +73,16 @@ If you want to run Docker commands as a non-root user, you need to add your user
 ```sh
 sudo usermod -aG docker $USER
 ```
+Also install the current Docker Compose
+
+```sh
+curl -SL https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+```
+You may need to give it execute permissions
+
+```sh
+sudo chmod +x /usr/local/bin/docker-compose
+```
 
 After running this command, you will need to log out and log back in, or you can restart the VM instance for the changes to take effect.
 
@@ -132,4 +142,74 @@ This is to allow Weaviate to access the GPT models without sharing the secrets p
 
 ```sh
 export OPENAI_APIKEY=my-key-here
+```
+
+### Step 11: Spin up the `docker-compose.yml`
+
+Change to the directory in the repository where the `docker-compose.yml` file resides
+
+```sh
+cd rag-detective/vector-store/
+```
+
+Spin up the docker container containing Weaviate in "detached" mode to run in the background.
+
+```sh
+docker-compose up -d
+```
+
+### Step 12: Add a Firewall rule to GCP to allow http access to confirm Weaviate is running
+
+This is done under the `Network  Security` tab under `Cloud Firewall` / `Firewall policies`. This is necessary to allow http access from the outside, where you can call the external IP address to ensure the Weaviate instance is running and giving a response.
+
+Obviously this is a temporary measure just as we build the application, and we will not be providing `HTTP` access in future (even if we did want web access, it would be `HTTPS`).
+
+![](../img/firewall-rule.jpg)
+
+In one instance of, our URL was `https://34.31.93.155:8080/` which gave the response:
+
+```json
+{
+  "links": [
+    {
+      "href": "/v1/meta",
+      "name": "Meta information about this instance/cluster"
+    },
+    {
+      "documentationHref": "https://weaviate.io/developers/weaviate/api/rest/schema",
+      "href": "/v1/schema",
+      "name": "view complete schema"
+    },
+    {
+      "documentationHref": "https://weaviate.io/developers/weaviate/api/rest/schema",
+      "href": "/v1/schema{/:className}",
+      "name": "CRUD schema"
+    },
+    {
+      "documentationHref": "https://weaviate.io/developers/weaviate/api/rest/objects",
+      "href": "/v1/objects{/:id}",
+      "name": "CRUD objects"
+    },
+    {
+      "documentationHref": "https://weaviate.io/developers/weaviate/api/rest/classification,https://weaviate.io/developers/weaviate/api/rest/classification#knn-classification",
+      "href": "/v1/classifications{/:id}",
+      "name": "trigger and view status of classifications"
+    },
+    {
+      "documentationHref": "https://weaviate.io/developers/weaviate/api/rest/well-known#liveness",
+      "href": "/v1/.well-known/live",
+      "name": "check if Weaviate is live (returns 200 on GET when live)"
+    },
+    {
+      "documentationHref": "https://weaviate.io/developers/weaviate/api/rest/well-known#readiness",
+      "href": "/v1/.well-known/ready",
+      "name": "check if Weaviate is ready (returns 200 on GET when ready)"
+    },
+    {
+      "documentationHref": "https://weaviate.io/developers/weaviate/api/rest/well-known#openid-configuration",
+      "href": "/v1/.well-known/openid-configuration",
+      "name": "view link to openid configuration (returns 404 on GET if no openid is configured)"
+    }
+  ]
+}
 ```
