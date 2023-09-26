@@ -93,6 +93,8 @@ In the initial indexing stage, text data must be first collected as documents an
 ### Querying Stage
 In this stage, the RAG pipeline extracts the most pertinent context based on a user’s query and forwards it, along with the query, to the LLM to generate a response. This procedure equips the LLM with current knowledge that wasn’t included in its original training data. This also reduces the likelihood of hallucinations, a problem for LLMs when they invent answers for data they were insufficiently trained with. The pivotal challenges in this phase revolve around the retrieval, coordination, and analysis across one or several knowledge bases.
 
+In our current cloud instance with everything installed, the command to start everything up is just `docker-compose up -d` to start up the containers and `docker-compose down` to stop them.
+
 To run the installation from scratch on a new Google Cloud instance, full instructions are located in [docs/gcp-setup-instructions.md](../docs/gcp-setup-instructions.md)
 
 Granular instructions on how to run the `scraper` container alone are located in [docs/gcp-scraper-commands.md](../docs/gcp-setup-instructions.md)
