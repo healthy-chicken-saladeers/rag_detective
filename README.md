@@ -13,7 +13,10 @@ Project Organization
           │   ├── gcp-scraper-commands.md
           │   └── gcp-setup-instructions.md
           ├── img
+          │   ├── docker-compose-up.jpg
           │   ├── firewall-rule.jpg
+          │   ├── indexing.png
+          │   ├── querying.png
           │   ├── weaviate-console1.jpg
           │   └── weaviate-console2.jpg
           ├── notebooks
@@ -22,12 +25,19 @@ Project Organization
           │   └── sitemap.csv
           ├── requirements.txt
           └── src
+              ├── llama_index
+              │   ├── Dockerfile
+              │   ├── Pipfile
+              │   ├── Pipfile.lock
+              │   ├── build_query.py
+              │   └── data
+              │       └── paul_graham_essay.txt
               └── scraper
                   ├── Dockerfile
                   ├── Pipfile
                   ├── Pipfile.lock
                   ├── scraper.py
-                  ├── scraping_Notebook.ipynb
+                  ├── scraping_notebook.ipynb
                   └── sitemap.csv
 
 
