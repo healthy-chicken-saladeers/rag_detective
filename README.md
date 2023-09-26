@@ -100,12 +100,12 @@ Retrieval Augmented Generation (RAG) serves as a framework to enhance Language a
 
 In the initial indexing stage, text data must be first collected as documents and metadata. In this implementation, this is performed by the scraping of website. This data must be then split into "nodes", which is a represents a "chunk" or part of the data containing a certain portion of information. Nodes must are then indexed via an embedding model, where we plan on using OpenAI's `Ada v2` embedding model. The embeddings and metadata together create a rich representation to aid in retrieval.
 
-![](../img/indexing.png)
+![](img/indexing.png)
 
 ### Querying Stage
 In this stage, the RAG pipeline extracts the most pertinent context based on a user’s query and forwards it, along with the query, to the LLM to generate a response. This procedure equips the LLM with current knowledge that wasn’t included in its original training data. This also reduces the likelihood of hallucinations, a problem for LLMs when they invent answers for data they were insufficiently trained with. The pivotal challenges in this phase revolve around the retrieval, coordination, and analysis across one or several knowledge bases.
 
-![](../img/querying.png)
+![](img/querying.png)
 
 In our current cloud instance with everything installed, the command to start everything up is just `docker-compose up -d` to start up the containers and `docker-compose down` to stop them.
 
