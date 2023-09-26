@@ -1,19 +1,18 @@
----
 version: '3.4'
 services:
   weaviate:
     command:
-    - --host
-    - 0.0.0.0
-    - --port
-    - '8080'
-    - --scheme
-    - http
+      - --host
+      - 0.0.0.0
+      - --port
+      - '8080'
+      - --scheme
+      - http
     image: semitechnologies/weaviate:1.21.3
     ports:
-    - 8080:8080
+      - 8080:8080
     volumes:
-    - weaviate_data:/var/lib/weaviate
+      - weaviate_data:/var/lib/weaviate
     restart: on-failure:0
     environment:
       OPENAI_APIKEY: $OPENAI_APIKEY
@@ -23,6 +22,16 @@ services:
       DEFAULT_VECTORIZER_MODULE: 'text2vec-openai'
       ENABLE_MODULES: 'text2vec-openai,generative-openai'
       CLUSTER_HOSTNAME: 'node1'
+  
+  scraper:
+    build:
+      context: ./scraper  # Adjusted the context to point to the scraper directory relative to src
+    container_name: scraper
+    user: appuser
+    command: ["python", "scraper.py"]
+    volumes:
+      - ./scraper/scraper_data:/app/data  # Adjusted the volume mappings as needed.
+
 volumes:
   weaviate_data:
-...
+  scraper_data:
