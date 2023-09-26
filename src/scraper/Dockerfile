@@ -9,23 +9,24 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Install wget and remove unnecessary folder:
-RUN  apt-get update \
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends wget gcc \
+  && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
 # Install pipenv:
 RUN pip install pipenv
-RUN apt-get update && apt-get install -y --no-install-recommends gcc
 
 # Copy directory into container and set it as working directory:
-COPY . /scraper_app
-WORKDIR /scraper_app
+COPY src/scraper /app
+WORKDIR /app
 
 # Install dependencies with pipenv:
-RUN pipenv install --deploy --system
+RUN pipenv install --deploy --ignore-pipfile
 
-# Creates a non-root user and adds permission to access acrophily sims folder:
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /scraper_app
+# Creates a non-root user and adds permission to access the scraper folder:
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-# Run acrophily simulation module command:
-CMD ["python", "milestone2_main.py"]
+# Run the appropriate Python module command:
+CMD ["python", "scraper.py"]
