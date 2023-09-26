@@ -187,19 +187,19 @@ docker-compose up
 
 ### `gcp-scraper-commands.md` and `gcp-setup-instructions.md`
 
-Additional documentation on starting up the project from a new GCP instance and to control the Docker containers individually if so desired
+* Additional documentation files in markdown format on starting up the project from a brand new GCP instance and to control the Docker containers individually if so desired
 
 ### `img` folder
 
-Image assets for display in this and the above markdown files.
+* Image assets for display in this and the above markdown files.
 
 ### `notebooks`
 
-This folder contains the code and output of our scraper in `scraping_notebook.ipynb`. The `sitemap.csv` is a list of sitemaps to scrape, currently set to only [apple.com](https://apple.com). It also contains the results of the scraping, `scraped_data1.csv`.
+* This folder contains the code and output of our scraper in `scraping_notebook.ipynb`. The `sitemap.csv` is a list of sitemaps to scrape, currently set to only [apple.com](https://apple.com). It also contains the results of the scraping, `scraped_data1.csv`.
 
 ### `src`
 
-Contains all the Python code and Dockerfiles to build the project. It also contains the data `paul_graham_essay.txt` which is used as test data for LlamaIndex.
+* Contains all the Python code and Dockerfiles to build the project. It also contains the data `paul_graham_essay.txt` which is used as test data for LlamaIndex.
 
 
 
