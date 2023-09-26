@@ -179,8 +179,7 @@ We use Docker Compose to define and run multi-container Docker applications. Bel
 - **weaviate_data:** Used by the Weaviate service to persist data.
 - **scraper_data:** Intermediate scraping data which may or may not be needed such as CSV and XML files.
 
-## Getting Started
-To run the defined services, navigate to the project directory containing the `docker-compose.yml` file and run the following command in the terminal:
+As mentioned previously, to run the defined services, navigate to the root project directory containing the `docker-compose.yml` file and run the following command in the terminal:
 
 ```sh
 docker-compose up
