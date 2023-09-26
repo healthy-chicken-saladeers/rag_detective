@@ -1,4 +1,4 @@
-# These are the instructions to run the scraper docker container alone
+# Instructions to run the scraper docker container alone
 
 #### These won't be necessary most of the time, as the `docker-compose.yml` will run both containers.
 

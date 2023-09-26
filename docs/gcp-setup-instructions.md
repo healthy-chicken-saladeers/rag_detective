@@ -1,4 +1,4 @@
-# Instructions to get the vector store container up and running on Google Cloud
+ # Instructions to get the scraper and Weaviate vector store container up and running on Google Cloud
 
 #### These steps will take you through how we installed pipenv, Docker, Python, and Git on a virtual machine instance on Google Cloud. We then use a PAT to install the repository from GitHub, add our OpenAI API key as an environment variable, and docker compose with a custom YAML file to install Weaviate. Finally we open the Firewall to allow incoming connections to Weaviate.
 
@@ -147,13 +147,13 @@ export OPENAI_APIKEY=my-key-here
 
 ### Step 11: Spin up the `docker-compose.yml`
 
-Change to the directory in the repository where the `docker-compose.yml` file resides
+Change to the `rag-detective` directory in the repository where the `docker-compose.yml` file resides
 
 ```sh
-cd rag-detective/vector-store/
+cd ~/rag-detective
 ```
 
-Spin up the docker container containing Weaviate in "detached" mode to run in the background.
+Spin up the docker container containing Weaviate and the scraper in "detached" mode to run in the background.
 
 ```sh
 docker-compose up -d
