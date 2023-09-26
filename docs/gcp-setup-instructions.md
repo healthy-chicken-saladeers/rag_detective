@@ -139,7 +139,7 @@ This will create the `rag-detective` folder.
 
 ### Step 10: Add OpenAI key as environment variable
 
-This is to allow Weaviate to access the GPT models without sharing the secrets publicly
+This is to allow Weaviate and LlamaIndex to access the GPT models without sharing the secrets publicly
 
 ```sh
 export OPENAI_APIKEY=my-key-here
