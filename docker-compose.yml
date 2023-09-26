@@ -25,12 +25,12 @@ services:
   
   scraper:
     build:
-      context: ./scraper  # Adjusted the context to point to the scraper directory relative to src
+      context: ./src/scraper 
     container_name: scraper
     user: appuser
     command: ["python", "scraper.py"]
     volumes:
-      - ./scraper/scraper_data:/app/data  # Adjusted the volume mappings as needed.
+      - ./src/scraper/scraper_data:/app/data
 
 volumes:
   weaviate_data:
