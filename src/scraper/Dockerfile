@@ -8,25 +8,24 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
-# Install wget and remove unnecessary folder:
+# Install pip and other dependencies:
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends wget gcc \
-  && apt-get clean \
+  && apt-get install -y --no-install-recommends gcc \
   && rm -rf /var/lib/apt/lists/*
 
 # Install pipenv:
 RUN pip install pipenv
 
 # Copy directory into container and set it as working directory:
-COPY src/scraper /app
+COPY . /app
 WORKDIR /app
 
 # Install dependencies with pipenv:
-RUN pipenv install --deploy --ignore-pipfile
+RUN pipenv install --deploy --system
 
-# Creates a non-root user and adds permission to access the scraper folder:
+# Creates a non-root user and adds permission to access the app folder:
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-# Run the appropriate Python module command:
+# Run scraper module command:
 CMD ["python", "scraper.py"]
