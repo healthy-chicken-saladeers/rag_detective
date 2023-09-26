@@ -23,7 +23,6 @@ Project Organization
           │   ├── scraped_data_1.csv
           │   ├── scraping_notebook.ipynb
           │   └── sitemap.csv
-          ├── requirements.txt
           └── src
               ├── llama_index
               │   ├── Dockerfile
@@ -52,6 +51,14 @@ Healthy Chicken Saladeers
 
 **Project**
 To develop an application that uses Retrieval Augmented Generation (RAG) with an LLM to create a chatbot that can answer specific questions about a company through the complete knowledge of all the information available publicly on their website in a manner that’s more specific and insightful than using a search engine.
+
+### More docs
+
+To run the installation from scratch on a new Google Cloud instance, full instructions are located in:
+* [docs/gcp-setup-instructions.md](./docs/gcp-setup-instructions.md)
+
+Granular instructions on how to run the `scraper` container alone are located in:
+* [docs/gcp-scraper-commands.md](./docs/gcp-scraper-commands.md)
 
 ### Milestone2 ###
 
@@ -99,12 +106,6 @@ In our current cloud instance with everything installed, the command to start ev
 * `docker-compose up -d` to start up the containers
 * `docker-compose down` to stop them.
 
-To run the installation from scratch on a new Google Cloud instance, full instructions are located in:
-* [docs/gcp-setup-instructions.md](./docs/gcp-setup-instructions.md)
-
-Granular instructions on how to run the `scraper` container alone are located in:
-* [docs/gcp-scraper-commands.md](./docs/gcp-scraper-commands.md)
-
 # LlamaIndex
 
 Retrieval Augmented Generation (RAG) serves as a framework to enhance Language and Learning Models (LLM) using tailored data. This approach typically involves two primary phases:
@@ -133,15 +134,74 @@ LlamaIndex is a data framework to ingest, structure, and access private or domai
 
 At present, LlamaIndex is set up to run a short "build and index" query using Paul Graham’s essay, [“What I Worked On”](http://paulgraham.com/worked.html). As we build the application, this will be changed to query the Weaviate store and output to the OpenAI API.
 
-# NOTE
+# Note
 
 Currently, both LlamaIndex and our scraper perform short demonstration tasks. As such, once these tasks complete in a few seconds, the containers shut down automatically.
 
 Since the `scraper` and `llama_index` services need to be continuously running to receive requests, they should ideally be long-running services, such as web servers or APIs that are designed to run indefinitely and handle incoming requests.
 
-We will likely achieve this by running a web framework like Flask or FastAPI in our containers to receive and handle HTTP requests.
+We will likely achieve this by running a web framework like Flask or FastAPI in our containers to receive and handle HTTP requests. Additionally, we do not have any `requirements.txt` present since the dependencies are handled by the Dockerfiles.
 
-## Notebooks
+# Additional Files
 
-This folder contains the code and output of our scraper, currently hardcoded to only read the first 10 pages of [apple.com](https://apple.com)
+### `docker-compose.yml`
+
+We use Docker Compose to define and run multi-container Docker applications. Below is a summary of the services defined in our `docker-compose.yml` file.
+
+#### 1. Weaviate Service
+   - **Image:** `semitechnologies/weaviate:1.21.3`
+   - **Purpose:** Vector store for use with RAG
+   - **Command:** Runs Weaviate with specified host, port, and scheme.
+   - **Ports:** Exposes port `8080` for external access.
+   - **Environment Variables:**
+     - Uses OpenAI API Key from host environment variable `$OPENAI_APIKEY`.
+     - Configures various Weaviate parameters like `QUERY_DEFAULTS_LIMIT`, `PERSISTENCE_DATA_PATH`, and `ENABLE_MODULES`.
+   - **Volume:** Persists data at `/var/lib/weaviate` using a named volume `weaviate_data`.
+   - **Restart Policy:** Restarts the container on failure.
+
+#### 2. Scraper Service
+   - **Build Context:** `./src/scraper`
+   - **Purpose:** Scrapes a given website using its `sitemap.xml`
+   - **Command:** Executes `scraper.py` with Python.
+   - **User:** Runs as user `appuser`.
+   - **Volume:** Mounts `./src/scraper/scraper_data` to `/app/data` in the container.
+
+#### 3. Llama_index Service
+   - **Build Context:** `./src/llama_index`
+   - **Purpose:** Provides the RAG framework.
+   - **Command:** Currently executes `build_query.py` with Python as a test example.
+   - **User:** Runs as user `appuser`.
+   - **Environment Variables:**
+     - Uses the same OpenAI API Key as Weaviate from host environment variable `$OPENAI_APIKEY`.
+   - **Volume:** Mounts `./src/llama_index` to `/app/llama_index` in the container.
+
+### Volumes
+- **weaviate_data:** Used by the Weaviate service to persist data.
+- **scraper_data:** Intermediate scraping data which may or may not be needed such as CSV and XML files.
+
+## Getting Started
+To run the defined services, navigate to the project directory containing the `docker-compose.yml` file and run the following command in the terminal:
+
+```sh
+docker-compose up
+```
+
+### `gcp-scraper-commands.md` and `gcp-setup-instructions.md`
+
+Additional documentation on starting up the project from a new GCP instance and to control the Docker containers individually if so desired
+
+### `img` folder
+
+Image assets for display in this and the above markdown files.
+
+### `notebooks`
+
+This folder contains the code and output of our scraper in `scraping_notebook.ipynb`. The `sitemap.csv` is a list of sitemaps to scrape, currently set to only [apple.com](https://apple.com). It also contains the results of the scraping, `scraped_data1.csv`.
+
+### `src`
+
+Contains all the Python code and Dockerfiles to build the project. It also contains the data `paul_graham_essay.txt` which is used as test data for LlamaIndex.
+
+
+
 
