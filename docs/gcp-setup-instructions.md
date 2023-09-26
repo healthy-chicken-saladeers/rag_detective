@@ -8,7 +8,7 @@ Open the Google Cloud Console, navigate to the "Compute Engine" section, and fin
 
 ### Step 2: Update the Package Index
 
-Before installing new packages, it's always good to update the package index. Run the following command:
+Before installing new packages, update the package index just in case. Run the following command:
 
 ```sh
 sudo apt-get update
@@ -24,7 +24,7 @@ sudo apt-get install python3 python3-pip -y
 
 ### Step 4: Install pipenv
 
-After installing pip, you can install pipenv as follows:
+After installing pip, install pipenv as follows:
 
 ```sh
 pip3 install pipenv
@@ -52,7 +52,7 @@ source ~/.bashrc
 
 ### Step 5: Install Git
 
-To install Git, run the following command:
+To install Git, run:
 
 ```sh
 sudo apt-get install git -y
@@ -67,9 +67,9 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 ```
 
-### Step 7: Add your user to the Docker Group (Optional)
+### Step 7: Add your user to the Docker Group
 
-If you want to run Docker commands as a non-root user, you need to add your user to the docker group:
+To run Docker commands as a non-root user, add your user to the docker group:
 
 ```sh
 sudo usermod -aG docker $USER
@@ -89,7 +89,7 @@ After running this command, you will need to log out and log back in, or you can
 
 ### Step 8: Verify Installation
 
-Once everything is installed, you should verify the installations:
+Once everything is installed, we can verify the installations:
 
 - For Python:
 
@@ -132,10 +132,10 @@ This is done using this [guide on GitHub docs.](https://docs.github.com/en/authe
 Once you have created a token, save it somewhere safe and private, as it will not display again. Using the fictional token `abcdefghijklmnopqrstuvwxyz123456789`, this is how you would then clone the repo:
 
 ```sh
-git clone -b milestone2 https://abcdefghijklmnopqrstuvwxyz123456789@github.com/healthy-chicken-saladeers/rag-detective.git
+git clone -b milestone2 https://abcdefghijklmnopqrstuvwxyz123456789@github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers.git
 ```
 
-This will create the `rag-detective` folder.
+This will create the `ac215_healthychickensaladeers` folder.
 
 ### Step 10: Add OpenAI key as environment variable
 
@@ -147,10 +147,10 @@ export OPENAI_APIKEY=my-key-here
 
 ### Step 11: Spin up the `docker-compose.yml`
 
-Change to the `rag-detective` directory in the repository where the `docker-compose.yml` file resides
+Change to the `ac215_healthychickensaladeers` directory in the repository where the `docker-compose.yml` file resides
 
 ```sh
-cd ~/rag-detective
+cd ~/ac215_healthychickensaladeers
 ```
 
 Spin up the docker container containing Weaviate, the scraper, and LlamaIndex in "detached" mode to run in the background.

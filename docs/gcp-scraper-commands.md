@@ -7,20 +7,20 @@
 ### Build the docker container from Dockerfile
 
 ```sh
-sudo docker build -t scraper-app -f Dockerfile .
+sudo docker build -t scraper -f Dockerfile .
 ```
 
-### Check image for scraper-app was created
+### Check image for scraper was created
 ```sh
 sudo docker images
 ```
 
 ### Run the container and start with base
 ```sh
-sudo docker run -it scraper-app bash
+sudo docker run -it scraper bash
 ```
 
 ### Run the program
 ```sh
-python milestone2_main.py
+python scraper.py
 ```
