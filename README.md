@@ -136,11 +136,13 @@ At present, LlamaIndex is set up to run a short "build and index" query using Pa
 
 # Note
 
-Currently, both LlamaIndex and our scraper perform short demonstration tasks. As such, once these tasks complete in a few seconds, the containers shut down automatically.
+* Currently, both LlamaIndex and our scraper perform short demonstration tasks. As such, once these tasks complete in a few seconds, the containers shut down automatically.
 
-Since the `scraper` and `llama_index` services need to be continuously running to receive requests, they should ideally be long-running services, such as web servers or APIs that are designed to run indefinitely and handle incoming requests.
+* Since the `scraper` and `llama_index` services need to be continuously running to receive requests, they should ideally be long-running services, such as web servers or APIs that are designed to run indefinitely and handle incoming requests. We will likely achieve this by running a web framework like Flask or FastAPI in our containers to receive and handle HTTP requests.
 
-We will likely achieve this by running a web framework like Flask or FastAPI in our containers to receive and handle HTTP requests. Additionally, we do not have any `requirements.txt` present since the dependencies are handled by the Dockerfiles.
+* Additionally, we do not have any `requirements.txt` present since the dependencies are handled by the Dockerfiles.
+
+* Currently, both Weaviate and LlamaIndex have access to the OpenAI API. There are two models that need to be used; the `Ada v2` embedding model and `GPT-3.5`, so depending on how the work is distributed for the data ingestion and the retrieval, one or both of Weaviate or LlamaIndex may use the API.
 
 # Additional Files
 
