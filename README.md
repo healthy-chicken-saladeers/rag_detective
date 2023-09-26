@@ -95,9 +95,9 @@ In this stage, the RAG pipeline extracts the most pertinent context based on a u
 
 In our current cloud instance with everything installed, the command to start everything up is just `docker-compose up -d` to start up the containers and `docker-compose down` to stop them.
 
-To run the installation from scratch on a new Google Cloud instance, full instructions are located in [docs/gcp-setup-instructions.md](../docs/gcp-setup-instructions.md)
+To run the installation from scratch on a new Google Cloud instance, full instructions are located in [docs/gcp-setup-instructions.md](./docs/gcp-setup-instructions.md)
 
-Granular instructions on how to run the `scraper` container alone are located in [docs/gcp-scraper-commands.md](../docs/gcp-setup-instructions.md)
+Granular instructions on how to run the `scraper` container alone are located in [docs/gcp-scraper-commands.md](./docs/gcp-setup-instructions.md)
 
 ## Notebooks
 
