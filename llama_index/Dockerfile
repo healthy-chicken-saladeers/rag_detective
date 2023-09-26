@@ -30,4 +30,4 @@ RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /
 USER appuser
 
 #start the container from bash:
-CMD ["python", "build_and_query.py"]
+CMD ["python", "build_query.py"]
