@@ -97,7 +97,7 @@ In our current cloud instance with everything installed, the command to start ev
 
 To run the installation from scratch on a new Google Cloud instance, full instructions are located in [docs/gcp-setup-instructions.md](./docs/gcp-setup-instructions.md)
 
-Granular instructions on how to run the `scraper` container alone are located in [docs/gcp-scraper-commands.md](./docs/gcp-setup-instructions.md)
+Granular instructions on how to run the `scraper` container alone are located in [docs/gcp-scraper-commands.md](./docs/gcp-scraper-commands.md)
 
 ## Notebooks
 
