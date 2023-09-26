@@ -5,67 +5,99 @@ AC215 - Milestone2
 
 Project Organization
 ------------
-      ├── LICENSE
-      ├── README.md
-      ├── notebooks
-      ├── references
-      ├── requirements.txt
-      ├── setup.py
-      └── src
-            ├── preprocessing
-            │   ├── Dockerfile
-            │   ├── preprocess.py
-            │   └── requirements.txt
-            └── validation
+      └── rag-detective
+          ├── LICENSE
+          ├── README.md
+          ├── docker-compose.yml
+          ├── docs
+          │   ├── gcp-scraper-commands.md
+          │   └── gcp-setup-instructions.md
+          ├── img
+          │   ├── firewall-rule.jpg
+          │   ├── weaviate-console1.jpg
+          │   └── weaviate-console2.jpg
+          ├── notebooks
+          │   ├── scraped_data_1.csv
+          │   ├── scraping_notebook.ipynb
+          │   └── sitemap.csv
+          ├── requirements.txt
+          └── src
+              └── scraper
                   ├── Dockerfile
-                  ├── cv_val.py
-                  └── requirements.txt
+                  ├── Pipfile
+                  ├── Pipfile.lock
+                  ├── scraper.py
+                  ├── scraping_Notebook.ipynb
+                  └── sitemap.csv
 
 
 --------
-# AC215 - Milestone2 - ButterFlyer
+# AC215 - Milestone2 - RAG Detective
 
 **Team Members**
-Pavlov Protovief, Paolo Primopadre and Pablo El Padron
+Ian Kelk, Mandy Wong, Alyssa Lutservitz, Nitesh Kumar, Bailey Bailey
 
 **Group Name**
-Awesome Group
+Healthy Chicken Saladeers
 
 **Project**
-In this project we aim to develop an application that can identify various species of butterflies in the wild using computer vision and offer educational content through a chatbot interface.
+To develop an application that uses Retrieval Augmented Generation (RAG) with an LLM to create a chatbot that can answer specific questions about a company through the complete knowledge of all the information available publicly on their website in a manner that’s more specific and insightful than using a search engine.
 
 ### Milestone2 ###
 
-We gathered dataset of 1M butterflies representing 17K species. Our dataset comes from following sources - (1),(2),(3) with approx 100GB in size. We parked our dataset in a private Google Cloud Bucket. 
+# Scraper Docker Container
 
-**Preprocess container**
-- This container reads 100GB of data and resizes the image sizes and stores it back to GCP
-- Input to this container is source and destincation GCS location, parameters for resizing, secrets needed - via docker
-- Output from this container stored at GCS location
+We scrape all textual data off of websites based on the site's `sitemap.xml` file, which is a mapping created by websites specifically to instruct search engine crawlers to scrape their data.
 
-(1) `src/preprocessing/preprocess.py`  - Here we do preprocessing on our dataset of 100GB, we reduce the image sizes (a parameter that can be changed later) to 128x128 for faster iteration with our process. Now we have dataset at 10GB and saved on GCS. 
+## Requirements
+- Python
+- pandas
+- BeautifulSoup
+- requests
 
-(2) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `special butterfly package` 
+## Functions
 
-(3) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.8-slim-buster`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+### `scrape_sitemap(url: str) -> pd.Series`
+Extracts all links from the provided company's sitemap.xml URL.
+- **Args:**
+  - `url` (str): The URL for a company sitemap.xml.
+- **Returns:**
+  - A pandas Series containing all the extracted links, or None if no links are found.
 
-To run Dockerfile - `Instructions here`
+### `scrape_website(all_links: pd.Series) -> pd.DataFrame`
+Extracts all textual content from the webpages of the provided links.
+- **Args:**
+  - `all_links` (pd.Series): A pandas Series containing all the links in the company's website.
+- **Returns:**
+  - A pandas DataFrame containing the scraped data including webpage link, text content, and timestamp of when the data was scraped.
 
-**Cross validation, Data Versioning**
-- This container reads preprocessed dataset and creates validation split and uses dvc for versioning.
-- Input to this container is source GCS location, parameters if any, secrets needed - via docker
-- Output is flat file with cross validation splits
-  
-(1) `src/validation/cv_val.py` - Since our dataset is quite large we decided to stratify based on species and kept 80% for training and 20% for validation. Our metrics will be monitored on this 20% validation set. 
+### `main()`
+Runs the scraping engine, reads the input sitemap URLs from "sitemap.csv", extracts data from the specified sitemaps, and saves the extracted data to CSV files.
 
-(2) `requirements.txt` - We used following packages to help us with cross validation here - `iterative-stratification` 
+## Output
 
-(3) `src/validation/Dockerfile` - This dockerfile starts with  `python:3.8-slim-buster`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+The script currently generates CSV files containing the scraped data from the first 10 webpages of each sitemap, named as 'scraped_data_<index>.csv' However, this will be changed to store the data in the Weaviate vector store.
 
-To run Dockerfile - `Instructions here`
+# Weaviate Vector Store Container
 
-**Notebooks** 
-This folder contains code that is not part of container - for e.g: EDA, any 🔍 🕵️‍♀️ 🕵️‍♂️ crucial insights, reports or visualizations. 
+Retrieval Augmented Generation (RAG) serves as a framework to enhance Language and Learning Models (LLM) using tailored data. This approach typically involves two primary phases:
 
-----
-You may adjust this template as appropriate for your project.
+1. **Indexing Phase**: This is the initial stage where a knowledge base is developed and organized for future references.
+
+2. **Querying Phase**: In this phase, pertinent information is extracted from the prepared knowledge base to aid the LLM in formulating responses to inquiries.
+
+### Indexing Stage
+
+In the initial indexing stage, text data must be first collected as documents and metadata. In this implementation, this is performed by the scraping of website. This data must be then split into "nodes", which is a represents a "chunk" or part of the data containing a certain portion of information. Nodes must are then indexed via an embedding model, where we plan on using OpenAI's `Ada v2` embedding model. The embeddings and metadata together create a rich representation to aid in retrieval.
+
+### Querying Stage
+In this stage, the RAG pipeline extracts the most pertinent context based on a user’s query and forwards it, along with the query, to the LLM to generate a response. This procedure equips the LLM with current knowledge that wasn’t included in its original training data. This also reduces the likelihood of hallucinations, a problem for LLMs when they invent answers for data they were insufficiently trained with. The pivotal challenges in this phase revolve around the retrieval, coordination, and analysis across one or several knowledge bases.
+
+To run the installation from scratch on a new Google Cloud instance, full instructions are located in [docs/gcp-setup-instructions.md](../docs/gcp-setup-instructions.md)
+
+Granular instructions on how to run the `scraper` container alone are located in [docs/gcp-scraper-commands.md](../docs/gcp-setup-instructions.md)
+
+## Notebooks
+
+This folder contains the code and output of our scraper, currently hardcoded to only read the first 10 pages of [apple.com](https://apple.com)
+
