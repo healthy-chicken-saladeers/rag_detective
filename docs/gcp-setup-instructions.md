@@ -153,11 +153,15 @@ Change to the `rag-detective` directory in the repository where the `docker-comp
 cd ~/rag-detective
 ```
 
-Spin up the docker container containing Weaviate and the scraper in "detached" mode to run in the background.
+Spin up the docker container containing Weaviate, the scraper, and LlamaIndex in "detached" mode to run in the background.
 
 ```sh
 docker-compose up -d
 ```
+
+You will see the three containers spin up:
+
+![](../img/docker-compose-up.jpg)
 
 ### Step 12: Add a Firewall rule to GCP to allow http access to confirm Weaviate is running
 
@@ -226,6 +230,3 @@ You'll see the following:
 Enter the URL from Step 12 (http://34.31.93.155:8080) and hit `Connect`. You'll see the console, which you can then begin to work with to set up Weaviate with your schema.
 
 ![](../img/weaviate-console2.jpg)
-
-
-
