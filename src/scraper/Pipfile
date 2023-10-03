@@ -8,6 +8,7 @@ pandas = "*"
 bs4 = "*"
 requests = "*"
 lxml = "*"
+"google.cloud.storage" = "*"
 
 [dev-packages]
 
