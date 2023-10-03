@@ -2,6 +2,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import requests
 from datetime import datetime
+from google.cloud import storage
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
@@ -85,6 +86,31 @@ def scrape_website(all_links):
     
     return df
 
+def upload_df_to_gcs(df, bucket_name, blob_name):
+    """
+    Uploads a pd.DataFrame as a csv file to a GCS bucket
+
+    Args:
+    df (pd.DataFrame): A pandas DataFrame to be uploaded
+    bucket_name (str): Name of GCS bucket
+    blob_name (str): Object path and filename within the bucket
+
+    Returns:
+    None
+
+    """
+
+    # Convert the pd.DataFrame to csv format in memory
+    csv_data = df.to_csv(index=False)
+
+    # Upload csv data to bucket
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob.upload_from_string(csv_data, content_type='text/csv')
+
+    return None
+
 import pandas as pd
 
 def main():
@@ -124,7 +150,9 @@ def main():
             continue
             
         output_file = f'scraped_data_{index}.csv'
-        scraped_df.to_csv(output_file, index=False)
+        bucket_name = "ac215_scraper_bucket"
+        # scraped_df.to_csv(output_file, index=False)
+        upload_df_to_gcs(scraped_df, bucket_name, output_file)
         print(f"Finished scraping. Data stored in {output_file}\n")
 
 
