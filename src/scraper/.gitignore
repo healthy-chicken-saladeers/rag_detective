@@ -1,0 +1,9 @@
+#ignore 
+data/
+log/
+
+__pycache__/
+.ipynb_checkpoints/
+
+
+
