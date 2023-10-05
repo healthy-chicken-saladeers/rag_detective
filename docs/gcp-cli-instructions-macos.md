@@ -7,9 +7,9 @@ If you don't have Homebrew installed on your macOS, follow these steps:
 1. Open your terminal.
 2. Run the following command to download and install Homebrew:
    
-       ```bash
-       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-       ```
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 
 3. Once the installation is complete, you can confirm it's installed by checking its version:
 
