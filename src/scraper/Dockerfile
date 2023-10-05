@@ -9,7 +9,7 @@ ENV PYENV_SHELL=/bin/bash
 RUN set -ex; \
  apt-get update && \
  apt-get upgrade -y && \
- apt-get install -y --no-install-recommends build-essential git  && \
+ apt-get install -y --no-install-recommends build-essential git nano && \
  pip install --no-cache-dir --upgrade pip && \
  pip install pipenv
 
