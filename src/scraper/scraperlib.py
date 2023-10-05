@@ -106,25 +106,24 @@ def scrape_website(all_links, options):
 
                 # If content seems too short or response code is not 200, use Selenium
                 if response.status_code != 200 or len(text_only_requests.split()) < 50:
+                    print("using selenium to scrape..\n")
                     try:
                         browser = webdriver.Chrome(options)
                         browser.get(link)
                         wait = WebDriverWait(browser, timeout=30)
 
-                        wait.until(lambda d: browser.find_element \
-                            (By.TAG_NAME, 'html').is_displayed() \
+                        wait.until(lambda d: browser.find_element(By.TAG_NAME, 'html').is_displayed() \
                             if browser.find_element(By.TAG_NAME, 'html') else True & \
-                                  np.all(np.array([i.is_displayed() \
-                                                   for i in \
-                                                   browser.find_elements( \
-                                                       By.TAG_NAME, \
-                                                       'div')])) \
-                            if browser.find_elements(By.TAG_NAME, 'div') else True)
+                          np.all(np.array([i.is_displayed() \
+                                           for i in
+                                           browser.find_elements(
+                                               By.TAG_NAME,
+                                               'div')])) \
+                        if browser.find_elements(By.TAG_NAME, 'div') else True)
 
                         soup_selenium = BeautifulSoup(browser.page_source, 'lxml')
 
-                        [tag.decompose() for tag in soup_selenium.find_all \
-                            (['header', 'nav', 'footer'])]
+                        [tag.decompose() for tag in soup_selenium.find_all(['header', 'nav', 'footer'])]
                         text_only_selenium = soup_selenium.get_text(separator=' ', strip=True).lower()
 
                         text_dict[link] = text_only_selenium
@@ -134,10 +133,8 @@ def scrape_website(all_links, options):
                                              " " + text_only_selenium
 
                     except Exception as e:
-                        print(f"Error occurred while processing {link} in selenium: \
-                        {e.with_traceback}")
-                        log_dict[link] = f'{pd.to_datetime(datetime.today().date())}\
-                          {e.with_traceback}'
+                        print(f"Error occurred while processing {link} in selenium: {e.with_traceback}")
+                        log_dict[link] = f'{pd.to_datetime(datetime.today().date())}  {e.with_traceback}'
 
                     finally:
                         browser.close()
@@ -158,6 +155,5 @@ def scrape_website(all_links, options):
         return pd.DataFrame(), df_log  # return empty DataFrame if no text is extracted
 
     df = pd.DataFrame(list(text_dict.items()), columns=['key', 'text'])
-    df['timestamp'] = pd.to_datetime(datetime.today().date())
 
     return df, df_log

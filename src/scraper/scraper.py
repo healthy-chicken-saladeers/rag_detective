@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import datetime
 from scraperlib import *
-
+from pathlib import Path
 
 def main():
     """
@@ -10,6 +10,8 @@ def main():
 
     The CSV file contains the scraped data from the first 10 webpages of each sitemap.
     """
+    p = Path('../../data')
+    path = str(p)
     options = set_chrome_options()
     try:
         sitemap_df = pd.read_csv("sitemap.csv")
@@ -37,13 +39,18 @@ def main():
             website_name = link_split[2]
         print(f"{links.shape[0]} webpages found for scraping. For demo, scraping only the first 10 webpages.\n")
 
-        scraped_df, log_df = scrape_website(links, options)
+        scraped_df, log_df = scrape_website(links[:3], options)
         if scraped_df.empty:
             print(f"No data was scraped from the first 10 links of {item}.\n")
             continue
 
-        timestamp = str(datetime.now()).split()[0]
-        output_file = f'data/{website_name}_{timestamp}.csv'
+        split = str(datetime.now()).split()
+        date = str(split[0])
+        ms = str(split[1].split('.')[1])
+        timestamp = date + "-" + ms
+
+        output_file = path + '/' + website_name + '_' + timestamp + '.csv'
+        print(output_file)
         scraped_df.to_csv(output_file, index=False)
         if not log_df.empty:
             log_file = f'log/{website_name}_{timestamp}.csv'
