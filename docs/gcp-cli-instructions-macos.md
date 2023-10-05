@@ -13,9 +13,9 @@ If you don't have Homebrew installed on your macOS, follow these steps:
 
 3. Once the installation is complete, you can confirm it's installed by checking its version:
 
-       ```bash
-       brew --version
-       ```
+```bash
+brew --version
+```
 ---
 
 ### 2. Updating Homebrew and Installed Software (If Homebrew already installed)
@@ -24,21 +24,21 @@ If you already have Homebrew installed and want to update everything, follow the
 
 1. Update Homebrew itself and the formulae definitions:
 
-       ```bash
-       brew update
-       ```
+```bash
+brew update
+```
 
 2. Upgrade all outdated formulae and casks at once:
 
-       ```bash
-       brew upgrade
-       ```
+```bash
+brew upgrade
+```
 
 3. Clean up old versions of installed formulae and casks to free up disk space:
 
-       ```bash
-       brew cleanup
-       ```
+```bash
+brew cleanup
+```
 
 ---
 
@@ -48,15 +48,15 @@ To install the `gcloud` CLI using Homebrew:
 
 1. Run the following command:
 
-       ```bash
-       brew install --cask google-cloud-sdk
-       ```
+```bash
+brew install --cask google-cloud-sdk
+```
 
 2. After installation, initialize the `gcloud` CLI:
 
-       ```bash
-       gcloud init
-       ```
+```bash
+gcloud init
+```
 
 This will guide you through the process of authorizing the CLI and setting the default configuration.
 
