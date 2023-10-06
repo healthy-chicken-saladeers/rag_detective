@@ -1,3 +1,7 @@
+## Original Schema Plan
+
+#### This plan was abandoned after countless hours struggling with Weaviate to work with a 4 level hierarchy, and ultimately we adopted a flat structure.
+
 For our app, we designed a schema that delineates the relationship between a website, its associated scrape sessions, and the segmented contents of each scraped page.
 
 1. **TextChunk**: Represents the segmented or partitioned text content extracted from a webpage.
