@@ -8,12 +8,15 @@ from selenium.webdriver.chrome.options import ChromiumOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import os
+from pathlib import Path
 from google.cloud import storage
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
 }
 
+bucket_name = "ac215_scraper_bucket"
 
 def set_chrome_options() -> ChromiumOptions:
     """Sets chrome options for Selenium.Chrome options for headless browser is enabled.
@@ -159,28 +162,86 @@ def scrape_website(all_links, options):
 
     return df, df_log
 
+def save_file(df, filename ):
+    """This method save a csv file with the following rules:
+        1. If running on local computer , files are saved in the root  data/ folder.
+        2. If running on a container locally , files are saved in the application data/ folder.
+        3. If running gcp container , files are saved on google cloud bucket "ac215_scraper_bucket"
+    :param df:
+                dataframe with all the data for a website, with key, and text item
+    :param filename:
+                    name of the file that the dataframe data is saved to.
 
-def upload_df_to_gcs(df, bucket_name, blob_name):
+    :return:
+        flag: Whether the save was successfull.
+        stored_message : Details about where the files were saved.
     """
-    Uploads a pd.DataFrame as a csv file to a GCS bucket
 
-    Args:
-    df (pd.DataFrame): A pandas DataFrame to be uploaded
-    bucket_name (str): Name of GCS bucket
-    blob_name (str): Object path and filename within the bucket
+    flag = False
+    stored_message =""
+    path = str(Path('../../data'))
+    #Check if we are running on local computer. Store file in the root data/ folder.
+    if os.path.exists(path):
+        df.to_csv(f"{path}/{filename}",index=False)
+        stored_message = f"Stored in {path}/{filename}"
+        flag = True
 
-    Returns:
-    None
+    #Running on container.  If running on gcp, the storage.Client() is able to authenticate
+    #the credentials, and data is stored in the bucket.
+    # If authentication not available (in case of local containers), store it in the app data/ folder
+    else:
+        try:
+            goog_storage_client = storage.client()
+            bucket = goog_storage_client.get_bucket(bucket_name)
+            if bucket:
+                csv_data = df.to_csv(index=False)
+                blob = bucket.blob('data/')
+                blob.upload_from_string(csv_data, content_type='text/csv')
+                flag = True
+                stored_message = f"Stored in google storage/{filename}"
+        except Exception as e:
+            path = str(Path('data'))
+            if not os.path.exists(path):
+                os.mkdir("data")
+            df.to_csv(f"{path}/{filename}", index=False)
+            flag = True
+            stored_message = f"Stored in data/{filename}"
 
-    """
+    return flag, stored_message
 
-    # Convert the pd.DataFrame to csv format in memory
-    csv_data = df.to_csv(index=False)
 
-    # Upload csv data to bucket
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(blob_name)
-    blob.upload_from_string(csv_data, content_type='text/csv')
 
-    return None
+
+
+
+
+
+
+
+
+
+
+# def upload_df_to_gcs(df, bucket_name, blob_name):
+#     """
+#     Uploads a pd.DataFrame as a csv file to a GCS bucket
+#
+#     Args:
+#     df (pd.DataFrame): A pandas DataFrame to be uploaded
+#     bucket_name (str): Name of GCS bucket
+#     blob_name (str): Object path and filename within the bucket
+#
+#     Returns:
+#     None
+#
+#     """
+#
+#     # Convert the pd.DataFrame to csv format in memory
+#     csv_data = df.to_csv(index=False)
+#
+#     # Upload csv data to bucket
+#     storage_client = storage.Client()
+#     bucket = storage_client.bucket(bucket_name)
+#     blob = bucket.blob(blob_name)
+#     blob.upload_from_string(csv_data, content_type='text/csv')
+#
+#     return None
