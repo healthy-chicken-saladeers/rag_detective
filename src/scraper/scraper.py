@@ -37,7 +37,7 @@ def main():
             website_name = link_split[2]
         print(f"{links.shape[0]} webpages found for scraping. Scraping all pages.\n")
 
-        scraped_df, log_df = scrape_website(links[:1], options)
+        scraped_df, log_df = scrape_website(links, options)
         if scraped_df.empty:
             print(f"No data was scraped for {item}.\n")
             continue
