@@ -51,7 +51,10 @@ def main():
 
         output_file = path + '/' + website_name + '_' + timestamp + '.csv'
         print(output_file)
-        scraped_df.to_csv(output_file, index=False)
+        # scraped_df.to_csv(output_file, index=False)
+        bucket_name = "ac215_scraper_bucket"
+        upload_df_to_gcs(scraped_df, bucket_name, output_file)
+        
         if not log_df.empty:
             log_file = f'log/{website_name}_{timestamp}.csv'
             log_df.to_csv(log_file, index=False)

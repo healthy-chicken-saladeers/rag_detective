@@ -8,6 +8,7 @@ from selenium.webdriver.chrome.options import ChromiumOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from google.cloud import storage
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
@@ -157,3 +158,29 @@ def scrape_website(all_links, options):
     df = pd.DataFrame(list(text_dict.items()), columns=['key', 'text'])
 
     return df, df_log
+
+
+def upload_df_to_gcs(df, bucket_name, blob_name):
+    """
+    Uploads a pd.DataFrame as a csv file to a GCS bucket
+
+    Args:
+    df (pd.DataFrame): A pandas DataFrame to be uploaded
+    bucket_name (str): Name of GCS bucket
+    blob_name (str): Object path and filename within the bucket
+
+    Returns:
+    None
+
+    """
+
+    # Convert the pd.DataFrame to csv format in memory
+    csv_data = df.to_csv(index=False)
+
+    # Upload csv data to bucket
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob.upload_from_string(csv_data, content_type='text/csv')
+
+    return None
