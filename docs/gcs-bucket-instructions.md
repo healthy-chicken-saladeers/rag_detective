@@ -8,22 +8,29 @@ Google Cloud Storage is a scalable object storage service that allows you to sto
 2. **Create a Bucket:**
    - In the left sidebar, go to "Cloud Storage" > "Buckets"
    - Navigate to the [Cloud Storage](https://console.cloud.google.com/storage) section.
-   ![](../img/gsc-bucket.jpg)
+   
+   ![](../img/gcs-bucket.jpg)
 
    - Click the "Create Bucket" button.
 
 3. **Configure Your Bucket:**
    - Fill in the required information:
   ![](../img/gsc-bucket-create.jpg)
+  
      - **Name your bucket**: Enter a unique name for your bucket. Bucket names must be globally unique across all GCP projects.
+     
      ![](../img/gcs-bucket-name.jpg)
      - **Choose where to store your data**: Choose your preferred region. This decision can affect latency and compliance with data regulations.
+     
      ![](../img/gcs-bucket-storage.jpg)
      - **Choose a storage class for your data**: Select the appropriate storage class based on your data access patterns and cost considerations.
+     
      ![](../img/gcs-bucket-storage-class.jpg)
      - **Choose how to control access to objects**: Set access control permissions for the bucket. 
+     
      ![](../img/gcs-bucket-access-control.jpg)
-     - **Choose how to protect object data**: Select from several options for enhancing the security and privacy of your data. Since we use both date and time in the filenames of data saved from our scraper, we choose to not implement versioning in our bucket.
+     - **Choose how to protect object data**: Select from several options for enhancing the security and privacy of your data. Since we use both date and time in the file names of data saved from our scraper, we choose to not implement versioning in our bucket.
+     
      ![](..img/gcs-bucket-protect-data.jpg)
 
 
@@ -54,7 +61,9 @@ To save files from a Python script running on a private Google Cloud Platform (G
 
 3. **Edit VM Instance Permissions:**
    - Click on the name of your private VM instance to access its details.
+   
    ![](../img/gcp-vm.jpg)
+   
    - Click the "Stop" button to first stop your instance. You must stop the VM instance to edit its service account.
    - Wait for the instance to stop and then click the "Edit" button to modify the instance settings.
 
@@ -63,6 +72,7 @@ To save files from a Python script running on a private Google Cloud Platform (G
    - Select the service account for your VM.
    - Under "Access scopes" select "Set access for each API".
    - The "Storage" drop-down should be set to "Full", which will grant both read and write access to your bucket.
+   
    ![](../img/gcp-vm-storage-permissions.jpg)
 
 5. **Save the VM Instance Changes:**
@@ -83,6 +93,7 @@ To access the Google Cloud Storage Python client library in your project and use
 
 2. **Install Google Cloud Storage Library:**
    - Run the following command to install the Google Cloud Storage library:
+   
      ```shell
      pipenv install google-cloud-storage
      ```
@@ -107,6 +118,7 @@ Now, you have the Google Cloud Storage Python client library installed and ready
 
 5. **Access GCS from Your VM:**
    - You can now use `gsutil` or any other GCS client library to access the GCS bucket from your VM. For example:
+   
      ```shell
      gsutil ls gs://your-bucket-name/
      ```
