@@ -31,7 +31,7 @@ Google Cloud Storage is a scalable object storage service that allows you to sto
      ![](../img/gcs-bucket-access-control.jpg)
      - **Choose how to protect object data**: Select from several options for enhancing the security and privacy of your data. Since we use both date and time in the file names of data saved from our scraper, we choose to not implement versioning in our bucket.
      
-     ![](..img/gcs-bucket-protect-data.jpg)
+     ![](../img/gcs-bucket-protect-data.jpg)
 
 
 4. **Create the Bucket:**
@@ -47,7 +47,7 @@ For more information on using Google Cloud Storage and managing buckets, refer t
 
 # Opening Permissions on a Private GCP VM to Access a GCS Bucket
 
-Since we are working on a private Google Cloud VM, we will need to grant it access to a Google Cloud Storage (GCS) bucket. Below are the steps needed to configure the necessary permissions and credentials. 
+If working on a private Google Cloud VM, we will need to grant it access to a Google Cloud Storage (GCS) bucket. Below are the steps needed to configure the necessary permissions and credentials. 
 
 ## Opening Permissions in GCP Console to Save Files from a Private GCP VM to a GCS Bucket
 
