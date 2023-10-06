@@ -28,7 +28,7 @@ services:
       context: ./src/scraper 
     container_name: scraper
     user: appuser
-    command: ["python", "scraper.py"]
+    command: ["-c", "pipenv shell"]
     volumes:
       - ./src/scraper/scraper_data:/app/data
 

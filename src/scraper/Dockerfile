@@ -28,11 +28,19 @@ RUN apt-get update && apt-get -y install google-chrome-stable
 
 
 # Add Pipfile, Pipfile.lock + python code
-ADD . /app
+COPY . /app
 WORKDIR /app
 
-RUN pipenv sync
-# Entry point
-ENTRYPOINT ["/bin/bash"]
+
+# Install dependencies with pipenv:
+RUN pipenv install --deploy --system
+
+# Creates a non-root user and adds permission to access the app folder:
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+USER appuser
+
+
+## Entry point
+#ENTRYPOINT ["/bin/bash"]
 # Get into the pipenv shell
 CMD ["-c", "pipenv shell"]
