@@ -191,8 +191,8 @@ def save_file(df, filename ):
     # If authentication not available (in case of local containers), store it in the app data/ folder
     else:
         try:
-            goog_storage_client = storage.client()
-            bucket = goog_storage_client.get_bucket(bucket_name)
+            goog_storage_client = storage.Client()
+            bucket = goog_storage_client.bucket(bucket_name)
             if bucket:
                 csv_data = df.to_csv(index=False)
                 blob = bucket.blob('data/')
