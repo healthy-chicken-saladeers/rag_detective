@@ -195,10 +195,10 @@ def save_file(df, filename ):
             bucket = goog_storage_client.bucket(bucket_name)
             if bucket:
                 csv_data = df.to_csv(index=False)
-                blob = bucket.blob('data/')
+                blob = bucket.blob(f'data/{filename}')
                 blob.upload_from_string(csv_data, content_type='text/csv')
                 flag = True
-                stored_message = f"Stored in google storage/{filename}"
+                stored_message = f"Stored in google storage data/{filename}"
         except Exception as e:
             path = str(Path('data'))
             if not os.path.exists(path):
