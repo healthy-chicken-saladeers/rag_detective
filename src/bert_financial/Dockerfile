@@ -26,11 +26,12 @@ COPY Pipfile Pipfile.lock ./
 RUN pipenv install --deploy --system
 
 # Copy rest of the source code
-COPY src/bert_financial .
+# Now copying everything from current directory 
+COPY . .
 
 # Switch to non-root user
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-# Provide the command to run when the container starts
-CMD ["python", "finetune_bert.py"]
+# By default, the container does nothing when it starts
+CMD ["tail", "-f", "/dev/null"]
