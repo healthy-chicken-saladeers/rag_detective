@@ -46,15 +46,15 @@ COPY . .
 # Create a directory that will be used as a mount point (if needed)
 RUN mkdir /app/gcsbucket
 
-# Switch to non-root user
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
-USER appuser
-
 # Copy the entrypoint script into the container
 COPY entrypoint.sh /entrypoint.sh
 
 # Make the script executable
 RUN chmod +x /entrypoint.sh
+
+# Switch to non-root user
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+USER appuser
 
 # Use the entry script as the entry point
 ENTRYPOINT ["/entrypoint.sh"]
