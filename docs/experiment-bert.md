@@ -105,3 +105,8 @@ To mitigate potential biases and validate the model's robustness, we should eval
 While the financial_phrasebank dataset offers a valuable resource for financial sentiment analysis, care must be taken when interpreting results based on annotator agreement levels. Future work should focus on unbiased evaluation and further exploration of potential factors influencing model performance in this domain.
 
 Looking at the below results at face value, it would indeed appear that the higher the level of annotator consensus on a dataset, the more performant the model trained on it performs.
+
+## Training Results
+
+![](../img/experiment-results.jpg)
+![](../img/compute-results.jpg)
