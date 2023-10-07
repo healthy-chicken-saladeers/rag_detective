@@ -11,8 +11,9 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     curl \
     lsb-release \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    sudo  && \ 
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
 
 # Add gcsfuse repo and install gcsfuse
 RUN echo "deb http://packages.cloud.google.com/apt gcsfuse-$(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/gcsfuse.list && \
@@ -52,8 +53,12 @@ COPY entrypoint.sh /entrypoint.sh
 # Make the script executable
 RUN chmod +x /entrypoint.sh
 
-# Switch to non-root user
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+# Add appuser to sudo group and disable password prompts for sudo commands
+RUN adduser -u 5678 --disabled-password --gecos "" appuser \
+    && adduser appuser sudo \
+    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+    && chown -R appuser /app
+
 USER appuser
 
 # Use the entry script as the entry point
