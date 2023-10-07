@@ -52,6 +52,7 @@ services:
     command: ["tail", "-f", "/dev/null"]
     volumes:
       - ./src/bert_financial:/app
+    privileged: true
 
 volumes:
   weaviate_data:

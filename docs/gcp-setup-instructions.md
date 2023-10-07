@@ -123,7 +123,18 @@ docker --version
 
 This should show that pipenv, Docker, Python, and Git are installed on the Google Cloud VM instance.
 
-### Step 9: Get a PAT from GitHub and clone the RAG Detective repository
+### Step 9: Install `gcsfuse` on your GCE instance.
+
+Before the Docker containers can use `gcsfuse`, it has to be available on the host system (GCE instance).
+
+    ```bash
+    export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
+    echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+    sudo apt-get update
+    sudo apt-get install gcsfuse
+
+### Step 10: Get a PAT from GitHub and clone the RAG Detective repository
 
 Since the repository is private, to clone it you need to authenticate with GitHub. GitHub discontinued password access in 2021, so you need to create a "fine-grained access token". 
 
@@ -137,7 +148,7 @@ git clone -b milestone2 https://abcdefghijklmnopqrstuvwxyz123456789@github.com/h
 
 This will create the `ac215_healthychickensaladeers` folder.
 
-### Step 10: Add OpenAI key as environment variable
+### Step 11: Add OpenAI key as environment variable
 
 This is to allow Weaviate and LlamaIndex to access the GPT models without sharing the secrets publicly
 
@@ -145,7 +156,7 @@ This is to allow Weaviate and LlamaIndex to access the GPT models without sharin
 export OPENAI_APIKEY=my-key-here
 ```
 
-### Step 11: Spin up the `docker-compose.yml`
+### Step 12: Spin up the `docker-compose.yml`
 
 Change to the `ac215_healthychickensaladeers` directory in the repository where the `docker-compose.yml` file resides
 
@@ -163,7 +174,7 @@ You will see the three containers spin up:
 
 ![](../img/docker-compose-up.jpg)
 
-### Step 12: Add a Firewall rule to GCP to allow http access to confirm Weaviate is running
+### Step 13: Add a Firewall rule to GCP to allow http access to confirm Weaviate is running
 
 This is done under the `Network  Security` tab under `Cloud Firewall` / `Firewall policies`. This is necessary to allow http access from the outside, where you can call the external IP address to ensure the Weaviate instance is running and giving a response.
 
@@ -219,7 +230,7 @@ For example, at one point our instance's external URL was `34.31.93.155`, so acc
 }
 ```
 
-### Step 13: Try out the Weaviate Console
+### Step 14: Try out the Weaviate Console
 
 Go to this link [https://console.weaviate.cloud/](https://console.weaviate.cloud/) to view the console login.
 
