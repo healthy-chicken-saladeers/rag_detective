@@ -1,4 +1,3 @@
-
 FROM python:3.9-slim
 
 ENV VAR1=10

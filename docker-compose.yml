@@ -43,6 +43,7 @@ services:
       - ./src/llama_index:/app/llama_index
     environment:
       OPENAI_API_KEY: $OPENAI_APIKEY #It uses the same key as weaviate if needed
+    privileged: true
 
   finetune_bert:
     build:

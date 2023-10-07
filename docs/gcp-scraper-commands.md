@@ -1,6 +1,6 @@
-# Instructions to run the scraper docker container alone
+# Instructions to run docker containers alone using the `scraper` container as an exa,ple
 
-#### These won't be necessary most of the time, as the `docker-compose.yml` will run both containers.
+#### These won't be necessary most of the time, as the `docker-compose.yml` will run all four containers.
 
 ### Here are instructions for the individual scraper container. Run these from the `src/scraper` folder.
 
@@ -49,3 +49,27 @@ docker exec -it [your-container-id-or-name] /bin/bash
 Replace `[your-container-id-or-name]` with the actual container ID or name.
 
 Once you run the above command, you should be inside the container's shell, where you can execute commands as if you're inside the container.
+
+### To give the container access to the GCS Bucket
+
+The directory `gcsbucket` is just a mount point in the Docker container. To actually see the contents of your GCS bucket inside that directory, you need to use `gcsfuse` to mount the bucket to that directory after starting the container.
+
+1. **Run your container**:
+
+    ```bash
+    sudo docker run -it --privileged finetune_bert bash
+    ```
+
+    Use `--privileged` to allow the container to have necessary permissions to mount filesystems. The `docker-compose` has already set the `llama_index` and `finetuned_bert` to run as privileged if launched this way.
+
+2. **Inside the container, mount the GCS bucket**:
+
+    If your GCE instance has appropriate IAM permissions to access the bucket, you can simply run:
+
+    ```bash
+    gcsfuse ac215_scraper_bucket /app/gcsbucket
+    ```
+
+    Now, if you list the contents of `/app/gcsbucket`, you should see the contents of your GCS bucket.
+
+Every time you start a new container instance, you'll need to remount the GCS bucket to see its contents in `/app/gcsbucket`. We will likely create a startup script to handle this.
