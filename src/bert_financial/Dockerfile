@@ -5,7 +5,6 @@ RUN apt-get update && apt-get install -y \
     gcc \
     build-essential \
     wget \
-    gcsfuse \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -34,8 +33,17 @@ COPY . .
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-# Create a directory for mounting GCS
-RUN mkdir /mnt/gcs
+# By default, the container does nothing when it starts
+CMD ["tail", "-f", "/dev/null"]
 
-# Mount the GCS bucket when the container starts
-CMD ["gcsfuse", "ac215_scraper_bucket", "/mnt/gcs"]
+# Install gcsfuse
+RUN wget -qO- https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+    echo "deb http://packages.cloud.google.com/apt gcsfuse-$(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/gcsfuse.list && \
+    apt-get update && \
+    apt-get install -y gcsfuse
+
+# Create a directory that will be used as a mount point
+RUN mkdir /app/gcsbucket
+
+# Switch back to non-root user for security reasons
+USER appuser
