@@ -28,8 +28,8 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Copy directory into container and set it as working directory:
-COPY . /llama_index
-WORKDIR /llama_index
+COPY . /app
+WORKDIR /app
 
 # Install pipenv
 RUN pip install pipenv
@@ -50,7 +50,7 @@ RUN chmod +x /entrypoint.sh
 RUN adduser -u 5678 --disabled-password --gecos "" appuser \
     && adduser appuser sudo \
     && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
-    && chown -R appuser /llama_index
+    && chown -R appuser /app
 
 USER appuser
 

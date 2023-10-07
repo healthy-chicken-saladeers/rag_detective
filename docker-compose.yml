@@ -37,9 +37,9 @@ services:
       context: ./src/llama_index
     container_name: llama_index
     user: appuser
-    command: ["python", "build_query.py"]
+    command: ["tail", "-f", "/dev/null"]
     volumes:
-      - ./src/llama_index:/app/llama_index
+      - ./src/llama_index:/app
     environment:
       OPENAI_API_KEY: $OPENAI_APIKEY #It uses the same key as weaviate if needed
     privileged: true
