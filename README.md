@@ -69,7 +69,15 @@ Links to the notebooks, which are identical but used the 4 different datasets de
 * [75% annotator consensus](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/BERT_fine-tune_financials/75Agree.ipynb)
 * [100% annotator consensus](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/BERT_fine-tune_financials/AllAgree.ipynb)
 
+We also ran this with just our `finetune_bert.py` file. We still had to install Hugging Face `transformers` and `wandb` because these are handled by `Pipfile`, and there are no plots displayed since in our container the plots are saved directly to disk without being shown.
 
+* [50% annotator consensus in `finetune_bert.py` run on Colab](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/BERT_fine-tune_financials/finetune_bert_py_in_colab.ipynb)
+
+#### For in-depth information on our training experiment, including discussion of the data, training methodology, conclusions, and interactive plots where you can hover your mouse for further detail, [please see our Weights & Biases report](https://wandb.ai/iankelk/bert-sentiment/reports/BERT-Fine-tuning-on-Financial-Data--Vmlldzo1NTg3MTg3)
+
+A static version of the most useful plots is here, showing the results for the 4 datasets representing 4 levels of annotator consensus:
+
+![](./img/experiment-results.jpg)
 
 ### More docs
 
