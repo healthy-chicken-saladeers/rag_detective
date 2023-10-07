@@ -43,8 +43,8 @@ RUN pipenv install --deploy --system
 # Now copying everything from current directory 
 COPY . .
 
-# Create a directory that will be used as a mount point (if needed)
-RUN mkdir /app/gcsbucket
+# Create a directory that will be used as a mount point (Removed while dir exists)
+# RUN mkdir /app/gcsbucket
 
 # Copy the entrypoint script into the container
 COPY entrypoint.sh /entrypoint.sh
