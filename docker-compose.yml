@@ -12,7 +12,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - weaviate_data:/var/lib/weaviate
+      - ./weaviate_data:/var/lib/weaviate
     restart: on-failure:0
     environment:
       OPENAI_APIKEY: $OPENAI_APIKEY
@@ -28,7 +28,7 @@ services:
       context: ./src/scraper 
     container_name: scraper
     user: appuser
-    command: ["-c", "pipenv shell"]
+    command: ["pipenv", "run", "python", "scraper.py"]
     volumes:
       - ./src/scraper/scraper_data:/app/data
 
@@ -37,11 +37,20 @@ services:
       context: ./src/llama_index
     container_name: llama_index
     user: appuser
-    command: ["python", "build_query.py"]
+    command: ["pipenv", "run", "python", "build_query.py"]
     volumes:
-      - ./src/llama_index:/app/llama_index
+      - ./src/llama_index:/app
     environment:
       OPENAI_API_KEY: $OPENAI_APIKEY #It uses the same key as weaviate if needed
+      
+  finetune_bert:
+    build:
+      context: ./src/bert_financial
+    container_name: finetune_bert
+    user: appuser
+    command: ["tail", "-f", "/dev/null"]
+    volumes:
+      - ./src/bert_financial:/app
 
 volumes:
   weaviate_data:

@@ -89,7 +89,7 @@ class F1_Evaluation(tf.keras.callbacks.Callback):
 wandb.login()
 
 # Define the path to dataset
-data_path = 'Sentences_50Agree.txt'
+data_path = './data/Sentences_50Agree.txt'
 
 # Load raw data as binary
 raw_data = open(data_path, 'rb').read()
