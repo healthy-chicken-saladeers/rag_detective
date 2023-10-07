@@ -1,3 +1,4 @@
+# Use Python 3.9-slim as the base image
 FROM python:3.9-slim
 
 # Install system dependencies
@@ -10,9 +11,9 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     curl \
     lsb-release \
-    sudo \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    sudo  && \ 
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
 
 # Add gcsfuse repo and install gcsfuse
 RUN echo "deb http://packages.cloud.google.com/apt gcsfuse-$(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/gcsfuse.list && \
@@ -22,20 +23,26 @@ RUN echo "deb http://packages.cloud.google.com/apt gcsfuse-$(lsb_release -c -s) 
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Environment Variables
+# Set the working directory
+WORKDIR /app
+
+# Set environment variables
 ENV VAR1=10
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Copy directory into container and set it as working directory:
-COPY . /app
-WORKDIR /app
-
-# Install pipenv
+# Install pipenv 
 RUN pip install pipenv
 
-# Install dependencies with pipenv:
+# Copy Pipfile and Pipfile.lock
+COPY Pipfile Pipfile.lock ./
+
+# Install Python dependencies
 RUN pipenv install --deploy --system
+
+# Copy rest of the source code
+# Now copying everything from current directory 
+COPY . .
 
 # Enable user_allow_other in fuse.conf
 RUN echo 'user_allow_other' >> /etc/fuse.conf
@@ -46,7 +53,7 @@ COPY entrypoint.sh /entrypoint.sh
 # Make the script executable
 RUN chmod +x /entrypoint.sh
 
-# Creates a non-root user and add user to sudo group and disable password prompt for sudo commands:
+# Add appuser to sudo group and disable password prompts for sudo commands
 RUN adduser -u 5678 --disabled-password --gecos "" appuser \
     && adduser appuser sudo \
     && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
@@ -57,5 +64,4 @@ USER appuser
 # Use the entry script as the entry point
 ENTRYPOINT ["/entrypoint.sh"]
 
-#start the container from bash:
 CMD ["/bin/bash"]
