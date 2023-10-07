@@ -49,3 +49,14 @@ RUN mkdir /app/gcsbucket
 # Switch to non-root user
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
+
+# Copy the entrypoint script into the container
+COPY entrypoint.sh /entrypoint.sh
+
+# Make the script executable
+RUN chmod +x /entrypoint.sh
+
+# Use the entry script as the entry point
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["/bin/bash"]

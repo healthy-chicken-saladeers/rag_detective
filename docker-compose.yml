@@ -39,7 +39,6 @@ services:
     user: appuser
     command: ["python", "build_query.py"]
     volumes:
-      - ./src/llama_index:/app
       - ./src/llama_index:/app/llama_index
     environment:
       OPENAI_API_KEY: $OPENAI_APIKEY #It uses the same key as weaviate if needed
