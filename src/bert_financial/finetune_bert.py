@@ -1,6 +1,3 @@
-!pip install wandb
-!pip install transformers
-
 # Import necessary libraries
 import os
 
