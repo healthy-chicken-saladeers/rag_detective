@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y \
     gcc \
     build-essential \
     wget \
-    gcsfuse \  # Add this line to install GCSFuse
+    gcsfuse \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
