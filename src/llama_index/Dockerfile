@@ -1,32 +1,61 @@
 FROM python:3.9-slim
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    build-essential \
+    wget \
+    apt-transport-https \
+    ca-certificates \
+    gnupg \
+    curl \
+    lsb-release \
+    sudo \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Add gcsfuse repo and install gcsfuse
+RUN echo "deb http://packages.cloud.google.com/apt gcsfuse-$(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/gcsfuse.list && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+    apt-get update && \
+    apt-get install -y gcsfuse && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Environment Variables
 ENV VAR1=10
-
-# Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
-
-# Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
-
-# Install wget and remove unnecessary folder:
-RUN  apt-get update \
-  && rm -rf /var/lib/apt/lists/*
-
-# Install pipenv, gcc and build-essential:
-RUN pip install pipenv
-RUN apt-get update && apt-get install -y --no-install-recommends gcc \
-&& apt-get install build-essential -y
 
 # Copy directory into container and set it as working directory:
 COPY . /llama_index
 WORKDIR /llama_index
 
+# Install pipenv
+RUN pip install pipenv
+
 # Install dependencies with pipenv:
 RUN pipenv install --deploy --system
 
-# Creates a non-root user and adds permission to access acrophily sims folder:
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /llama_index
+# Enable user_allow_other in fuse.conf
+RUN echo 'user_allow_other' >> /etc/fuse.conf
+
+# Copy the entrypoint script into the container
+COPY entrypoint.sh /entrypoint.sh
+
+# Make the script executable
+RUN chmod +x /entrypoint.sh
+
+# Creates a non-root user and add user to sudo group and disable password prompt for sudo commands:
+RUN adduser -u 5678 --disabled-password --gecos "" appuser \
+    && adduser appuser sudo \
+    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+    && chown -R appuser /llama_index
+
 USER appuser
 
+# Use the entry script as the entry point
+ENTRYPOINT ["/entrypoint.sh"]
+
 #start the container from bash:
-CMD ["pipenv", "run", "python", "build_query.py"]
+CMD ["/bin/bash"]
