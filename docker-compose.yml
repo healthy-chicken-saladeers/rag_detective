@@ -49,7 +49,7 @@ services:
       context: ./src/bert_financial
     container_name: finetune_bert
     user: appuser
-    command: ["tail", "-f", "/dev/null"]
+    command: ["bash", "-c", "mkdir -p /app/gcsbucket && tail -f /dev/null"]
     volumes:
       - ./src/bert_financial:/app
     privileged: true
