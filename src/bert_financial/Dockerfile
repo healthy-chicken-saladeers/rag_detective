@@ -6,10 +6,11 @@ RUN apt-get update && apt-get install -y \
     gcc \
     build-essential \
     wget \
-    apt-transport-https \  
-    ca-certificates \      
-    gnupg \                
-    curl \                 
+    apt-transport-https \
+    ca-certificates \
+    gnupg \
+    curl \
+    lsb-release \  # <-- Add this line
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
