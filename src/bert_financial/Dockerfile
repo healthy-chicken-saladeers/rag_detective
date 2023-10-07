@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     gnupg \
     curl \
-    lsb-release \  # <-- Add this line
+    lsb-release \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
