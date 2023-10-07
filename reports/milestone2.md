@@ -1,5 +1,7 @@
-AC215 Milestone3
+AC215-Template (Milestone2)
 ==============================
+
+AC215 - Milestone2
 
 Project Organization
 ------------
@@ -39,7 +41,7 @@ Project Organization
 
 
 --------
-# AC215 - Milestone3 - RAG Detective
+# AC215 - Milestone2 - RAG Detective
 
 **Team Members**
 Ian Kelk, Mandy Wong, Alyssa Lutservitz, Nitesh Kumar, Bailey Bailey
