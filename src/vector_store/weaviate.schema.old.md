@@ -49,13 +49,13 @@ Below is the schema's representation in the JSON format:
           "name": "key",
           "dataType": ["string"],
           "description": "The identifier for the text chunk.",
-          "indexInverted": True
+          "indexInverted": true
         },
         {
           "name": "text",
           "dataType": ["string"],
           "description": "The content of the text chunk.",
-          "indexInverted": True
+          "indexInverted": true
         }
       ]
     },
@@ -67,7 +67,7 @@ Below is the schema's representation in the JSON format:
           "name": "pageURL",
           "dataType": ["string"],
           "description": "The specific URL of the scraped webpage.",
-          "indexInverted": True
+          "indexInverted": true
         },
         {
           "name": "chunks",
@@ -84,7 +84,7 @@ Below is the schema's representation in the JSON format:
           "name": "timestamp",
           "dataType": ["date"],
           "description": "The date and time when the scrape session occurred.",
-          "indexInverted": True
+          "indexInverted": true
         },
         {
           "name": "pages",
@@ -101,7 +101,7 @@ Below is the schema's representation in the JSON format:
           "name": "websiteAddress",
           "dataType": ["string"],
           "description": "The address of the website.",
-          "indexInverted": True
+          "indexInverted": true
         },
         {
           "name": "scrapeSessions",

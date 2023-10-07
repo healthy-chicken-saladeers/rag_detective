@@ -14,13 +14,13 @@
           "name": "key",
           "dataType": ["string"],
           "description": "The identifier for the text chunk.",
-          "indexInverted": True
+          "indexInverted": true
         },
         {
           "name": "text",
           "dataType": ["string"],
           "description": "The content of the text chunk.",
-          "indexInverted": True
+          "indexInverted": true
         }
       ]
     },
@@ -32,7 +32,7 @@
           "name": "pageURL",
           "dataType": ["string"],
           "description": "The specific URL of the scraped webpage.",
-          "indexInverted": True
+          "indexInverted": true
         },
         {
           "name": "chunks",
@@ -49,7 +49,7 @@
           "name": "timestamp",
           "dataType": ["date"],
           "description": "The date and time when the scrape session occurred.",
-          "indexInverted": True
+          "indexInverted": true
         },
         {
           "name": "pages",
@@ -66,7 +66,7 @@
           "name": "websiteAddress",
           "dataType": ["string"],
           "description": "The address of the website.",
-          "indexInverted": True
+          "indexInverted": true
         },
         {
           "name": "scrapeSessions",
