@@ -44,8 +44,8 @@ RUN pipenv install --deploy --system
 # Now copying everything from current directory 
 COPY . .
 
-# Create a directory that will be used as a mount point (Removed while dir exists)
-# RUN mkdir /app/gcsbucket
+# Enable user_allow_other in fuse.conf
+RUN echo 'user_allow_other' >> /etc/fuse.conf
 
 # Copy the entrypoint script into the container
 COPY entrypoint.sh /entrypoint.sh
