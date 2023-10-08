@@ -24,7 +24,7 @@ Project Organization
         │   │   ├── 75Agree.ipynb
         │   │   ├── AllAgree.ipynb
         │   │   └── finetune_bert_py_in_colab.ipynb
-        │   ├── add_data_to_weaviate_new.ipynb
+        │   ├── rag_with_weaviate.ipynb
         │   ├── add_data_to_weaviate_old.ipynb
         │   ├── financial_data
         │   │   ├── Sentences_50Agree.txt
