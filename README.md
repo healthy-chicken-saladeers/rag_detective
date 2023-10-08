@@ -3,39 +3,75 @@ AC215 Milestone3
 
 Project Organization
 ------------
-      └── rag-detective
-          ├── LICENSE
-          ├── README.md
-          ├── docker-compose.yml
-          ├── docs
-          │   ├── gcp-scraper-commands.md
-          │   └── gcp-setup-instructions.md
-          ├── img
-          │   ├── docker-compose-up.jpg
-          │   ├── firewall-rule.jpg
-          │   ├── indexing.png
-          │   ├── querying.png
-          │   ├── weaviate-console1.jpg
-          │   └── weaviate-console2.jpg
-          ├── notebooks
-          │   ├── scraped_data_1.csv
-          │   ├── scraping_notebook.ipynb
-          │   └── sitemap.csv
-          └── src
-              ├── llama_index
-              │   ├── Dockerfile
-              │   ├── Pipfile
-              │   ├── Pipfile.lock
-              │   ├── build_query.py
-              │   └── data
-              │       └── paul_graham_essay.txt
-              └── scraper
-                  ├── Dockerfile
-                  ├── Pipfile
-                  ├── Pipfile.lock
-                  ├── scraper.py
-                  ├── scraping_notebook.ipynb
-                  └── sitemap.csv
+    .
+    └── ac215_healthychickensaladeers
+        ├── LICENSE
+        ├── README.md
+        ├── docker-compose.yml
+        ├── docs
+        │   ├── experiment-bert.md
+        │   ├── gcp-cli-instructions-macos.md
+        │   ├── gcp-scraper-commands.md
+        │   ├── gcp-setup-instructions.md
+        │   └── gcs-bucket-instructions.md
+        ├── img
+        │   ├── <list_of_many_images_used_in_markdown>
+        ├── notebooks
+        │   ├── BERT_fine-tune_financials
+        │   │   ├── 50Agree.ipynb
+        │   │   ├── 66Agree.ipynb
+        │   │   ├── 75Agree.ipynb
+        │   │   ├── AllAgree.ipynb
+        │   │   └── finetune_bert_py_in_colab.ipynb
+        │   ├── add_data_to_weaviate_new.ipynb
+        │   ├── add_data_to_weaviate_old.ipynb
+        │   ├── financial_data
+        │   │   ├── Sentences_50Agree.txt
+        │   │   ├── Sentences_66Agree.txt
+        │   │   ├── Sentences_75Agree.txt
+        │   │   └── Sentences_AllAgree.txt
+        │   ├── sample_data
+        │   │   └── www.chooch.com_2023-10-03T15-30-00.csv
+        │   ├── scraping_notebook.ipynb
+        │   └── sitemap.csv
+        ├── reports
+        │   └── milestone2.md
+        └── src
+            ├── bert_financial
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── entrypoint.sh
+            │   ├── finetune_bert.py
+            │   └── gcsbucket
+            ├── llama_index
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── build_query.py
+            │   ├── data
+            │   │   └── paul_graham_essay.txt
+            │   ├── entrypoint.sh
+            │   └── gcsbucket
+            ├── prompts
+            │   └── prompts.py
+            ├── scraper
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── chromedriver
+            │   ├── log
+            │   ├── rag-detective-2ed9f2d52fde.json
+            │   ├── scraper.py
+            │   ├── scraperlib.py
+            │   ├── scraping_notebook.ipynb
+            │   ├── scraping_notebook_milestone3.ipynb
+            │   └── sitemap.csv
+            └── vector_store
+                ├── schema.json
+                ├── schema_old.json
+                ├── weaviate.schema.md
+                └── weaviate.schema.old.md
 
 
 --------
@@ -75,54 +111,107 @@ We also ran this with just our `finetune_bert.py` file. We still had to install 
 
 #### For in-depth information on our training experiment, including discussion of the data, training methodology, conclusions, and interactive plots where you can hover your mouse for further detail, [please see our Weights & Biases report](https://wandb.ai/iankelk/bert-sentiment/reports/BERT-Fine-tuning-on-Financial-Data--Vmlldzo1NTg3MTg3)
 
+#### Note: The Weights & Biases report site is not always reliable. For a static version of the report on GitHub, [see here.]()
+
 A static version of the most useful plots is here, showing the results for the 4 datasets representing 4 levels of annotator consensus:
 
 ![](./img/experiment-results.jpg)
 
 ### More docs
 
-To run the installation from scratch on a new Google Cloud instance, full instructions are located in:
+*NEW:* Detailed instructions on how to install the Google Cloud CLI on your Mac while working on a project like this. It's a much better experience than using the web browser or plain SSH:
+* [docs/gcp-cli-instructions-macos.md](./docs/gcp-cli-instructions-macos.md)
+
+*NEW:* Step-by-step instructions with screenshots on how to set up a Google Cloud Storage bucket:
+* [docs/gcs-bucket-instructions.md](./docs/gcs-bucket-instructions.md)
+
+*UPDATED:* To run the installation from scratch on a new Google Cloud instance, full instructions are located in:
 * [docs/gcp-setup-instructions.md](./docs/gcp-setup-instructions.md)
 
-Granular instructions on how to run the `scraper` container alone are located in:
+*UPDATED:* Granular instructions on how to run the `scraper` container alone are located in:
 * [docs/gcp-scraper-commands.md](./docs/gcp-scraper-commands.md)
 
-### Milestone2 ###
+# Web Scraper
 
-# Scraper Docker Container
+This Python project provides code for web scraping, which extracts data from webpages for data analysis. The main codebase consists of two parts:
 
-We scrape all textual data off of websites based on the site's `sitemap.xml` file, which is a mapping created by websites specifically to instruct search engine crawlers to scrape their data.
+1. `main()` function that coordinates the data extraction process.
+2. `scraperlib` library provides necessary tools to scrape website data based on a sitemap.
 
-## Requirements
-- Python
-- pandas
-- BeautifulSoup
-- requests
+The sense of the project is to crawl over each URL provided in a CSV file called `sitemap.csv` and extract the text from found webpages. Extracted text from each webpage is saved into another CSV file, which can be used for data analysis purposes later.
 
-## Functions
+## Working Principle
 
-#### `scrape_sitemap(url: str) -> pd.Series`
-Extracts all links from the provided company's sitemap.xml URL.
-- **Args:**
-  - `url` (str): The URL for a company sitemap.xml.
-- **Returns:**
-  - A pandas Series containing all the extracted links, or None if no links are found.
+-   `main()` function reads the `sitemap.csv` containing URLs of different sitemaps to be scraped.
+-   It then loops through each sitemap, calling the `scrape_sitemap()` function from the `scraperlib` library to extract links from the sitemap.
+-   `scrape_website()` function then scrapes data from the URLs extracted in the above step and returns a dataframe containing scraped data along with a log dataframe.
+-   Scraped data is then saved into a CSV using the `save_file()` function.
 
-#### `scrape_website(all_links: pd.Series) -> pd.DataFrame`
-Extracts all textual content from the webpages of the provided links.
-- **Args:**
-  - `all_links` (pd.Series): A pandas Series containing all the links in the company's website.
-- **Returns:**
-  - A pandas DataFrame containing the scraped data including webpage link, text content, and timestamp of when the data was scraped.
+The library also ensures scraping accuracy by switching to selenium in case of small amounts of content or unsuccessful requests to pages. Errors during the scraping process are also recorded in a separate log dataframe.
 
-#### `main()`
-Runs the scraping engine, reads the input sitemap URLs from "sitemap.csv", extracts data from the specified sitemaps, and saves the extracted data to CSV files.
+## scraperlib Library
 
-## Output
+This library provides several functions that allow the main program to extract data from a webpage:
 
-The script currently generates CSV files containing the scraped data from the first 10 webpages of each sitemap, named as 'scraped_data_<index>.csv' However, this will be changed to store the data in the Weaviate vector store.
+-   `set_chrome_options()` function provides browser options for Selenium web driver with headless mode(meaning without graphical user interface) on.
+-   `scrape_sitemap(url)` function returns links present in the sitemap. Extracts 'loc' tags using BeautifulSoup.
+-   `scrape_website(all_links, options)` function extracts text data from the webpages in given links. Uses BeautifulSoup to extract data and Selenium if requests is unsuccessful or the content is too small.
+-   `save_file(df, filename)` function saves data into a CSV file. It can also store data to Google Cloud Storage if running in a GCP environment.
+-   `headers` variable ensures that webpages treat our web scraper as a browser for compatibility.
+
+![](./img/bucket.jpg)
+
+The scraper's output from each webpage is a CSV file that contains the text data extracted from the webpage. The data is stored in a pandas DataFrame with two columns - 'key' and 'text'. The 'key' corresponds to the webpage's URL, and the 'text' contains the extracted textual data from the webpage. 
+
+In the case of any error during the scraping process, a log DataFrame is generated with 'key' and 'error'. Here, 'key' is the webpage's URL, and 'error' records the specific error encountered. This error log is saved as a CSV in the application's log/ directory. These logs help trace back any exceptions or errors encountered during the scraping process.  
+
+When running in a Google Cloud Platform (GCP) environment, if the scraper has appropriate access right, the CSVs files (both data and error logs) are directly stored in the Google Cloud Storage bucket instead of the local filesystem. The bucket is named `"ac215_scraper_bucket"` as per the script.
+
+When the scraper successfully stores a CSV file into the `"ac215_scraper_bucket"`, it prints a message signifying the successful operation and provides the path to the saved CSV in the bucket.
+
+Because it only needs to write individual files into the bucket, the scraper uses the `google.cloud.storage` library, unlike the `llama_index` and `finetune_bert` containers which use `gcsfuse` to mount the bucket locally.
+
+## Files in Scraper
+
+* **chromedriver** is a separate component provided by the Google that acts as a server to interact with the Chrome browser. It is an essential tool for controlling a web browser through programs and performing browser automation. It is functional for all browsers built on Chrome and is a vital component in tools like Selenium for controlling Chrome during automated scraping, which we use when a page is rendered with JavaScript.
+* **log** is a folder which contains the logs generated by the scraping process.
+* **rag-detective-2ed9f2d52fde.json** a Google Cloud Service Account key
+* **scraping_notebook.ipynb** is the original notebook for the scraper
+* **scraping_notebook_milestone3.ipynb** is a newer notebook where we experimented with Selenium for web scraping.
+* **[sitemap.csv](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/scraper/sitemap.csv)** is the list of sites we have scraped:
+    - [bland.ai](https://bland.ai/sitemap.xml)
+    - [cohere.com](https://cohere.com/sitemap.xml)
+    - [ai21.com](https://ai21.com/sitemap.xml)
+    - [descript.com](https://descript.com/sitemap.xml)
+    - [weaviate.io](https://weaviate.io/sitemap.xml)
+    - [assemblyai.com](https://assemblyai.com/sitemap.xml)
+    - [anthropic.com](https://anthropic.com/sitemap.xml)
+    - [inflection.ai](https://inflection.ai/sitemap.xml)
+    - [h2o.ai](https://h2o.ai/sitemap.xml)
+    - [harver.com](https://harver.com/sitemap_index.xml)
+    - [dataminr.com](https://dataminr.com/sitemap.xml)
+    - [shield.ai](https://shield.ai/sitemap_index.xml)
+    - [kymeratx.com](https://kymeratx.com/sitemap.xml)
+    - [arvinas.com](https://arvinas.com/sitemap.xml)
+    - [ardelyx.com](https://ardelyx.com/sitemap.xml)
+    - [monterosatx.com](https://monterosatx.com/sitemap.xml)
+    - [trianabio.com](https://trianabio.com/sitemap.xml)
+    - [tangotx.com](https://tangotx.com/sitemap.xml)
+    - [vertex.com](https://vertex.com/sitemap.xml)
+    - [vervetx.com](https://vervetx.com/sitemap.xml)
+    - [novonordisk.com](https://novonordisk.com/sitemap.xml)
+    - [shionogi.com](https://shionogi.com/us/en/sitemap.xml)
+    - [alexion.com](https://alexion.com/sitemap.xml)
+    - [relaytx.com](https://relaytx.com/sitemap.xml)
+    - [neumoratx.com](https://neumoratx.com/sitemap.xml)
+    - [verily.com](https://verily.com/sitemap.xml)
+    - [kojintx.com](https://kojintx.com/sitemap.xml)
 
 # Weaviate Vector Store Container
+
+*NEW* Our Weaviate schema and explanation can be read [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/vector_store/weaviate.schema.md) and in JSON format [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/vector_store/schema.json)
+
+*NEW* Just for fun, and because it's part of the building process, our original hierarchical schema can be read [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/vector_store/weaviate.schema.old.md) and in JSON format [here.](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/vector_store/schema_old.json) We had to change to a flat structure due to limitations on deep hierarchical querying of Weaviate.
 
 Weaviate is an open-source knowledge graph program that utilizes GraphQL and RESTful APIs. It’s designed to organize large amounts of data in a manner that makes the data interconnected and contextual, allowing users to perform semantic searches and analyses. It can automatically classify and interpret data through machine learning models, facilitating more intelligent and informed data retrievals and insights. It is scalable and can be used for a variety of applications, such as data analysis and information storage and retrieval.
 
@@ -134,6 +223,13 @@ In our current cloud instance with everything installed, the command to start ev
 * `docker-compose down` to stop them.
 
 # LlamaIndex
+
+*NEW* A detailed step-by-step demonstration and explanation of how to accomplish RAG with Weaviate is shown in [this notebook.](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/add_data_to_weaviate_new.ipynb) Since we had originally started with the more complex (and eventually abandoned) hierarchical schema which we tried to use [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/add_data_to_weaviate_old.ipynb), we haven't needed the LlamaIndex framework yet, however regardless of if we use it or not, we will still require this container for the application.
+
+#### Note: The data used in the notebook is the sample data `
+www.chooch.com_2023-10-03T15-30-00.csv`. In production, the RAG implementation will pull from a GCS bucket, and `gcsfuse` is already implemented: when you launch the container, it logs you in automatically.
+
+#### A full explanation of this process and how it works is detailed [here.](./docs/docker-gcsfuse.md)
 
 Retrieval Augmented Generation (RAG) serves as a framework to enhance Language and Learning Models (LLM) using tailored data. This approach typically involves two primary phases:
 
@@ -173,40 +269,48 @@ At present, LlamaIndex is set up to run a short "build and index" query using Pa
 
 # Additional Files
 
-### `docker-compose.yml`
+### *UPDATED:* `docker-compose.yml`
 
-We use Docker Compose to define and run multi-container Docker applications. Below is a summary of the services defined in our `docker-compose.yml` file.
+- **version**: Specifies the Docker Compose file version.
+  
+### Services:
 
-#### 1. Weaviate Service
-   - **Image:** `semitechnologies/weaviate:1.21.3`
-   - **Purpose:** Vector store for use with RAG
-   - **Command:** Runs Weaviate with specified host, port, and scheme.
-   - **Ports:** Exposes port `8080` for external access.
-   - **Environment Variables:**
-     - Uses OpenAI API Key from host environment variable `$OPENAI_APIKEY`.
-     - Configures various Weaviate parameters like `QUERY_DEFAULTS_LIMIT`, `PERSISTENCE_DATA_PATH`, and `ENABLE_MODULES`.
-   - **Volume:** Persists data at `/var/lib/weaviate` using a named volume `weaviate_data`.
-   - **Restart Policy:** Restarts the container on failure.
+1. **weaviate**:
+    - **command**: The command and its arguments to start the container.
+    - **image**: Uses the image `semitechnologies/weaviate:1.21.3`.
+    - **ports**: Maps port 8080 of the host to port 8080 of the container.
+    - **volumes**: Mounts a named volume `weaviate_data` at `/var/lib/weaviate` in the container.
+    - **restart**: If the container fails, it won't be restarted.
+    - **environment**: Sets various environment variables, such as OpenAI API key, default limits, persistence path, modules, etc.
 
-#### 2. Scraper Service
-   - **Build Context:** `./src/scraper`
-   - **Purpose:** Scrapes a given website using its `sitemap.xml`
-   - **Command:** Executes `scraper.py` with Python.
-   - **User:** Runs as user `appuser`.
-   - **Volume:** Mounts `./src/scraper/scraper_data` to `/app/data` in the container.
+2. **scraper**:
+    - **build**: Builds the image using the Dockerfile found in `./src/scraper`.
+    - **container_name**: Names the container `scraper`.
+    - **user**: Sets the user as `appuser`.
+    - **command**: Runs `scraper.py` using Python.
+    - **volumes**: Mounts the local `./src/scraper/scraper_data` directory to `/app/data` in the container.
 
-#### 3. Llama_index Service
-   - **Build Context:** `./src/llama_index`
-   - **Purpose:** Provides the RAG framework.
-   - **Command:** Currently executes `build_query.py` with Python as a test example.
-   - **User:** Runs as user `appuser`.
-   - **Environment Variables:**
-     - Uses the same OpenAI API Key as Weaviate from host environment variable `$OPENAI_APIKEY`.
-   - **Volume:** Mounts `./src/llama_index` to `/app/llama_index` in the container.
+3. **llama_index**:
+    - **build**: Builds the image using the Dockerfile found in `./src/llama_index`.
+    - **container_name**: Names the container `llama_index`.
+    - **user**: Sets the user as `appuser`.
+    - **command**: Keeps the container running indefinitely using the `tail -f /dev/null` trick.
+    - **volumes**: Mounts the local `./src/llama_index` directory to `/app` in the container.
+    - **environment**: Sets the OpenAI API key. This uses the same key as weaviate if needed.
+    - **privileged**: Runs the container in privileged mode.
 
-### Volumes
-- **weaviate_data:** Used by the Weaviate service to persist data.
-- **scraper_data:** Intermediate scraping data which may or may not be needed such as CSV and XML files.
+4. **finetune_bert**:
+    - **build**: Builds the image using the Dockerfile found in `./src/bert_financial`.
+    - **container_name**: Names the container `finetune_bert`.
+    - **user**: Sets the user as `appuser`.
+    - **command**: Keeps the container running indefinitely using the `tail -f /dev/null` trick.
+    - **volumes**: Mounts the local `./src/bert_financial` directory to `/app` in the container.
+    - **privileged**: Runs the container in privileged mode.
+
+### Volumes:
+
+- **weaviate_data**: A named volume to store Weaviate data.
+- **scraper_data**: A named volume for the scraper service. Not attached to a specific path in the `docker-compose.yml`, but might be used elsewhere or intended for future use.
 
 As mentioned previously, to run the defined services, navigate to the root project directory containing the `docker-compose.yml` file and run the following command in the terminal:
 
@@ -229,7 +333,3 @@ docker-compose up
 ### `src`
 
 * Contains all the Python code and Dockerfiles to build the project. It also contains the data `paul_graham_essay.txt` which is used as test data for LlamaIndex.
-
-
-
-
