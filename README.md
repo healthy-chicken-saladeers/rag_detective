@@ -9,6 +9,7 @@ Project Organization
         ├── README.md
         ├── docker-compose.yml
         ├── docs
+        │   ├── docker-gcsfuse.md
         │   ├── experiment-bert.md
         │   ├── gcp-cli-instructions-macos.md
         │   ├── gcp-scraper-commands.md
@@ -259,11 +260,9 @@ At present, LlamaIndex is set up to run a short "build and index" query using Pa
 
 # Note
 
-* Currently, both LlamaIndex and our scraper perform short demonstration tasks. As such, once these tasks complete in a few seconds, the containers shut down automatically.
+* Data for the RAG system is stored in the GCS bucket. The only data that is stored in GCS is a [single sample file](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/sample_data/www.chooch.com_2023-10-03T15-30-00.csv) for the RAG demonstration, and the [four CSV files](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/tree/milestone3/notebooks/financial_data) that comprise the 2MB of data for the BERT fine-tuning are inside the `notebooks` folder to allow it to be run locally. They will be moved to the bucket when we get further with the BERT model.
 
-* Since the `scraper` and `llama_index` services need to be continuously running to receive requests, they should ideally be long-running services, such as web servers or APIs that are designed to run indefinitely and handle incoming requests. We will likely achieve this by running a web framework like Flask or FastAPI in our containers to receive and handle HTTP requests.
-
-* Additionally, we do not have any `requirements.txt` present since the dependencies are handled by the Dockerfiles.
+* We do not have any `requirements.txt` present since the dependencies are handled by the Dockerfiles.
 
 * Currently, both Weaviate and LlamaIndex have access to the OpenAI API. There are two models that need to be used; the `Ada v2` embedding model and `GPT-3.5`, so depending on how the work is distributed for the data ingestion and the retrieval, one or both of Weaviate or LlamaIndex may use the API.
 

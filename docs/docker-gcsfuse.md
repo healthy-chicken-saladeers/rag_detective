@@ -1,4 +1,4 @@
-## Dockerfile and Entrypoint.sh Explanation
+## Dockerfile and entrypoint.sh Explanation
 
 ### Dockerfile
 
