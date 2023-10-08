@@ -128,7 +128,7 @@ A static version of the most useful plots is here, showing the results for the f
 * [docs/gcp-setup-instructions.md](./docs/gcp-setup-instructions.md)
 
 *UPDATED:* Granular instructions on how to run the `scraper` container alone are located in:
-* [docs/gcp-scraper-commands.md](./docs/gcp-docker-commands.md)
+* [docs/gcp-docker-commands.md](./docs/gcp-docker-commands.md)
 
 # Web Scraper
 
@@ -225,7 +225,9 @@ In our current cloud instance with everything installed, the command to start ev
 
 # LlamaIndex
 
-*NEW* A detailed step-by-step demonstration and explanation of how to accomplish RAG with Weaviate is shown in [this notebook.](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/add_data_to_weaviate_new.ipynb) Since we had originally started with the more complex (and eventually abandoned) hierarchical schema which we tried to use [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/add_data_to_weaviate_old.ipynb), we haven't needed the LlamaIndex framework yet, however regardless of if we use it or not, we will still require this container for the application.
+### *NEW*  A detailed step-by-step demonstration and explanation of how to accomplish RAG with Weaviate is shown in [this notebook.](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/rag_with_weaviate.ipynb)
+
+* Since we had originally started with the more complex (and eventually abandoned) hierarchical schema which we tried to use [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/add_data_to_weaviate_old.ipynb), we haven't needed the LlamaIndex framework yet, however regardless of if we use it or not, we will still require this container for the application.
 
 #### Note: The data used in the notebook is the sample data `
 www.chooch.com_2023-10-03T15-30-00.csv`. In production, the RAG implementation will pull from a GCS bucket, and `gcsfuse` is already implemented: when you launch the container, it logs you in automatically.
