@@ -232,7 +232,7 @@ In our current cloud instance with everything installed, the command to start ev
 **Note:** The data used in the notebook is the sample data `
 www.chooch.com_2023-10-03T15-30-00.csv`. In production, the RAG implementation will pull from a GCS bucket, and `gcsfuse` is already implemented: when you launch the container, it logs you in automatically.
 
-#### A full explanation of this process and how it works is detailed [here.](./docs/docker-gcsfuse.md)
+### A full explanation of how we launch `gcsfuse` upon container launch is detailed [here.](./docs/docker-gcsfuse.md)
 
 Retrieval Augmented Generation (RAG) serves as a framework to enhance Language and Learning Models (LLM) using tailored data. This approach typically involves two primary phases:
 
