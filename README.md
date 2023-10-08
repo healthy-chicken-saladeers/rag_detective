@@ -229,7 +229,7 @@ In our current cloud instance with everything installed, the command to start ev
 
 * Since we had originally started with the more complex (and eventually abandoned) hierarchical schema which we tried to use [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/add_data_to_weaviate_old.ipynb), we haven't needed the LlamaIndex framework yet, however regardless of if we use it or not, we will still require this container for the application.
 
-#### Note: The data used in the notebook is the sample data `
+**Note:** The data used in the notebook is the sample data `
 www.chooch.com_2023-10-03T15-30-00.csv`. In production, the RAG implementation will pull from a GCS bucket, and `gcsfuse` is already implemented: when you launch the container, it logs you in automatically.
 
 #### A full explanation of this process and how it works is detailed [here.](./docs/docker-gcsfuse.md)
