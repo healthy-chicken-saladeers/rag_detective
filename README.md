@@ -112,7 +112,7 @@ We also ran this with just our `finetune_bert.py` file. We still had to install 
 
 #### Note: The Weights & Biases report site is not always reliable. For a static version [see here.](./docs/experiment-bert.md)
 
-A static version of the most useful plots is here, showing the results for the 4 datasets representing 4 levels of annotator consensus:
+A static version of the most useful plots is here, showing the results for the four datasets representing four levels of annotator consensus:
 
 ![](./img/experiment-results.jpg)
 
@@ -128,7 +128,7 @@ A static version of the most useful plots is here, showing the results for the 4
 * [docs/gcp-setup-instructions.md](./docs/gcp-setup-instructions.md)
 
 *UPDATED:* Granular instructions on how to run the `scraper` container alone are located in:
-* [docs/gcp-scraper-commands.md](./docs/gcp-scraper-commands.md)
+* [docs/gcp-scraper-commands.md](./docs/gcp-docker-commands.md)
 
 # Web Scraper
 

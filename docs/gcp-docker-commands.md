@@ -1,4 +1,4 @@
-# Instructions to run docker containers alone using the `scraper` container as an exa,ple
+# Instructions to run docker containers alone using the `scraper` container as an example
 
 #### These won't be necessary most of the time, as the `docker-compose.yml` will run all four containers.
 
@@ -57,7 +57,7 @@ The directory `gcsbucket` is just a mount point in the Docker container. To actu
 1. **Run your container**:
 
     ```bash
-    sudo docker run -it --privileged finetune_bert bash
+    sudo docker run -it --privileged scraper bash
     ```
 
     Use `--privileged` to allow the container to have necessary permissions to mount filesystems. The `docker-compose` has already set the `llama_index` and `finetuned_bert` to run as privileged if launched this way.
