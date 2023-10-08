@@ -172,7 +172,7 @@ Because it only needs to write individual files into the bucket, the scraper use
 
 #### Some experimentation with scraping
 
-* **[scraping_notebook_milestone3.ipynb](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/scraping_notebook_milestone3.ipynb)** is an updated notebook where we experimented with Selenium for web scraping.
+* **[scraping_notebook_milestone3.ipynb](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/scraping_notebook_milestone3.ipynb)** is an updated notebook where we experimented with Selenium for web scraping. Due to the huge variety of websites on the internet, it's very difficult to account for all edge cases, and you can see we hit one during the scrape on this notebook where unexpected results were returned.
 
 ## Files in Scraper
 
