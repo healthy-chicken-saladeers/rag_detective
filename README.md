@@ -33,7 +33,7 @@ Project Organization
         │   │   └── Sentences_AllAgree.txt
         │   ├── sample_data
         │   │   └── www.chooch.com_2023-10-03T15-30-00.csv
-        │   ├── scraping_notebook.ipynb
+        │   ├── scraping_notebook_milestone3.ipynb
         │   └── sitemap.csv
         ├── reports
         │   └── milestone2.md
@@ -65,8 +65,6 @@ Project Organization
             │   ├── rag-detective-2ed9f2d52fde.json
             │   ├── scraper.py
             │   ├── scraperlib.py
-            │   ├── scraping_notebook.ipynb
-            │   ├── scraping_notebook_milestone3.ipynb
             │   └── sitemap.csv
             └── vector_store
                 ├── schema.json
