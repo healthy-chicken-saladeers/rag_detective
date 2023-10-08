@@ -77,7 +77,7 @@ Among the annotators, three were researchers, while the remaining 13 were master
 
 ## Experiment Tracking:
 
-- Weights and Biases (W&B) was used for experiment tracking. With the `WandbCallback`, all the metrics, loss, etc., get logged into the W&B dashboard for visualization and analysis.
+- Weights & Biases (W&B) was used for experiment tracking. With the `WandbCallback`, all the metrics, loss, etc., get logged into the W&B dashboard for visualization and analysis.
 
 ## Reflection on Plots:
 

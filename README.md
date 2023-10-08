@@ -112,7 +112,7 @@ We also ran this with just our `finetune_bert.py` file. We still had to install 
 
 #### For in-depth information on our training experiment, including discussion of the data, training methodology, conclusions, and interactive plots where you can hover your mouse for further detail, [please see our Weights & Biases report](https://wandb.ai/iankelk/bert-sentiment/reports/BERT-Fine-tuning-on-Financial-Data--Vmlldzo1NTg3MTg3)
 
-#### Note: The Weights & Biases report site is not always reliable. For a static version of the report on GitHub, [see here.]()
+#### Note: The Weights & Biases report site is not always reliable. For a static version [see here.](./docs/experiment-bert.md)
 
 A static version of the most useful plots is here, showing the results for the 4 datasets representing 4 levels of annotator consensus:
 
