@@ -97,7 +97,7 @@ The annotations, derived from a diverse group of 16 financial professionals and 
 
 We weren't able to get multiple GPUs through Google Vertex, however I was able to use an A100 GPU through Google Colab. This GPU took what was going to be a multiple hour training on my Mac CPU and was able to run it in under 30 minutes. I've both run the `finetune_bert.py` file in both the notebook format for greater readability, as well as using a simple `!python finetune_bert.py` as the first line of a notebook.
 
-Links to the notebooks, which are identical but used the 4 different datasets depending on annotator consensus:
+Links to the notebooks, which are identical but used the four different datasets depending on annotator consensus:
 
 * [50% annotator consensus](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/BERT_fine-tune_financials/50Agree.ipynb)
 * [66% annotator consensus](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/BERT_fine-tune_financials/66Agree.ipynb)
@@ -260,17 +260,17 @@ LlamaIndex is a data framework to ingest, structure, and access private or domai
 
 At present, LlamaIndex is set up to run a short "build and index" query using Paul Graham’s essay, [“What I Worked On”](http://paulgraham.com/worked.html). As we build the application, this will be changed to query the Weaviate store and output to the OpenAI API.
 
-# Note
+### Note
 
-* Data for the RAG system is stored in the GCS bucket. The only data that is stored in GCS is a [single sample file](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/sample_data/www.chooch.com_2023-10-03T15-30-00.csv) for the RAG demonstration, and the [four CSV files](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/tree/milestone3/notebooks/financial_data) that comprise the 2MB of data for the BERT fine-tuning are inside the `notebooks` folder to allow it to be run locally. They will be moved to the bucket when we get further with the BERT model.
+* Data for the RAG system is stored in the GCS bucket. The only data that is stored in GCS is a [sample file](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/sample_data/www.chooch.com_2023-10-03T15-30-00.csv) for the RAG demonstration, an [essay](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/llama_index/data/paul_graham_essay.txt) as sample data for LlamaIndex, and the [four CSV files](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/tree/milestone3/notebooks/financial_data) that comprise the 2MB of data for the BERT fine-tuning are inside the `notebooks` folder to allow it to be run locally. They will be moved to the bucket when we get further with the BERT model.
 
 * We do not have any `requirements.txt` present since the dependencies are handled by the Dockerfiles.
 
 * Currently, both Weaviate and LlamaIndex have access to the OpenAI API. There are two models that need to be used; the `Ada v2` embedding model and `GPT-3.5`, so depending on how the work is distributed for the data ingestion and the retrieval, one or both of Weaviate or LlamaIndex may use the API.
 
-# Additional Files
+## Additional Files
 
-### *UPDATED:* `docker-compose.yml`
+#### *UPDATED:* `docker-compose.yml`
 
 - **version**: Specifies the Docker Compose file version.
   
@@ -319,26 +319,26 @@ As mentioned previously, to run the defined services, navigate to the root proje
 docker-compose up
 ```
 
-### `gcp-scraper-commands.md` and `gcp-setup-instructions.md`
+#### `gcp-scraper-commands.md` and `gcp-setup-instructions.md`
 
 * Additional documentation files in markdown format on starting up the project from a brand new GCP instance and to control the Docker containers individually if so desired
 
-### `img` folder
+#### `img` folder
 
 * Image assets for display in this and the above markdown files.
 
-### `notebooks`
+#### `notebooks`
 
 * This folder contains the code and output of our scraper in `scraping_notebook.ipynb`. The `sitemap.csv` is a list of sitemaps to scrape, currently set to only [apple.com](https://apple.com). It also contains the results of the scraping, `scraped_data1.csv`.
 
-### `src`
+#### `src`
 
 * Contains all the Python code and Dockerfiles to build the project. It also contains the data `paul_graham_essay.txt` which is used as test data for LlamaIndex.
 
-### `reports`
+#### `reports`
 
 * Holds the previous `README.md` from prior milestones.
 
-### `prompts`
+#### `prompts`
 
 * Some experimentation on prompting to get NER data off of incoming answers and chunks. Will be used if there is time towards the end of the semester as a stretch goal.
