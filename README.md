@@ -334,3 +334,11 @@ docker-compose up
 ### `src`
 
 * Contains all the Python code and Dockerfiles to build the project. It also contains the data `paul_graham_essay.txt` which is used as test data for LlamaIndex.
+
+### `reports`
+
+* Holds the previous `README.md` from prior milestones.
+
+### `prompts`
+
+* Some experimentation on prompting to get NER data off of incoming answers and chunks. Will be used if there is time towards the end of the semester as a stretch goal.

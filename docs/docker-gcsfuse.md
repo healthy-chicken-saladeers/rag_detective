@@ -6,6 +6,8 @@ This Dockerfile is used to build a Docker image based on Python 3.9-slim, a mini
 
 ![Image above shows how we launch all containers with `docker-compose`, then use `docker exec` to enter the container, where we can see the GCS bucket has been automatically mounted and the data shown.](../img/docker-gcsfuse.jpg)
 
+#### Note: Inside the folders for the containers there is a folder called `gcsbucket`. This does not hold any data; rather, it is a mount point for the GCS bucket when the Docker container is run.
+
 1. **Base Image**:
    ```docker
    FROM python:3.9-slim
