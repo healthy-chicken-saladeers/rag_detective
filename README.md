@@ -108,7 +108,7 @@ We also ran this with just our `finetune_bert.py` file. We still had to install 
 
 * [50% annotator consensus in `finetune_bert.py` run on Colab](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/BERT_fine-tune_financials/finetune_bert_py_in_colab.ipynb)
 
-#### For in-depth information on our training experiment, including discussion of the data, training methodology, conclusions, and interactive plots where you can hover your mouse for further detail, [please see our Weights & Biases report](https://wandb.ai/iankelk/bert-sentiment/reports/BERT-Fine-tuning-on-Financial-Data--Vmlldzo1NTg3MTg3)
+#### For in-depth information on our training experiment, including discussion of the data, training methodology, conclusions, and interactive plots where you can hover your mouse for further detail, [please see our Weights & Biases report](https://api.wandb.ai/links/iankelk/mmrp03k6)
 
 #### Note: The Weights & Biases report site is not always reliable. For a static version [see here.](./docs/experiment-bert.md)
 
