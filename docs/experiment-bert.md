@@ -100,13 +100,56 @@ To put this simply:
 
 To mitigate potential biases and validate the model's robustness, we should evaluate it on a test set derived from the entire dataset, without considering the annotator agreement levels. This is a bit more tricky to create than just a random split of the data; ideally a good test set should sample from all four of the consensus datasets equally, a problem compounded by their imbalance in sizes (4846, 4217, 3453, and 2264 sentences).
 
-## Conclusion:
+## Initial Conclusion:
 
 While the financial_phrasebank dataset offers a valuable resource for financial sentiment analysis, care must be taken when interpreting results based on annotator agreement levels. Future work should focus on unbiased evaluation and further exploration of potential factors influencing model performance in this domain.
 
 Looking at the below results at face value, it would indeed appear that the higher the level of annotator consensus on a dataset, the more performant the model trained on it performs.
 
-## Training Results
+## Initial Training Results
 
 ![](../img/experiment-results.jpg)
 ![](../img/compute-results.jpg)
+
+## Retraining with Unbiased Data
+
+As discussed in the initial conclusion, the varying levels of annotator agreements create an unusual challenge. The aim is to create a train, test, and validation split that does not bias the model towards obvious sentiments. Here we describe each step in the data-splitting process to de-bias the data as described, and the results of retraining.
+
+## Step 1: Load the Data
+
+Firstly we load the dataset files (which are text files in this case). Considering the possibility that these text files might have different encodings (they initially crashed the program as they use `ISO-8859-1`), we use Python's `chardet` library to detect the encoding before reading the file. This ensures that the loading of files doesn't fail due to encoding issues. The data is then shuffled randomly. The shuffling was an easy thing to miss, as previously we had used `train_test_split` from `scikit-learn` to split the data, and it had automatically shuffled the data. The data actually comes nearly sorted by sentiment, so without shuffling, the model can't be fine-tuned at all.
+
+The files are read in the following way:
+- Every sentence in the dataset is separated by an '@' delimiter.
+- There are no headers in the files so they are assigned later as ['sentence', 'label'].
+- We use pandas' `read_csv` function to read these files.
+
+## Step 2: Create a Subset from 'sentences_50agree'
+
+The `sentences_50agree` dataset is the largest and most diverse dataset. To avoid overfitting and create a diverse validation set, we create a subset from this dataframe that will later be used for validation/testing. This subset is the same size as the train set.
+
+## Step 3: Split the Subset into Validation and Test Sets
+
+The subset created from `sentences_50agree` is split into validation and test sets. Here, a stratified sampling is performed to ensure that the split datasets have instances of each class ('positive', 'negative', and 'neutral') in proportions close to their original distribution in the parent dataset. The dataset is split in such way that 31% data is used for validation/testing. We choose 31% as this seems to result in the closest to a 70/15/15 train/validate/test split once the datasets have been assembled.
+
+## Step 4: Update the Training Set
+
+After obtaining the validation and test sets, we remove sentences present in these sets from the training set. This is done to avoid data leakage and ensure that the model doesn't see any sentence in the training phase that it would later encounter in the validation/testing phase.
+
+## Step 5: Further Divide the Validation and Test Sets
+
+The validation/test set subset is then divided equally into two parts: one part forms the validation set and the other part forms the test set.
+
+## Step 6: Output the Sizes and Percentages
+
+Finally, after creating all the datasets, we output the sizes of the train, validation, and test datasets along with their respective percentages to make sure that the classes are as balanced as they can be given the data.
+
+This completed our data splitting process to ensure that we had a good mix of data in each dataset and our model does not get biased towards the easy-to-identify financial sentiments.
+
+## De-biased Conclusion
+
+It now appears that the 66% annotator consensus has the highest F1 score. This is a preliminary finding, but it shows clearly that the previous trend of the model's performance increasing with annotator consensus was misleading. Perhaps at 66% annotator consensus, we have a decent compromise to train the model.
+
+## De-biased Experimental Results
+
+![](../img/debiased-results.jpg)
