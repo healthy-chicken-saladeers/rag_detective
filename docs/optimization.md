@@ -2,7 +2,7 @@
 
 The model we chose for fine-tuning and optimization, BERT, especially the `bert-base-uncased` variant, is a commonly used foundation model for NLP tasks. When fine-tuned, it can be a powerful tool for financial sentiment analysis. To deploy BERT in real-world applications, especially on edge devices or under latency constraints, we want to optimize its size and speed. In our project, we tried three main optimization techniques: quantization, pruning, and distillation. It turned out we chose a challenging, complex model to conduct these techniques on.
 
-This document references two training notebooks, which can be found here:
+This document references two training notebooks. The first is for fine-tuning and checkpointing BERT on the 75Agree dataset, and the second creates 9 versions of the LSTM and 9 versions of the smaller BERT model by doing grid search on the hyperparameters. They can be found here:
 
 - [75Agree_balanced_30_checkpointed.ipynb](../notebooks/BERT_fine-tune_financials_balanced/75Agree_balanced_30_checkpointed.ipynb)
 
