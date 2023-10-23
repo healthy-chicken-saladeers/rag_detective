@@ -86,9 +86,8 @@ This is the traditional loss used when training neural networks. It computes the
 
 If $y$ is the ground truth and $\hat{y}_{student}$ is the prediction from the student:
 
-```math
-Hard Target Loss = L(y, \hat{y}_{student})
-```
+Hard Target Loss = $L(y, \hat{y}_{student})$
+
 
 For classification tasks, this is usually the cross-entropy loss.
 
@@ -98,7 +97,7 @@ This loss computes the difference between the soft predictions (logits or probab
 
 Given the logits from the teacher $z_{teacher}$ and the logits from the student $z_{student}$, the soft target loss can be expressed as:
 
-Soft Target Loss = $L(Softmax(z_{teacher}/T), Softmax(z_{student}/T))$
+Soft Target Loss = $L($Softmax$(z_{teacher}/T), $Softmax$(z_{student}/T))$
 
 where
 - $T$ is the "temperature" hyperparameter. A value greater than 1 makes the softmax outputs softer (i.e., closer to a uniform distribution), which emphasizes the relationships between classes.
