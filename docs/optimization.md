@@ -1,6 +1,6 @@
 # Optimizing BERT for Financial Sentiment Analysis
 
-The mdoel we chose for fine-tuning and optimization, BERT, especially the `bert-base-uncased` variant, is a commonly used foundation model for NLP tasks. When fine-tuned, it can be a powerful tool for financial sentiment analysis. To deploy BERT in real-world applications, especially on edge devices or under latency constraints, we want to optimize its size and speed. In our project, we tried three main optimization techniques: quantization, pruning, and distillation. It turned out we chose a challenging, complex model to conduct these techniques on.
+The model we chose for fine-tuning and optimization, BERT, especially the `bert-base-uncased` variant, is a commonly used foundation model for NLP tasks. When fine-tuned, it can be a powerful tool for financial sentiment analysis. To deploy BERT in real-world applications, especially on edge devices or under latency constraints, we want to optimize its size and speed. In our project, we tried three main optimization techniques: quantization, pruning, and distillation. It turned out we chose a challenging, complex model to conduct these techniques on.
 
 Some initial research about using these methods on large language models led us to the following starting point:
 
@@ -66,7 +66,7 @@ BERT has millions of parameters. By pruning, we can obtain a sparser model. Howe
 
 ### More issues with TF-MOT
 
-The TensorFlow Model Optimization Toolkit also offers pruning capabilities. But similar to quantization, it is only compatible with Sequential or Functional Keras models rather than Subclassed models, which includes models loaded from Hugging Face's Transformers.
+The TensorFlow Model Optimization Toolkit also offers pruning capabilities. But similar to quantization, it is only compatible with Sequential or Functional Keras models rather than Subclassed models, which include models loaded from Hugging Face's Transformers.
 
 To apply pruning using TF-MOT, the model needs to be wrapped similar to quantization, and the same compatibility issues arose as they did with quantization. Subclassed models like Hugging Face's `bert-base-uncased` don't expose their internal layer structure the way `Sequential` and `Functional` models do, which makes it more challenging for techniques like pruning and quantization.
 
@@ -126,3 +126,49 @@ The soft targets capture the relationships between different classes. In our 3-c
 
 Distillation can be an effective approach for BERT. Given its depth, a shallower model can be trained to mimic BERT's performance, especially if we're focused on a specific domain like financial sentiment analysis.
 
+## Our distillation methodology
+
+Our initial experimentation with the 4 datasets of different levels of annotation consensus can be found [here.](experiment-bert.md) We continued on from this however to dig deeper by running the fine-tuning for more epochs and seeing which models had the best validation F1 scores, which we added to be calculated for every epoch.
+
+Our results were surprising and changed our view yet again, as the `75Agree` dataset, which indicated 75% consensus, now appeared to give the best results by far in terms of both accuracy and f1.
+
+![](../img/experiment-results-20.jpg)
+
+## First, we fine-tuned BERT with Model Checkpointing and F1 Evaluation using a different dataset and for 30 epochs
+
+The main changes we implemented here involved calculating the F1 score at the end of each training epoch, and saving the model that achieves the best F1 score on the validation data. This well-performing model is subsequently exploited to evaluate its performance on unseen test data.
+
+## Methodology
+
+**Step 1:** Login into the Weights & Biases platform to track the experiment metrics.
+
+**Step 2:** Load the pre-trained BERT sequence classification model which is designed to classify inputs into one of the three labels.
+
+**Step 3:** Defined the loss function as `Sparse Categorical Crossentropy` loss in this case. Also, configure the optimizer `Adam` with a learning rate schedule.
+
+**Step 4:** Initialize the Weights & Biases project to monitor experiment metrics. Set up the custom `F1_Evaluation` Callback which saves the model whenever there is an improvement in the F1 Score.
+
+**Step 5:** Invoke the model training over 30 epochs, incorporating the callbacks to log metrics to Weights & Biases, and perform custom F1 evaluation and model checkpointing. This is an increase to the 10 we had originally done and even the 20 we did later. Through model checkpointing this was a convenient way to find our most performant model that wasn't overfitting.
+
+**Step 6:** Post training, utilize the plot function defined to visualize the trend of loss, accuracy, and F1 score on the training and the validation data.
+
+**Step 7:** Load into memory the trained model saved during the F1 Evaluation. Disable further training of this model to evaluate its performance as is on the test dataset.
+
+**Step 8:** Predict labels for the test data with this model. Obtain a comprehensive classification report with precision, recall, f1-score, and support.
+
+**Step 9:** Log the F1 score achieved on the test dataset into the Weights & Biases dashboard. 
+
+## Hyperparameters
+
+- **Learning Rate Schedule:** An initial learning rate of `3e-5`, which gradually decays as per an exponential decay schedule with decay steps set to `10000` and decay rate set to `0.9`.
+- **Batch Size:** Set to `8` for both validation and training datasets.
+- **Epochs:** The model is trained over `30` epochs.
+- **Interval for F1 Evaluation:** F1 score is calculated at the end of each epoch, thus, the interval is set to `1`.
+
+In this particular run, we reached an F1 of 0.87 and an accuracy of 0.8655 at epoch 24 (the `val_f1_score` was saved in reference to `step` but this can be seen from the `val_accuracy` and `val_loss plots`. This is a pretty good result and better than our previous best of about .84 using the `66Agree` dataset.
+
+Since the model was checkpointed upon reaching its best f1 score at epoch 24, it didn't affect it to continue the training for visualization purposes.
+
+The full training can be seen in the [75Agree_balanced_30_checkpointed.ipynb](../notebooks/BERT_fine-tune_financials_balanced/75Agree_balanced_30_checkpointed.ipynb) notebook.
+
+![](../img/experiment-results-30.jpg)
