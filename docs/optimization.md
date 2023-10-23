@@ -2,6 +2,12 @@
 
 The model we chose for fine-tuning and optimization, BERT, especially the `bert-base-uncased` variant, is a commonly used foundation model for NLP tasks. When fine-tuned, it can be a powerful tool for financial sentiment analysis. To deploy BERT in real-world applications, especially on edge devices or under latency constraints, we want to optimize its size and speed. In our project, we tried three main optimization techniques: quantization, pruning, and distillation. It turned out we chose a challenging, complex model to conduct these techniques on.
 
+This document references two training notebooks, which can be found here:
+
+- [75Agree_balanced_30_checkpointed.ipynb](../notebooks/BERT_fine-tune_financials_balanced/75Agree_balanced_30_checkpointed.ipynb)
+
+- [bert_lstm_distillation_75.ipynb](../notebooks/distillation/bert_lstm_distillation_75.ipynb)
+
 Some initial research about using these methods on large language models led us to the following starting point:
 
 **Most Likely to Succeed**: 
@@ -168,6 +174,8 @@ The main changes we implemented here involved calculating the F1 score at the en
 In this particular run, we reached an F1 of 0.87 and an accuracy of 0.8655 at epoch 24 (the `val_f1_score` was saved in reference to `step` but this can be seen from the `val_accuracy` and `val_loss plots`. This is a pretty good result and better than our previous best of about .84 using the `66Agree` dataset.
 
 Since the model was checkpointed upon reaching its best f1 score at epoch 24, it didn't affect it to continue the training for visualization purposes.
+
+The full training can be seen in the [75Agree_balanced_30_checkpointed.ipynb](../notebooks/BERT_fine-tune_financials_balanced/75Agree_balanced_30_checkpointed.ipynb) notebook.
 
 ![](../img/experiment-results-30.jpg)
 
