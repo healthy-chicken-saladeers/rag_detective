@@ -97,7 +97,7 @@ This loss computes the difference between the soft predictions (logits or probab
 
 Given the logits from the teacher $z_{teacher}$ and the logits from the student $z_{student}$, the soft target loss can be expressed as:
 
-Soft Target Loss = $L($Softmax$(z_{teacher}/T), $Softmax$(z_{student}/T))$
+Soft Target Loss = $L($ Softmax $(z_{teacher}/T),$ Softmax $(z_{student}/T))$
 
 where
 - $T$ is the "temperature" hyperparameter. A value greater than 1 makes the softmax outputs softer (i.e., closer to a uniform distribution), which emphasizes the relationships between classes.
