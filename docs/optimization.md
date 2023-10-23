@@ -134,11 +134,11 @@ Our results were surprising and changed our view yet again, as the `75Agree` dat
 
 ![](../img/experiment-results-20.jpg)
 
-## First, we fine-tuned BERT with Model Checkpointing and F1 Evaluation using a different dataset and for 30 epochs
+### We fine-tuned BERT with Model Checkpointing and F1 Evaluation using a different dataset and for 30 epochs
 
 The main changes we implemented here involved calculating the F1 score at the end of each training epoch, and saving the model that achieves the best F1 score on the validation data. This well-performing model is subsequently exploited to evaluate its performance on unseen test data.
 
-## Methodology
+## Steps
 
 **Step 1:** Login into the Weights & Biases platform to track the experiment metrics.
 
@@ -169,6 +169,203 @@ In this particular run, we reached an F1 of 0.87 and an accuracy of 0.8655 at ep
 
 Since the model was checkpointed upon reaching its best f1 score at epoch 24, it didn't affect it to continue the training for visualization purposes.
 
-The full training can be seen in the [75Agree_balanced_30_checkpointed.ipynb](../notebooks/BERT_fine-tune_financials_balanced/75Agree_balanced_30_checkpointed.ipynb) notebook.
-
 ![](../img/experiment-results-30.jpg)
+
+## Distillation
+
+At this point, with out best BERT fine-tuned model checkpointed and saved, it was time to distill some smaller models using it as a teacher model. The full training can be seen in the [bert_lstm_distillation_75.ipynb](../notebooks/distillation/bert_lstm_distillation_75.ipynb) notebook.
+
+# LSTM Model and Architecture
+
+For the distilled version of the LSTM model, we define an LSTM-based hybrid architecture. 
+
+1. **Embedding layer**: This initial layer maps the numerical word indices to dense vectors with a length of the pre-set `EMBEDDING_DIM`. This embedding dimension is usually a tunable hyperparameter. The embedding layer takes a `vocab_size` as the input dimension, which corresponds to the number of unique words in your vocabulary, and it outputs vectors with the shape defined by `embedding_dim`. Given the example, an input dimension of 30522 and embedding dimension of 64 are defined.
+
+2. **Dropout layer**: This is a regularization technique to prevent overfitting in the model. It is set to randomly exclude some nodes (neurons) from the network during a training iteration with a rate of 0.5. This means that roughly half the nodes in the layer will be "turned off" during a training iteration.
+
+3. **LSTM layer**: This is the core of the LSTM architecture. The LSTM (Long Short-Term Memory) layer allows for the learning and remembering of sequential or time-dependent behaviour in the data, which is essential in understanding the context within sentences when it comes to NLP tasks. In the LSTM layer, `HIDDEN_DIM` defines the number of LSTM units in the layer and `return_sequences` set to False instructs the LSTM to return only the output of the final timestamp. In the defined model, a Bidirectional LSTM is used, which involves duplicating the LSTM layer so that there are now two layers side-by-side, then providing the input sequence as-is as input to the first layer, and providing a reversed copy of the input sequence to the second.
+
+4. **Another Dropout layer**: Similar to the earlier Dropout layer, but applied after the LSTM layer.
+
+5. **Dense layer**: Finally, there is a dense layer that connects every neuron in the previous LSTM layer to every neuron in this layer. This layer has an output dimension the same as the number of classes (3 in this case), and it provides the final prediction outputs of the model.
+
+In the `call` function, it sequentially takes the input through the embedding layer, dropout layer, LSTM layer, dropout layer, and the final dense layer.
+
+The model also contains a custom loss function `loss_fn`, which combines `SparseCategoricalCrossentropy` and `MeanSquaredError` according to the formula: 
+
+`(alpha) * SparseCategoricalCrossentropy + (1-alpha) * MeanSquaredError`. 
+
+This custom loss function is used during the training of the LSTM model to not only capture the error from misclassification but also the difference between the true and predicted probabilities. This encourages the models to not only make correct classifications but also with correct confidence levels.
+
+The custom loss function computes `SparseCategoricalCrossentropy` loss by comparing between the true class index (derived from the original BERT's logit outputs) and predicted class probabilities while `MeanSquaredError` loss is calculated by squaring the differences between the true class probabilities produced by the softened teacher model and the class probabilities predicted by the student model.
+
+## Data Preprocessing
+
+Our dataset containing a column of sentences and a corresponding column of labels will have to be transformed into suitable input for the LSTM model.
+
+1. **Tokenization**: The text data (sentences) are tokenized into words or smaller subwords, and these tokens are then converted to numerical indices.
+
+2. **Padding**: To ensure that all data can be handled in a batch operation, it is necessary to ensure that all the sequences are the same length. This is typically done by truncating longer sequences, and for shorter sequences; this is achieved by appending zero to the end (also known as padding).
+
+3. **Label Encoding**: For the labels, one common practice is to convert the target labels to one-hot encodings. For instance, if your model is performing a classification task over n classes, each label will be transformed into a vector of length n, where all elements are 0, except for the index representing the class, which will be 1.
+
+## Training Process
+
+We now prepare the LSTM model for training, train it, and then evaluate it.
+
+1. **Weights and Biases (WandB) Setup**: After initializing a run with WandB, we name the run `75 LSTM Distill t={str(temperature)} a={str(alpha)}`, where temperature and alpha are the parameters for the distillation process. The `75` refers to the `75Agree` dataset with 75% consensus, and the training will be run in a grid search with different values of `temperature` and `alpha`.
+
+2. **Teacher Model's Logits Calculation & Softening**: The teacher model's logits for both training and validation datasets are calculated by utilizing the `predict` function on the teacher BERT model. The logits are then softened by applying the `softmax` function to them and dividing it by the `temperature` variable. This process makes the teacher's predictions more "confident" when the temperature is low and makes them more "uncertain" when the temperature is high.
+
+3. **Tokenizer Creation and Texts Processing**: We create a tokenizer for the LSTM model, which is different from the tokenizer used for the BERT model. It's created with a maximum number of words equal to the VOCAB_SIZE, which for BERT is `30522`. This tokenizer is fit on the training sentences. The text to be fed into LSTM are then converted into sequences of tokens. In addition, we used padding to ensure all sequences have the same length - that is, they fit into the LSTM model.
+
+4. **Student Model Construction**: We then create an LSTM model treated as a student distillation model. Its architecture is defined by the LSTM Distilled class earlier with the constants such as vocab size, embedding dimension, LSTM units, output, dropout rate, and alpha. After compiling the model with an optimizer, our custom loss function, and accuracy metric, we also use a callback to evaluate the F1 score after each epoch.
+   
+5. **Model Training**: The LSTM student model is trained using the preprocessed training data and the softened probabilities of the teacher model.
+
+6. **Model Evaluation**: Once the LSTM model training is complete, the test data is passed through the model to perform predictions. Then a classification report is printed, and the weighted F1 score is calculated and logged.
+
+A summary of the LSTM model shows that the LSTM model has significantly fewer parameters compared to the BERT model (2.15 million vs 109.5 million) but still performs decently well. Despite the parameter count and size in MB being roughly 1/51st of that of BERT, the LSTM Distilled model's performance is quite decent with only a small drop in F1 score and accuracy.
+
+## Performance Visualization
+
+To visualize the performance of our LSTM model across epochs, we created a function `plot_training_process`. This function generates plots for various model metrics across epochs of training. 
+
+- **Loss**: The plot shows the model loss, meaning how the model's training and validation loss evolved during the training process.
+
+- **Accuracy**: Similarly, it plots the training and validation accuracy. 
+
+- **F1 Score**: The validation F1 scores are also plotted to offer an idea of model performance throughout the training process.
+
+The plots help in better understanding how well the model is learning and if it is overfitting or underfitting, by comparing the training and validation metrics. We noted that the LSTM model doesn't perform as well on the test data as expected, which is valuable information for if this is a viable option.
+
+# Smaller BERT Model and Architecture
+
+For the distilled version of a smaller BERT model, several steps needed to be undertaken to prepare the model, modify it for a specific use case, and to prepare the data accordingly.
+
+1. **Tokenizer**: As in the larger BERT model, the first step involves loading a pre-trained BERT tokenizer. This tokenizer from Hugging Face's `transformers` library supports the functionality required to prepare text to the format expected by the smaller BERT model.
+
+2. **Text to BERT format Conversion**: Texts are converted into BERT's input format, which includes tokenizing the text, truncating it if it exceeds the model's maximum input length, and padding it with 0s at the end if it is shorter than the maximum length, allowing BERT to accept input of a consistent size.
+
+3. **Tensorflow Dataset Creation**: For optimal performance during training with Tensorflow, it's suggested to transform the data inputs and outputs into a Tensorflow dataset. For this, we created a helper function `make_tf_dataset`, which takes the encodings and the labels as input, and converts them into a dataset of input and output tensors. The function also assembles input features in the correct format expected by the BERT model. It creates a dictionary for each observation where the keys "input_ids" and "attention_mask" correspond to their respective values.
+
+4. **Mapping Labels**: Labels are converted from their string representation to a numerical format. This is done using a dictionary `label2num` that maps labels ('negative', 'neutral', 'positive') to numbers (0, 1, 2). 
+
+5. **Creating Tensorflow Datasets**: These numerical labels and BERT formatted encodings are used to create Tensorflow datasets for training, validation, and testing using the `make_tf_dataset` function.
+
+6. **Custom Smaller BERT Model**: A custom BERT digitillation model is then created by subclassing the `tf.keras.Model` class. It takes a pre-trained BERT model and a parameter `alpha` as inputs during initialization. During the forward pass (`call` function), this model simply calls the BERT model on the provided inputs. 
+
+7. **Loss Function Definition**: This custom function combines two different measures: 'hard' loss and 'soft' loss. The 'hard' loss is calculated using the Sparse Categorical Cross Entropy between the hard labels (i.e., the original labels) and the model's predictions. The 'soft' loss is calculated using the Kullback-Leibler Divergence between the teacher model's softened probabilities and the student model's probabilities. The total loss is then a combination of the two losses, controlled by the parameter `alpha`.
+
+This approach allowed us to create a BERT student model with a custom architecture and loss function. It is designed to retain as much useful information as possible from the teacher model while operating using significantly lesser computational resources.
+
+## Smaller BERT Distillation and Training Process
+
+For the distillation of the smaller BERT model, the initial steps are again the creation of a Weights and Biases (WandB) run and retrieval of the teacher BERT model's softened probabilities. The student BERT model with half the number of hidden layers (6 instead of 12) is then prepared and trained through a similar process like the LSTM model.
+
+1. **Weights and Biases (WandB) Setup**: Just like with the LSTM, this step initializes a Weights and Biases run with the specific project and run names including the fact that this is a BERT model, the temperature, and the alpha parameter.
+
+2. **Calculate Teacher's Probabilities**: The logits for both training and validation datasets are calculated using the teacher BERT model. These logits are then softened using the softmax function and the temperature parameter. 
+
+3. **Student Model Definition**: The student model is defined to be a version of BERT with 6 hidden layers and 3 output labels (the classes 'negative', 'neutral', and 'positive'). The student model is then initialised using the custom `DistillBert` class. 
+
+4. **Preparing Data**: The softened probabilities of the teacher BERT model for the training and validation datasets are converted into TensorFlow datasets. Then, they are zipped with the corresponding TensorFlow datasets comprising the original data. This part was key to allowing the student to learn from both the labels and the teacher model.
+
+5. **Optimizer and Learning Rate**: An `Adam` optimizer is used with an exponentially decaying learning rate and specific decay steps and rate. 
+
+6. **Compiling Model**: The model is compiled using the optimizer defined in the previous step, the custom loss function from the DistillBert class, and accuracy as the metric to track.
+
+7. **Callbacks**: A custom F1 score evaluation callback is prepared which triggers after every epoch. It was extremely important to give this F1 callback the original BERT tokenized dataset, and not the one with the probabilities from the teacher model zipped in. This caused a headache for quite a while until we discovered the differing shapes of `(654,)` and `(654,3` of the `preds` and `labels`.
+
+8. **Model Training**: The student model is then trained on the dataset with the teacher probabilities acting as labels. 
+
+9. **Evaluation**: Once training is complete, the student BERT model's performance is evaluated on the test data. A classification report provides precision, recall, F1-score, and support for each class. Model's F1 score is also computed and logged in the WandB dashboard.
+
+An inspection of the student BERT model reveals it has a significantly lower number of parameters (67M against 110M in the teacher BERT model). However, despite its smaller size, it maintains relatively high performance. There is only a small drop in validation F1 score and accuracy, indicating a decent trade-off between performance and complexity. Despite its reduced size in comparison to the larger BERT model, the smaller BERT still requires a considerable amount of resources which is significantly more demanding than the LSTM model.
+
+However, the test results indicate the smaller BERT model's performance decrease is worse than originally thought, with a decline in both F1 score and accuracy. It may not be a viable replacement for the full BERT model.
+
+# The Hyperparameter Grid Search
+
+Distillation requires a lot of experimentation and seems to be a bit of an art. We chose 3 values for the hyperparameters of `temperature` and `alpha` with some loose logic based on how we imagined they might work. All the plots below were trained using the 75Agree dataset but tested with data from all the datasets.
+
+### For distilling BERT into the LSTM:
+
+**Temperature**:
+
+- 1 *This is effectively using the original logits from the teacher, and it's a good baseline to start with*
+- 2 *A moderate temperature*
+- 5 *A higher temperature to see if smoother probabilities help*
+
+**Alpha (Weight for teacher soft labels vs. hard label loss)**:
+
+- 0.5 *Equal importance to both*
+- 0.7 *Slightly more importance to the teacher's soft labels*
+- 0.3 *Slightly more importance to the hard label*
+
+![](../img/75_lstm_results.jpg)
+
+
+### For distilling BERT with 12 layers into BERT with 6 layers:
+
+When distilling within similar architectures (like BERT-to-BERT), the student model can often mimic the teacher model more accurately. This might allow for different temperature and alpha values, so we made them lean more to the teacher model.
+
+**Temperature**:
+
+- 1 *Again, a baseline*
+- 2 *A moderate temperature*
+- 3 *Slightly higher but not as high as when distilling to an LSTM, since the architectures are more similar*
+
+**Alpha**:
+
+- 0.5 (Equal importance to both)
+- 0.8 (More importance to the teacher's soft labels, since the architectures are similar and the student can likely benefit more from the teacher's nuances)
+- 0.2 (More importance to the hard label, to ensure the distilled model doesn't stray too far from ground truth)
+
+![](../img/75_bert_results.jpg)
+
+## Combined plots
+
+Let's see how well our distilled models do against the original 110M parameter BERT model. As mentioned in the notebook:
+
+### LSTM Parameter Summary
+
+It is much smaller than the BERT model at 2.15 million parameter (8.21 MB) vs BERT's 109.5 million (417.7 MB). It's somewhat close in validation set performance:
+
+* F1 score is 81.5 vs 87
+* Accuracy is 82.2 vs 87.
+
+So roughly a 5.5 point drop in F1 and a 4.8 point drop in accuracy for $\frac{1}{51}$ of the parameter count and size in MB. This makes it much less unwieldy for GPU memory and disk usage.
+
+#### Test Results
+
+Unfortunately the LSTM doesn't fare as well with the test data. The best performing LSTM model, the temperature of `2` and alpha of `0.7`, shows:
+
+* F1 score of 0.69 vs 0.79
+* Accuracy of 0.7 0.79
+
+So the LSTM has a 9 point drop in test F1 and an 8 point drop in test Accuracy.
+
+### BERT (6 layer distilled) Parameter Summary
+
+It is smaller than the BERT model at 67 million parameter vs BERT's 110 million, but much bigger than the LSTM. It's somewhat close in validation performance to the BERT model, but:
+
+* F1 score is 77.6 vs 87
+* Accuracy is 82.6 vs 87.
+
+So roughly a 9 point drop in F1 and a 4.4 drop in accuracy for 61% of the parameter count. It's much worse a trade-off than the LSTM.
+
+#### Test Results
+
+Unfortunately the 6 layer BERT doesn't fare as well with the test data. The best performing distilled BERT model, also the temperature of `3` and alpha of `0.2`, shows:
+
+* F1 score of 0.7 vs 0.79
+* Accuracy of 0.71 0.79
+
+So the smaller BERT has a 9 point drop in test F1 and an 8 point drop in test Accuracy.
+
+*It's clear from the plots below that while the LSTM and smaller BERT models just lag behind the orginal BERT model on the `75Agree` dataset by about 5 points in the validation data. However, the more real-world test data shows they lag behind by 10 points in both accuracy and F1. This might actually be a decent tradeoff for the relatively tiny LSTM model, which more than 50x smaller than BERT. However for the smaller BERT model, the performance is unacceptable given its large size.*
+
+![](../img/75_combined_results.jpg)
+
+
