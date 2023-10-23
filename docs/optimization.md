@@ -34,13 +34,15 @@ Let's go over our methodology.
 ### Applicability to BERT:
 Given the size of `bert-base-uncased`, quantization can substantially reduce its memory footprint. TensorFlow Lite offers tools for post-training quantization. For BERT, weight quantization is safer than full integer quantization, as activations in transformers can have dynamic ranges.
 
-### Our challenges in Quantizing our BERT Model
+## Our challenges in Quantizing our BERT Model
 
 #### TensorFlow Lite and Dynamic range quantization
 
 We discovered early on that most of the built-in quantization in TensorFlow is geared towards running models on edge devices, and use another framework called TensorFlow Lite. **Dynamic range quantization**, the first method we tried, required this conversion. The TensorFlow Lite converter has an option to quantize the model weights to 8-bit integers during this process, saving considerable amounts of memory and improve execution speed.
 
-However, we hit a major problem in the conversion of BERT. When using the converted TFLite model's interpreter, the observed expected input shape was [1, 1], indicating that the model was expecting a single token as input. This was unusual for a BERT model, as BERT is designed to look at entire sequences of tokens, not just a single one. The expected input shape was noted from both the 'shape' and 'shape_signature' field of TFLite model's inputs. Ensuring the correctly expected shape for BERT-style inputs during conversion is vital, but we couldn't find any reason why our converted model stopped behaving like BERT. It could be just that the Hugging Face `Transformers` library is not compatible with TensorFlow Lite due to the size of some of the models.
+However, we hit a major problem in the conversion of BERT. When using the converted TFLite model's interpreter, the observed expected input shape was [1, 1], indicating that the model was expecting a single token as input. This was unusual for a BERT model, as BERT is designed to look at entire sequences of tokens, not just a single one. The expected input shape was noted from both the 'shape' and 'shape_signature' field of TFLite model's inputs. Ensuring the correctly expected shape for BERT-style inputs during conversion is vital for the model to work, but we couldn't find any reason why our converted model stopped behaving like BERT. It could be just that the Hugging Face `Transformers` library is not compatible with TensorFlow Lite due to the size of some of the models. In short, we couldn't convert BERT to a TFLite model.
+
+### Other quantization methods in TensorFlow
 
 #### Quantization-aware training (QAT) and Post-training quantization
 
