@@ -98,23 +98,19 @@ This loss computes the difference between the soft predictions (logits or probab
 
 Given the logits from the teacher $z_{teacher}$ and the logits from the student $z_{student}$, the soft target loss can be expressed as:
 
-```math
-Soft Target Loss = L(Softmax(z_{teacher}/T), Softmax(z_{student}/T))
-```
+Soft Target Loss = $L(Softmax(z_{teacher}/T), Softmax(z_{student}/T))$
 
-Where:
+where
 - $T$ is the "temperature" hyperparameter. A value greater than 1 makes the softmax outputs softer (i.e., closer to a uniform distribution), which emphasizes the relationships between classes.
 
 ## Combining the Losses:
 
 To train the student model, a weighted combination of the hard target loss and soft target loss is used:
 
-```math
-Total Loss = \alpha \times Hard Target Loss + (1-\alpha) \times Soft Target Loss
-```
+Total Loss = $\alpha \times$ Hard Target Loss $+ (1-\alpha) \times$ Soft Target Loss
 
-Where:
-- \( \alpha \) is a hyperparameter that controls the weighting of the respective losses. $\alpha$ values closer to 1 put a greater emphasis on the hard labels, and $\alpha$ closer to zero emphasize the teacher model's logits.
+where
+- $\alpha$ is a hyperparameter that controls the weighting of the respective losses. $\alpha$ values closer to 1 put a greater emphasis on the hard labels, and $\alpha$ closer to zero emphasize the teacher model's logits.
 
 The soft targets capture the relationships between different classes. In our 3-class classification for financial sentiment (negative, positive, or neutral), if a particular input results in the teacher model assigning high probabilities to class 3 and slightly lower probabilities to classes 1 and 2, this provides more information than simply knowing the ground truth is class 3. The student model learns from this additional information, which helps in its generalization.
 
