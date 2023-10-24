@@ -104,7 +104,7 @@ The debiasing process involved several key steps:
 
 The debiased evaluation showed a change in performance trend: now, the model trained on the dataset with a `66%` annotator consensus showed the highest F1 score. However, after further experimentation and trackig the F1 score over 20 epochs, the `75Agree` dataset did notably better, suggesting this level offers an optimal compromise for training the model. 
 
-![](../img/experiment-results-20.jpg)
+![](./img/experiment-results-20.jpg)
 
 These steps emphasized the importance of considering annotator bias when creating and evaluating ML models, especially those involving sentiment analysis where subjective decision-making is involved.
 
