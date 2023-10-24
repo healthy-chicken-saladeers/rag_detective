@@ -91,7 +91,9 @@ In the last milestone, we focused on fine-tuning a BERT classifier on financial 
 
 The `financial_phrasebank` dataset comprises sentences from financial news labeled into three sentiment classes: Neutral, Positive, and Negative. It provides four configurations based on the level of annotator agreement: 50%, 66%, 75%, and 100%. 
 
-Initial training results suggested a trend where higher consensus among annotators led to superior model performance. However, this could introduce bias because sentences with higher consensus are often more clear-cut in their sentiment, making them easier for the model to predict. There appeared to be a risk that a model would perform well on training and testing datasets with clear sentiments but fail to accurately classify more nuanced sentences in real-world situations. 
+Initial training results suggested a trend where higher consensus among annotators led to superior model performance. However, this could introduce bias because sentences with higher consensus are often more clear-cut in their sentiment, making them easier for the model to predict. There appeared to be a risk that a model would perform well on training and testing datasets with clear sentiments but fail to accurately classify more nuanced sentences in real-world situations. Here is our original plot with data we now believe to be biased:
+
+![](./img/experiment-results.jpg)
 
 To mitigate this potential bias, we created an unbiased dataset for evaluation. It took samples from all four configurated datasets equally while addressing the imbalance in their sizes, ultimately providing a more balanced distribution of sentiments. 
 
