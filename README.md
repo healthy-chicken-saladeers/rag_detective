@@ -116,7 +116,7 @@ The debiased evaluation showed a change in performance trend: now, the model tra
 
 These steps emphasized the importance of considering annotator bias when creating and evaluating ML models, especially those involving sentiment analysis where subjective decision-making is involved.
 
-# Reports on debiased BERT training
+## Reports on debiased BERT training
 
 #### *Updated* Our fine-tuning BERT WandB report now contains the full details of how we debias the data and the new results. This is in the [second half of the report](https://api.wandb.ai/links/iankelk/mmrp03k6)
 
@@ -126,7 +126,7 @@ These steps emphasized the importance of considering annotator bias when creatin
 
 Next, we focused on optimizing BERT (`bert-base-uncased`) model for financial sentiment analysis. We used different techniques to reduce the model size and speed up the inference. The primary optimization strategies considered were `quantization`, `pruning`, and `knowledge distillation`. 
 
-# Reports on BERT distillation into LSTM and BERT (6 layer) 
+## Reports on BERT distillation into LSTM and BERT (6 layer) 
 
 #### *New* There is an extremely detailed report documented on Weights & Biases located [here](https://api.wandb.ai/links/iankelk/jpvsoack)
 
