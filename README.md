@@ -150,11 +150,11 @@ These are the two notebooks used for the BERT distillation in this milestone. Pr
 
 **This one implements the fine-tuning of BERT using the `75Agree` dataset with balanced validation and testing data, and uses model checkpointing to choose the final model.**
 
-* [75Agree_balanced_30_checkpointed.ipynb](../notebooks/BERT_fine-tune_financials_balanced/75Agree_balanced_30_checkpointed.ipynb)
+* [75Agree_balanced_30_checkpointed.ipynb](./notebooks/BERT_fine-tune_financials_balanced/75Agree_balanced_30_checkpointed.ipynb)
 
 **This one loads the previous fine-tuned BERT model and distills it into 9 LSTM models and 9 smaller BERT models using grid search on the hyperparameters. We then compare these using Weights & Biases.**
 
-* [bert_lstm_distillation_75.ipynb](../notebooks/distillation/bert_lstm_distillation_75.ipynb)
+* [bert_lstm_distillation_75.ipynb](./notebooks/distillation/bert_lstm_distillation_75.ipynb)
 
 ### Original notebooks
 
@@ -167,8 +167,8 @@ Links to the original notebooks, which are identical but used the four different
 
 There are also debiased versions of these notebooks with 10 and 20 epochs. We kept these in their own folders as they were used to generate the data for the Weights & Biases reports.
 
-* [10 epochs initial debiasing](./notebooks/BERT_fine-tune_financials_balanced/intial_debiasing)
-* [20 epochs further exploration](./notebooks/BERT_fine-tune_financials_balanced/longer_diabiasing_20_epochs)
+* [10 epochs initial debiasing notebooks folder](./notebooks/BERT_fine-tune_financials_balanced/intial_debiasing)
+* [20 epochs further exploration notebooks folder](./notebooks/BERT_fine-tune_financials_balanced/longer_diabiasing_20_epochs)
 
 ### More docs
 
