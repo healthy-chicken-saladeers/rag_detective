@@ -91,7 +91,7 @@ One of the challenges faced in financial sentiment analysis is the limited avail
 
 The annotations, derived from a diverse group of 16 financial professionals and students, revealed an interesting trend: as the degree of annotator consensus increased, so did the model's performance. However, this observation carried a bias, suggesting that sentences with clearer sentiments—due to higher annotator agreement—might be inherently easier to predict.
 
-### Debiasing the data
+### *New* Debiasing the data
 
 In the last milestone, we focused on fine-tuning a BERT classifier on financial sentiment analysis using the `financial_phrasebank` dataset. However, there are potential biases in the performance due to the varying levels of annotator consensus in sentiment labeling. 
 
@@ -122,7 +122,7 @@ These steps emphasized the importance of considering annotator bias when creatin
 
 #### *Updated* If the Weights & Biases report site does not load, here is a [static version.](./docs/experiment-bert.md)
 
-### Distilling BERT into LSTM and half-size BERT models 
+### *New* Distilling BERT into LSTM and half-size BERT models 
 
 Next, we focused on optimizing BERT (`bert-base-uncased`) model for financial sentiment analysis. We used different techniques to reduce the model size and speed up the inference. The primary optimization strategies considered were `quantization`, `pruning`, and `knowledge distillation`. 
 
@@ -148,7 +148,7 @@ The BERT distilled model, on the other hand, displayed a more pronounced drop in
 
 It's possible the optimization could be further improved by using quantization or pruning on the resulting LSTM model, since it's now in a format that could be used with TF-MOT, however it's unlikely to be practical as we've already sacrificed 9 points of accuracy and f1. We've also already reached a much smaller size of 2M parameters / 8MB of memory, and further compression will likely dramatically reduce the performance.
 
-### Current notebooks
+### *New* Current notebooks
 
 These are the two notebooks used for the BERT distillation in this milestone. Previously we'd had multiple notebooks, one for each dataset, but the distillation has been reworked into functions so it could all be done in a single notebook.
 
@@ -160,7 +160,7 @@ These are the two notebooks used for the BERT distillation in this milestone. Pr
 
 * [bert_lstm_distillation_75.ipynb](./notebooks/distillation/bert_lstm_distillation_75.ipynb)
 
-### Original notebooks
+### *Moved* Original notebooks
 
 Links to the original notebooks, which are identical but used the four different datasets depending on annotator consensus, are in a subfolder and no longer relied upon for current work.
 
@@ -174,21 +174,7 @@ There are also debiased versions of these notebooks with 10 and 20 epochs. We ke
 * [10 epochs initial debiasing notebooks folder](./notebooks/BERT_fine-tune_financials_balanced/intial_debiasing)
 * [20 epochs further exploration notebooks folder](./notebooks/BERT_fine-tune_financials_balanced/longer_diabiasing_20_epochs)
 
-### More docs
-
-Detailed instructions on how to install the Google Cloud CLI on your Mac while working on a project like this. It's a much better experience than using the web browser or plain SSH:
-* [docs/gcp-cli-instructions-macos.md](./docs/gcp-cli-instructions-macos.md)
-
-Step-by-step instructions with screenshots on how to set up a Google Cloud Storage bucket:
-* [docs/gcs-bucket-instructions.md](./docs/gcs-bucket-instructions.md)
-
-To run the installation from scratch on a new Google Cloud instance, full instructions are located in:
-* [docs/gcp-setup-instructions.md](./docs/gcp-setup-instructions.md)
-
-Granular instructions on how to run the `scraper` container alone are located in:
-* [docs/gcp-docker-commands.md](./docs/gcp-docker-commands.md)
-
-# Setting Up a Google Cloud Function
+# *New* Setting Up a Google Cloud Function
 
 Google Cloud Functions are part of the serverless offerings from GCP, which enable us to build and deploy code without managing the underlying infrastructure. With Cloud Functions, we can run our individual code snippets, or functions, in response to specific events without the need to manage a server, making development more streamlined and efficient.
 
@@ -204,6 +190,20 @@ For our project, we've created a custom Cloud Function designed to retrieve scra
 7. **Monitoring**: GCP offers tools to keep track of the function's performance, helping you identify any potential issues.
 
 For the detailed, step-by-step guide with images, please refer to our [comprehensive documentation.](./docs/gc-function-instructions.md)
+
+### More docs
+
+Detailed instructions on how to install the Google Cloud CLI on your Mac while working on a project like this. It's a much better experience than using the web browser or plain SSH:
+* [docs/gcp-cli-instructions-macos.md](./docs/gcp-cli-instructions-macos.md)
+
+Step-by-step instructions with screenshots on how to set up a Google Cloud Storage bucket:
+* [docs/gcs-bucket-instructions.md](./docs/gcs-bucket-instructions.md)
+
+To run the installation from scratch on a new Google Cloud instance, full instructions are located in:
+* [docs/gcp-setup-instructions.md](./docs/gcp-setup-instructions.md)
+
+Granular instructions on how to run the `scraper` container alone are located in:
+* [docs/gcp-docker-commands.md](./docs/gcp-docker-commands.md)
 
 # Web Scraper
 
