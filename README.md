@@ -188,6 +188,23 @@ To run the installation from scratch on a new Google Cloud instance, full instru
 Granular instructions on how to run the `scraper` container alone are located in:
 * [docs/gcp-docker-commands.md](./docs/gcp-docker-commands.md)
 
+# Setting Up a Google Cloud Function
+
+Google Cloud Functions are part of the serverless offerings from GCP, which enable us to build and deploy code without managing the underlying infrastructure. With Cloud Functions, we can run our individual code snippets, or functions, in response to specific events without the need to manage a server, making development more streamlined and efficient.
+
+For our project, we've created a custom Cloud Function designed to retrieve scraped data from our GCS bucket, process it using the Llama Index / Weaviate, and subsequently query the document to extract meaningful responses based on its content.
+
+**Overview of how to setup this process**:
+1. **Preparation**: Make sure you have a GCP account and a project ready in GCP.
+2. **Initialization**: Begin the process in the Google Cloud Console and choose your project.
+3. **Function Creation**: Designate properties like the function's name, region, and authentication methods.
+4. **Configuration**: This involves setting up the runtime environment and integrating the OpenAI API key. Here, you'll also replace the default code with our custom logic.
+5. **Deployment**: After configuring, you'll deploy the function, which provides you with a unique URL endpoint for execution.
+6. **Testing**: Use the provided URL to test the function's output, ensuring it's returning the expected results.
+7. **Monitoring**: GCP offers tools to keep track of the function's performance, helping you identify any potential issues.
+
+For the detailed, step-by-step guide with images, please refer to our [comprehensive documentation.](./docs/gc-function-instructions.md)
+
 # Web Scraper
 
 This Python project provides code for web scraping, which extracts data from webpages for data analysis. The main codebase consists of two parts:
