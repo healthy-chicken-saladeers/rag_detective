@@ -1,4 +1,4 @@
-AC215 Milestone3
+AC215 Milestone4
 ==============================
 
 Project Organization
@@ -74,7 +74,7 @@ Project Organization
 
 
 --------
-# AC215 - Milestone3 - RAG Detective
+# AC215 - Milestone4 - RAG Detective
 
 **Team Members**
 Ian Kelk, Mandy Wong, Alyssa Lutservitz, Nitesh Kumar, Bailey Bailey
@@ -116,6 +116,8 @@ The debiased evaluation showed a change in performance trend: now, the model tra
 
 These steps emphasized the importance of considering annotator bias when creating and evaluating ML models, especially those involving sentiment analysis where subjective decision-making is involved.
 
+### Reports on debiased BERT training
+
 #### *Updated* Our fine-tuning BERT WandB report now contains the full details of how we debias the data and the new results. This is in the [second half of the report](https://api.wandb.ai/links/iankelk/mmrp03k6)
 
 #### *Updated* If the Weights & Biases report site does not load, here is a [static version.](./docs/experiment-bert.md)
@@ -123,6 +125,8 @@ These steps emphasized the importance of considering annotator bias when creatin
 ### Distilling BERT into LSTM and half-size BERT models 
 
 Next, we focused on optimizing BERT (`bert-base-uncased`) model for financial sentiment analysis. We used different techniques to reduce the model size and speed up the inference. The primary optimization strategies considered were `quantization`, `pruning`, and `knowledge distillation`. 
+
+### Reports on BERT distillation into LSTM and BERT (6 layer) 
 
 #### *New* There is an extremely detailed report documented on Weights & Biases located [here](https://api.wandb.ai/links/iankelk/jpvsoack)
 
@@ -172,16 +176,16 @@ There are also debiased versions of these notebooks with 10 and 20 epochs. We ke
 
 ### More docs
 
-*NEW:* Detailed instructions on how to install the Google Cloud CLI on your Mac while working on a project like this. It's a much better experience than using the web browser or plain SSH:
+Detailed instructions on how to install the Google Cloud CLI on your Mac while working on a project like this. It's a much better experience than using the web browser or plain SSH:
 * [docs/gcp-cli-instructions-macos.md](./docs/gcp-cli-instructions-macos.md)
 
-*NEW:* Step-by-step instructions with screenshots on how to set up a Google Cloud Storage bucket:
+Step-by-step instructions with screenshots on how to set up a Google Cloud Storage bucket:
 * [docs/gcs-bucket-instructions.md](./docs/gcs-bucket-instructions.md)
 
-*UPDATED:* To run the installation from scratch on a new Google Cloud instance, full instructions are located in:
+To run the installation from scratch on a new Google Cloud instance, full instructions are located in:
 * [docs/gcp-setup-instructions.md](./docs/gcp-setup-instructions.md)
 
-*UPDATED:* Granular instructions on how to run the `scraper` container alone are located in:
+Granular instructions on how to run the `scraper` container alone are located in:
 * [docs/gcp-docker-commands.md](./docs/gcp-docker-commands.md)
 
 # Web Scraper
@@ -264,9 +268,9 @@ Because it only needs to write individual files into the bucket, the scraper use
 
 # Weaviate Vector Store Container
 
-*NEW* Our Weaviate schema and explanation can be read [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/vector_store/weaviate.schema.md) and in JSON format [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/vector_store/schema.json)
+Our Weaviate schema and explanation can be read [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/vector_store/weaviate.schema.md) and in JSON format [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/vector_store/schema.json)
 
-*NEW* Just for fun, and because it's part of the building process, our original hierarchical schema can be read [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/vector_store/weaviate.schema.old.md) and in JSON format [here.](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/vector_store/schema_old.json) We had to change to a flat structure due to limitations on deep hierarchical querying of Weaviate.
+Just for fun, and because it's part of the building process, our original hierarchical schema can be read [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/vector_store/weaviate.schema.old.md) and in JSON format [here.](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/src/vector_store/schema_old.json) We had to change to a flat structure due to limitations on deep hierarchical querying of Weaviate.
 
 Weaviate is an open-source knowledge graph program that utilizes GraphQL and RESTful APIs. It’s designed to organize large amounts of data in a manner that makes the data interconnected and contextual, allowing users to perform semantic searches and analyses. It can automatically classify and interpret data through machine learning models, facilitating more intelligent and informed data retrievals and insights. It is scalable and can be used for a variety of applications, such as data analysis and information storage and retrieval.
 
@@ -279,7 +283,7 @@ In our current cloud instance with everything installed, the command to start ev
 
 # LlamaIndex
 
-### *NEW*  A detailed step-by-step demonstration and explanation of how to accomplish RAG with Weaviate is shown in [this notebook.](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/rag_with_weaviate.ipynb)
+### A detailed step-by-step demonstration and explanation of how to accomplish RAG with Weaviate is shown in [this notebook.](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/rag_with_weaviate.ipynb)
 
 * Since we had originally started with the more complex (and eventually abandoned) hierarchical schema which we tried to use [here](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/add_data_to_weaviate_old.ipynb), we haven't needed the LlamaIndex framework yet, however regardless of if we use it or not, we will still require this container for the application.
 
@@ -324,7 +328,7 @@ At present, LlamaIndex is set up to run a short "build and index" query using Pa
 
 ## Additional Files
 
-#### *UPDATED:* `docker-compose.yml`
+#### `docker-compose.yml`
 
 - **version**: Specifies the Docker Compose file version.
   
