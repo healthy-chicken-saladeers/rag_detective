@@ -124,9 +124,9 @@ These steps emphasized the importance of considering annotator bias when creatin
 
 Next, we focused on optimizing BERT (`bert-base-uncased`) model for financial sentiment analysis. We used different techniques to reduce the model size and speed up the inference. The primary optimization strategies considered were `quantization`, `pruning`, and `knowledge distillation`. 
 
-#### *New* There is an extremely detailed report documented on Weights & Biases located [here](https://api.wandb.ai/links/iankelk/jpvsoack)**
+#### *New* There is an extremely detailed report documented on Weights & Biases located [here](https://api.wandb.ai/links/iankelk/jpvsoack)
 
-#### *New* The same report is also located within this GitHub repo as [optimization.md](./docs/optimization.md) in case WandB has any issues**
+#### *New* The same report is also located within this GitHub repo as [optimization.md](./docs/optimization.md) in case WandB has any issues
 
 The initial part of the project involved fine-tuning BERT on the `75Agree` dataset as determined in the previous section. We performed a grid search on hyperparameters to create various versions of LSTM and a smaller BERT model. The performance of these models was then evaluated. 
 
@@ -160,15 +160,15 @@ These are the two notebooks used for the BERT distillation in this milestone. Pr
 
 Links to the original notebooks, which are identical but used the four different datasets depending on annotator consensus, are in a subfolder and no longer relied upon for current work.
 
-* [50% annotator consensus](../notebooks/BERT_fine-tune_financials/50Agree.ipynb)
-* [66% annotator consensus](../notebooks/BERT_fine-tune_financials/66Agree.ipynb)
-* [75% annotator consensus](../notebooks/BERT_fine-tune_financials/75Agree.ipynb)
-* [100% annotator consensus](../notebooks/BERT_fine-tune_financials/AllAgree.ipynb)
+* [50% annotator consensus](./notebooks/BERT_fine-tune_financials/50Agree.ipynb)
+* [66% annotator consensus](./notebooks/BERT_fine-tune_financials/66Agree.ipynb)
+* [75% annotator consensus](./notebooks/BERT_fine-tune_financials/75Agree.ipynb)
+* [100% annotator consensus](./notebooks/BERT_fine-tune_financials/AllAgree.ipynb)
 
 There are also debiased versions of these notebooks with 10 and 20 epochs. We kept these in their own folders as they were used to generate the data for the Weights & Biases reports.
 
-* [10 epochs initial debiasing](../notebooks/BERT_fine-tune_financials_balanced/intial_debiasing)
-* [20 epochs further exploration](../notebooks/BERT_fine-tune_financials_balanced/longer_diabiasing_20_epochs)
+* [10 epochs initial debiasing](./notebooks/BERT_fine-tune_financials_balanced/intial_debiasing)
+* [20 epochs further exploration](./notebooks/BERT_fine-tune_financials_balanced/longer_diabiasing_20_epochs)
 
 ### More docs
 
