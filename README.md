@@ -85,6 +85,12 @@ Healthy Chicken Saladeers
 **Project**
 To develop an application that uses Retrieval Augmented Generation (RAG) with an LLM to create a chatbot that can answer specific questions about a company through the complete knowledge of all the information available publicly on their website in a manner that’s more specific and insightful than using a search engine.
 
+### Quick Review: Fine-tuning BERT with Financial data for sentiment analysis
+
+One of the challenges faced in financial sentiment analysis is the limited availability of quality annotated training data. We used the `financial_phrasebank` dataset, which draws attention to the potential influences of annotator consensus on sentiment predictions. A curated collection of 4846 sentences from English financial news, the dataset is categorized into three sentiment classes: Neutral, Positive, and Negative. Notably, it provides varying configurations based on degrees of annotator agreement, spanning from 50% to a complete consensus.
+
+The annotations, derived from a diverse group of 16 financial professionals and students, revealed an interesting trend: as the degree of annotator consensus increased, so did the model's performance. However, this observation carried a bias, suggesting that sentences with clearer sentiments—due to higher annotator agreement—might be inherently easier to predict.
+
 ### Debiasing the data
 
 In the last milestone, we focused on fine-tuning a BERT classifier on financial sentiment analysis using the `financial_phrasebank` dataset. However, there are potential biases in the performance due to the varying levels of annotator consensus in sentiment labeling. 
@@ -110,13 +116,17 @@ The debiased evaluation showed a change in performance trend: now, the model tra
 
 These steps emphasized the importance of considering annotator bias when creating and evaluating ML models, especially those involving sentiment analysis where subjective decision-making is involved.
 
+#### *Updated* Our fine-tuning BERT WandB report now contains the full details of how we debias the data and the new results. This is in the [second half of the report](https://api.wandb.ai/links/iankelk/mmrp03k6)
+
+#### *Updated* If the Weights & Biases report site does not load, here is a [static version.](./docs/experiment-bert.md)
+
 ### Distilling BERT into LSTM and half-size BERT models 
 
 Next, we focused on optimizing BERT (`bert-base-uncased`) model for financial sentiment analysis. We used different techniques to reduce the model size and speed up the inference. The primary optimization strategies considered were `quantization`, `pruning`, and `knowledge distillation`. 
 
-**There is an extremely detailed report documented on Weights & Biases located [here](https://api.wandb.ai/links/iankelk/jpvsoack)**
+#### *New* There is an extremely detailed report documented on Weights & Biases located [here](https://api.wandb.ai/links/iankelk/jpvsoack)**
 
-**The same report is also located within this GitHub repo as [optimization.md](./optimization.md) in case WandB has any issues**
+#### *New* The same report is also located within this GitHub repo as [optimization.md](./docs/optimization.md) in case WandB has any issues**
 
 The initial part of the project involved fine-tuning BERT on the `75Agree` dataset as determined in the previous section. We performed a grid search on hyperparameters to create various versions of LSTM and a smaller BERT model. The performance of these models was then evaluated. 
 
@@ -134,36 +144,31 @@ The BERT distilled model, on the other hand, displayed a more pronounced drop in
 
 It's possible the optimization could be further improved by using quantization or pruning on the resulting LSTM model, since it's now in a format that could be used with TF-MOT, however it's unlikely to be practical as we've already sacrificed 9 points of accuracy and f1. We've also already reached a much smaller size of 2M parameters / 8MB of memory, and further compression will likely dramatically reduce the performance.
 
-### Fine-tuning BERT with Financial data for sentiment analysis
+### Current notebooks
 
-In order to fulfill the model training and experimentation aspect of this project, we decided to fine-tune the 110M parameter model BERT, which stands for `Bidirectional Encoder Representations from Transformers`, a machine learning model used for natural language processing tasks.
+These are the two notebooks used for the BERT distillation in this milestone. Previously we'd had multiple notebooks, one for each dataset, but the distillation has been reworked into functions so it could all be done in a single notebook.
 
-Rather than our original idea of hosting our own embedding model, which has become impractical due to the lack of a GPU and BERT's short 512 token context, we can use this model to perform sentiment analysis of any financial information returned by the LLM. We can proceed with it through the following milestones as well, as we used TensorFlow to train it and can proceed with the later goals of distillation, quantization, or compression.
+**This one implements the fine-tuning of BERT using the `75Agree` dataset with balanced validation and testing data, and uses model checkpointing to choose the final model.**
 
-One of the challenges faced in financial sentiment analysis is the limited availability of quality annotated training data. We used the `financial_phrasebank` dataset, which draws attention to the potential influences of annotator consensus on sentiment predictions. A curated collection of 4846 sentences from English financial news, the dataset is categorized into three sentiment classes: Neutral, Positive, and Negative. Notably, it provides varying configurations based on degrees of annotator agreement, spanning from 50% to a complete consensus.
+* [75Agree_balanced_30_checkpointed.ipynb](../notebooks/BERT_fine-tune_financials_balanced/75Agree_balanced_30_checkpointed.ipynb)
 
-The annotations, derived from a diverse group of 16 financial professionals and students, revealed an interesting trend: as the degree of annotator consensus increased, so did the model's performance. However, this observation might carry an inherent bias, suggesting that sentences with clearer sentiments—due to higher annotator agreement—might be inherently easier to predict.
+**This one loads the previous fine-tuned BERT model and distills it into 9 LSTM models and 9 smaller BERT models using grid search on the hyperparameters. We then compare these using Weights & Biases.**
 
-We weren't able to get multiple GPUs through Google Vertex, however I was able to use an A100 GPU through Google Colab. This GPU took what was going to be a multiple hour training on my Mac CPU and was able to run it in under 30 minutes. I've both run the `finetune_bert.py` file in both the notebook format for greater readability, as well as using a simple `!python finetune_bert.py` as the first line of a notebook.
+* [bert_lstm_distillation_75.ipynb](../notebooks/distillation/bert_lstm_distillation_75.ipynb)
 
-Links to the notebooks, which are identical but used the four different datasets depending on annotator consensus:
+### Original notebooks
 
-* [50% annotator consensus](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/BERT_fine-tune_financials/50Agree.ipynb)
-* [66% annotator consensus](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/BERT_fine-tune_financials/66Agree.ipynb)
-* [75% annotator consensus](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/BERT_fine-tune_financials/75Agree.ipynb)
-* [100% annotator consensus](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/BERT_fine-tune_financials/AllAgree.ipynb)
+Links to the original notebooks, which are identical but used the four different datasets depending on annotator consensus, are in a subfolder and no longer relied upon for current work.
 
-We also ran this with just our `finetune_bert.py` file. We still had to install Hugging Face `transformers` and `wandb` because these are handled by `Pipfile`, and there are no plots displayed since in our container the plots are saved directly to disk without being shown.
+* [50% annotator consensus](../notebooks/BERT_fine-tune_financials/50Agree.ipynb)
+* [66% annotator consensus](../notebooks/BERT_fine-tune_financials/66Agree.ipynb)
+* [75% annotator consensus](../notebooks/BERT_fine-tune_financials/75Agree.ipynb)
+* [100% annotator consensus](../notebooks/BERT_fine-tune_financials/AllAgree.ipynb)
 
-* [50% annotator consensus in `finetune_bert.py` run on Colab](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/blob/milestone3/notebooks/BERT_fine-tune_financials/finetune_bert_py_in_colab.ipynb)
+There are also debiased versions of these notebooks with 10 and 20 epochs. We kept these in their own folders as they were used to generate the data for the Weights & Biases reports.
 
-#### For in-depth information on our training experiment, including discussion of the data, training methodology, conclusions, and interactive plots where you can hover your mouse for further detail, [please see our Weights & Biases report](https://api.wandb.ai/links/iankelk/mmrp03k6)
-
-#### Note: The Weights & Biases report site is not always reliable. For a static version [see here.](./docs/experiment-bert.md)
-
-A static version of the most useful plots is here, showing the results for the four datasets representing four levels of annotator consensus:
-
-![](./img/experiment-results.jpg)
+* [10 epochs initial debiasing](../notebooks/BERT_fine-tune_financials_balanced/intial_debiasing)
+* [20 epochs further exploration](../notebooks/BERT_fine-tune_financials_balanced/longer_diabiasing_20_epochs)
 
 ### More docs
 
