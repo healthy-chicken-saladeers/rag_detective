@@ -85,53 +85,6 @@ Healthy Chicken Saladeers
 **Project**
 To develop an application that uses Retrieval Augmented Generation (RAG) with an LLM to create a chatbot that can answer specific questions about a company through the complete knowledge of all the information available publicly on their website in a manner that’s more specific and insightful than using a search engine.
 
-### Debiasing the data
-
-In the last milestone, we focused on fine-tuning a BERT classifier on financial sentiment analysis using the `financial_phrasebank` dataset. However, there are potential biases in the performance due to the varying levels of annotator consensus in sentiment labeling. 
-
-The `financial_phrasebank` dataset comprises sentences from financial news labeled into three sentiment classes: Neutral, Positive, and Negative. It provides four configurations based on the level of annotator agreement: 50%, 66%, 75%, and 100%. 
-
-Initial training results suggested a trend where higher consensus among annotators led to superior model performance. However, this could introduce bias because sentences with higher consensus are often more clear-cut in their sentiment, making them easier for the model to predict. There appeared to be a risk that a model would perform well on training and testing datasets with clear sentiments but fail to accurately classify more nuanced sentences in real-world situations. 
-
-To mitigate this potential bias, we created an unbiased dataset for evaluation. It took samples from all four configurated datasets equally while addressing the imbalance in their sizes, ultimately providing a more balanced distribution of sentiments. 
-
-The debiasing process involved several key steps: 
-- First, the data was loaded and shuffled randomly since the initial data was nearly sorted by sentiment. 
-- A subset for validation/testing was created from the most diverse, `sentences_50agree` dataset. 
-- This subset was then split into two sections for validation and testing, ensuring each category's sentiments were proportionally retained. 
-- These subsets were removed from the training dataset to avoid data leakage.
-- The final sizes of the datasets and respective percentages were cross-verified to ensure a balanced distribution.
-
-The debiased evaluation showed a change in performance trend: now, the model trained on the dataset with a `66%` annotator consensus showed the highest F1 score. However, after further experimentation and trackig the F1 score over 20 epochs, the `75Agree` dataset did notably better, suggesting this level offers an optimal compromise for training the model. 
-
-![](../img/experiment-results-20.jpg)
-
-These steps emphasized the importance of considering annotator bias when creating and evaluating ML models, especially those involving sentiment analysis where subjective decision-making is involved.
-
-### Distilling BERT into LSTM and half-size BERT models 
-
-Next, we focused on optimizing BERT (`bert-base-uncased`) model for financial sentiment analysis. We used different techniques to reduce the model size and speed up the inference. The primary optimization strategies considered were `quantization`, `pruning`, and `knowledge distillation`. 
-
-**There is an extremely detailed report documented on Weights & Biases located [here](https://api.wandb.ai/links/iankelk/jpvsoack)**
-
-**The same report is also located within this GitHub repo as [optimization.md](./optimization.md) in case WandB has any issues**
-
-The initial part of the project involved fine-tuning BERT on the `75Agree` dataset as determined in the previous section. We performed a grid search on hyperparameters to create various versions of LSTM and a smaller BERT model. The performance of these models was then evaluated. 
-
-`Quantization` and `pruning` techniques presented certain constraints due to compatibility issues between Hugging Face's Transformers library and TensorFlow Optimization Toolkit, making these methods of optimization not feasible.
-
-Thus, our primary focus shifted to `knowledge distillation`, a technique used to train a smaller model based on a larger, typically more accurate model. Distillation was seen as a promising approach for BERT, to create a more domain-specific model for financial sentiment analysis.
-
-Two distilled models were created:
-1. An LSTM model
-2. A smaller BERT model with half the number of layers as the original BERT.
-
-For the LSTM model, despite being roughly 1/51st in size and parameter count of the original BERT model, the model showed a similar validation F1 score and accuracy, albeit a significant drop on test data.
-
-The BERT distilled model, on the other hand, displayed a more pronounced drop in validation and test performance, making it less optimal as a substitute for the full BERT model.
-
-It's possible the optimization could be further improved by using quantization or pruning on the resulting LSTM model, since it's now in a format that could be used with TF-MOT, however it's unlikely to be practical as we've already sacrificed 9 points of accuracy and f1. We've also already reached a much smaller size of 2M parameters / 8MB of memory, and further compression will likely dramatically reduce the performance.
-
 ### Fine-tuning BERT with Financial data for sentiment analysis
 
 In order to fulfill the model training and experimentation aspect of this project, we decided to fine-tune the 110M parameter model BERT, which stands for `Bidirectional Encoder Representations from Transformers`, a machine learning model used for natural language processing tasks.
