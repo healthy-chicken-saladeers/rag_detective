@@ -1,0 +1,14 @@
+#ignore 
+
+
+__pycache__/
+.ipynb_checkpoints/
+
+model_training/secrets/*.json
+
+.idea/
+
+
+
+
+
