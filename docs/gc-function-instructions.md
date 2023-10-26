@@ -135,11 +135,11 @@ Now when you view the function again under Google Cloud Run, it says "Allow Unau
 Now when you test the url endpoint again, you get the following output:
 ![gc-function-response](../img/gc-function-response.png)
 
-You can test out additional queries on the same scraped data file by adding `?query=When was Verily founded?` to the end of the url endpoint.
+You can test out additional queries on the same scraped data file by adding a new `query` to the end of the url endpoint.
 
 example: `https://us-central1-rag-detective.cloudfunctions.net/rag-detective?query=When%20was%20Verily%20founded?`
 
-You can also test out query on other scraped data file in the GCS bucket by adding `?object_name=data/assemblyai.com_2023-10-06T18-15-31.csv&query=What is Assembly AI?` to the end of the url endpoint.
+You can also test out a query on other scraped data files in the GCS bucket by adding both a new `object_name` and `query` to the end of the url endpoint.
 
 example: `https://us-central1-rag-detective.cloudfunctions.net/rag-detective?object_name=data/assemblyai.com_2023-10-06T18-15-31.csv&query=What%20is%20Assembly%20AI?`
 
@@ -156,3 +156,75 @@ For more advanced features and customization, refer to the [Google Cloud Functio
 The limitations of LLMs include their potential for generating incorrect or biased information and their inability to access real-time or specific external data; RAG improves queries by combining LLMs with the capacity to retrieve and incorporate external, contextually relevant information, addressing these limitations and enhancing the accuracy and relevance of responses.
 
 For example, ChatGPT (based on the GPT-3.5 architecture developed by OpenAI) can only provide information up to its last training data in September 2021, and it cannot access or provide knowledge of events or developments that occurred after that date.
+
+If we ask ChatGPT a question about a company that was not included in its training data we will get a response like this:
+
+![gc-function-response](../img/example-chatgpt.jpg)
+
+Querying information on Kojin Therapeutics, a small molecule drug discovery company within relatively specialized domain, highlights a scenario where RAG proves valuable.
+
+In our function, we can pass in the scraped data file from Kojin's sitemap.xml and then pass in the same query: "What is Kojin Therapeutics?"
+
+We've revised the earlier function below to provide additional context.
+
+```
+import os
+from google.cloud import storage
+from llama_index import download_loader, VectorStoreIndex, SimpleDirectoryReader, Document
+
+os.environ.get('OPENAI_API_KEY')
+
+def query_vector_store(request):
+
+    request_json = request.get_json(silent=True)
+    request_args = request.args
+
+    bucket_name = 'ac215_scraper_bucket'
+    object_name = 'data/kojintx.com_2023-10-06T22-53-54.csv'
+    query = 'What is Kojin Therapeutics?'
+
+    if request_args and 'bucket_name' in request_args:
+        bucket_name = request_args['bucket_name']
+    if request_args and 'object_name' in request_args:
+        object_name = request_args['object_name']
+    if request_args and 'query' in request_args:
+        query = request_args['query']
+
+    # Client for interacting with GCS API
+    storage_client = storage.Client()
+    # Performs a call to GCS API to get the bucket
+    bucket = storage_client.get_bucket(bucket_name)
+    # Specify the name of the object in the GCS bucket and download as text
+    blob = bucket.blob(object_name)
+    data = blob.download_as_text()
+    # Pass the scraped text data into a document object
+    document = [Document(text=data)]
+    # Store document embeddings in a vector store
+    index = VectorStoreIndex.from_documents(document)
+    # Query the vector store for a context-relevant response
+    query_engine = index.as_query_engine()
+    response = query_engine.query(query)
+
+    print(response)
+    return f"Response: {response}"
+```
+
+Now the url endpoint from our cloud function will return a response to our query based on the given context.
+
+https://us-central1-rag-detective.cloudfunctions.net/rag-detective
+
+![gc-function-response](../img/example-function1.jpg)
+
+Additionally we can pass in other queries: for example, we could ask: "When was Kojin founded?"
+
+https://us-central1-rag-detective.cloudfunctions.net/rag-detective?query=When%20was%20Kojin%20founded?
+
+![gc-function-response](../img/example-function2.jpg)
+
+If we pose a question that falls outside the predefined context, for example "Who is Kim Kardashian?" would elicit a response from RAG indicating that it's beyond the provided context and cannot provide an answer. In contrast, querying the same question in ChatGPT would have generated a response because it relies on its general knowledge base to answer widely known information.
+
+https://us-central1-rag-detective.cloudfunctions.net/rag-detective?query=Who%20is%20Kim%20Kardashian?
+
+![gc-function-response](../img/example-function3.jpg)
+
+The above example shows that RAG proves particularly valuable when handling information outside of a LLMs training and for domain-specific inquiries, as it can tap into a broader knowledge base/domain-specific data sources, ensuring more accurate and pertinent responses.
