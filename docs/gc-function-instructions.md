@@ -2,7 +2,7 @@
 
 Google Cloud Functions are a serverless compute service that allows you to run your code without having to manage the underlying infrastructure. In this guide, we'll walk you through the steps to create a Cloud Function in Google Cloud Platform.
 
-In the context of our project, we have developed a custom function that retrieves a scraped data file from our GCS bucket, adds the file to a vector store using Llama Index, and queries the document to get a response based on its contents.
+For our project, we have developed a customized function utilizing Retrieval Augmented Generation (RAG) to perform targeted queries within a domain-specific context. RAG integrates a language model's text generation capabilities with the ability to retrieve and incorporate external information, thereby improving question-answering by enabling the model to access a wider knowledge base for generating more precise and contextually relevant responses. The function retrieves a text file of scraped data from a companies website from our GCS bucket, stores its embeddings in a vector store using Llama Index, and subsequently queries the vector store to derive context-based responses. For an illustrative example of this function applied to our project's objectives, please refer to the end of the documentation.
 
 ## Prerequisites
 
@@ -150,3 +150,9 @@ You can monitor your function's performance and view logs in the Google Cloud Co
 Don't forget to delete your Cloud Function if you no longer need it to avoid incurring additional charges.
 
 For more advanced features and customization, refer to the [Google Cloud Functions documentation](https://cloud.google.com/functions/docs).
+
+# RAG LLM Example
+
+The limitations of LLMs include their potential for generating incorrect or biased information and their inability to access real-time or specific external data; RAG improves queries by combining LLMs with the capacity to retrieve and incorporate external, contextually relevant information, addressing these limitations and enhancing the accuracy and relevance of responses.
+
+For example, ChatGPT (based on the GPT-3.5 architecture developed by OpenAI) can only provide information up to its last training data in September 2021, and it cannot access or provide knowledge of events or developments that occurred after that date.
