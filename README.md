@@ -38,39 +38,54 @@ Project Organization
         ├── reports
         │   └── milestone2.md
         └── src
-            ├── bert_financial
-            │   ├── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
-            │   ├── entrypoint.sh
-            │   ├── finetune_bert.py
-            │   └── gcsbucket
-            ├── llama_index
-            │   ├── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
-            │   ├── build_query.py
-            │   ├── data
-            │   │   └── paul_graham_essay.txt
-            │   ├── entrypoint.sh
-            │   └── gcsbucket
-            ├── prompts
-            │   └── prompts.py
-            ├── scraper
-            │   ├── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
-            │   ├── chromedriver
-            │   ├── log
-            │   ├── rag-detective-2ed9f2d52fde.json
-            │   ├── scraper.py
-            │   ├── scraperlib.py
-            │   └── sitemap.csv
-            └── vector_store
-                ├── schema.json
-                ├── schema_old.json
-                ├── weaviate.schema.md
-                └── weaviate.schema.old.md
+        │    ├── bert_financial
+        │    │   ├── Dockerfile
+        │    │   ├── Pipfile
+        │    │   ├── Pipfile.lock
+        │    │   ├── entrypoint.sh
+        │    │   ├── finetune_bert.py
+        │    │   └── gcsbucket
+        │    ├── llama_index
+        │    │   ├── Dockerfile
+        │    │   ├── Pipfile
+        │    │   ├── Pipfile.lock
+        │    │   ├── build_query.py
+        │    │   ├── data
+        │    │   │   └── paul_graham_essay.txt
+        │    │   ├── entrypoint.sh
+        │    │   └── gcsbucket
+        │    ├── prompts
+        │    │   └── prompts.py
+        │    ├── scraper
+        │    │   ├── Dockerfile
+        │    │   ├── Pipfile
+        │    │   ├── Pipfile.lock
+        │    │   ├── chromedriver
+        │    │   ├── log
+        │    │   ├── rag-detective-2ed9f2d52fde.json
+        │    │   ├── scraper.py
+        │    │   ├── scraperlib.py
+        │    │   └── sitemap.csv
+        │    └── vector_store
+        │        ├── schema.json
+        │        ├── schema_old.json
+        │        ├── weaviate.schema.md
+        │        └── weaviate.schema.old.md
+        ├── model_training
+            ├── docker-shell.sh
+            ├── Dockerfile
+            ├── docker-entrypoint.sh
+            ├── cli.sh
+            ├── package-trainer.sh
+            ├── Pipfile
+            ├── Pipfile.lock
+            ├── package
+            │   ├── setup.py
+            │   ├── trainer
+            │       ├──  __init__.py
+            │       ├──  task.py
+            ├── secrets
+            │   ├── .gitkeep
 
 
 --------
@@ -190,6 +205,33 @@ For our project, we've created a custom Cloud Function designed to retrieve scra
 7. **Monitoring**: GCP offers tools to keep track of the function's performance, helping you identify any potential issues.
 
 For the detailed, step-by-step guide with images, please refer to our [comprehensive documentation.](./docs/gc-function-instructions.md)
+
+# *New* Serverless Model training with Vertex AI
+
+Vertex AI is a machine learning platform offered by GCP. Vertex AI combines data engineering,
+data science, and ML engineering workflows enabling easy collaboration in teams. It is also scalable,
+as the project requirement gets larger, and allows us to execute training on as per need basis. Another
+advantage is that it reduces the cost as compared to hosting a virtual machine with GPU.
+
+**Overview of the Model Training Workflow**:
+
+1. **Pre-requisite**
+2. **API's to enable in GCP for Project**
+3. **Setup GPU Quotas**
+4. **Setup GCP Service Account**
+5. **Create GCS Bucket**
+6. **Get WandDB API Key**
+7. **Setup directory Structure**
+8. **Setup container**
+9. **Prepare code for Vertex AI training**
+10. **Vertex AI setup.py**
+11. **Upload our code for training on gcs bucket**
+12. **Create Jobs in Vertex AI**
+13. **Monitoring model training and identifying issues**
+14. **View training Metrics**
+
+For the detailed, step-by-step guide with images, please refer to our [vertex-ai-documentation](./docs/vertex-ai-model-training.md)
+
 
 ### More docs
 
