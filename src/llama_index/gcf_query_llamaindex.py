@@ -30,16 +30,11 @@ def query_llamaindex(request):
     request_json = request.get_json(silent=True)
     request_args = request.args
 
-    # Default example values
-    website = "ai21.com"
-    timestamp = "2023-10-06T18-11-24"
-    query = "How was AI21 Studio a game changer?"
+    website = "ai21.com.com"
+    query = "What does Kojin Therapeutics study?"
 
-    # Get actual values from query string
-    if request_json and 'website' in request_json:
-        website = request_json['website']
-    if request_args and 'timestamp' in request_args:
-        timestamp = request_args['timestamp']
+    if request_args and 'website' in request_args:
+        website = request_args['website']
     if request_args and 'query' in request_args:
         query = request_args['query']
 
@@ -55,20 +50,20 @@ def query_llamaindex(request):
     # setup an index for the Vector Store
     index = VectorStoreIndex.from_vector_store(vector_store, storage_context=storage_context)
 
-    # Create exact match filters for websiteAddress and timestamp
+    # Create exact match filters for websiteAddress
+    # value = website
     website_address_filter = ExactMatchFilter(key="websiteAddress", value=website)
-    timestamp_filter = ExactMatchFilter(key="timestamp", value=timestamp)
 
     # Create a metadata filters instance with the above filters
-    metadata_filters = MetadataFilters(filters=[website_address_filter, timestamp_filter]) 
+    metadata_filters = MetadataFilters(filters=[website_address_filter]) 
 
     # Create a query engine with the filters
     query_engine = index.as_query_engine(text_qa_template=qa_template, filters=metadata_filters)
 
     # Execute the query
-    query_str = query
-    response = query_engine.query(query_str)
+    response = query_engine.query(query)
 
     # Print the response 
     print(response)
     return f"Response: {response}"
+
