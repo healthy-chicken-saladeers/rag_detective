@@ -9,7 +9,7 @@ For our project, we have developed several cloud functions utilizing Retrieval A
 - The `querying` function retrieves the text embeddings for a specified companys website from Weaviate and passes that along with a query to an LLM which returns a context-based response. For an illustrative example of this function applied to our project's objectives, please refer to the end of the documentation. This function also supplies an additional prompt to the query_engine called `qa_template`, which informs the LLM to only provide responses within the provided context. This prevents the LLM from using its own training data when responding to queries.
 - The function for `creating the Weaviate schema` allows us to either create a schema from scratch or to delete and recreate an existing schema. 
 
-We have written Google Cloud Functions to conduct both the indexing and querying stages of RAG and a function to create or recreate the Weaviate schema as described in the README.md. The Python code can be found here for [indexing](./src/llama_index/gcf_index_llamaindex.py), [querying](./src/llama_index/gcf_query_llamaindex.py), and [creating the Weaviate schema.](./src/llama_index/gcf_create_weaviate_schema.py)
+We have written Google Cloud Functions to conduct both the indexing and querying stages of RAG and a function to create or recreate the Weaviate schema as described in the README.md. The Python code can be found here for [indexing](./src/llama_index/gcf/index_llama_index/gcf_index_llamaindex.py), [querying](./src/llama_index/gcf/query_llama_index/gcf_query_llamaindex.py), and [creating the Weaviate schema.](./src/llama_index/gcf/create_weaviate_schema//gcf_create_weaviate_schema.py)
 
 ## Prerequisites
 

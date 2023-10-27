@@ -1,0 +1,2 @@
+functions-framework==3.*
+weaviate-client==3.24.2
