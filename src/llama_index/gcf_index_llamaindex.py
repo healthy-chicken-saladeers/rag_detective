@@ -2,8 +2,6 @@ import functions_framework
 import weaviate
 import pandas as pd
 import os
-import requests
-import json
 from datetime import datetime, timezone
 from llama_index import Document
 # Suppress Pydantic warnings since it's based in llamaindex
@@ -97,3 +95,5 @@ def index_llamaindex(request):
     storage_context = StorageContext.from_defaults(vector_store = vector_store)
     # set up the index
     index = VectorStoreIndex(nodes, storage_context=storage_context)
+
+    return(f"Successfully added {csv_file} to Weaviate.")
