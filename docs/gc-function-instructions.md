@@ -2,7 +2,7 @@
 
 Google Cloud Functions are a serverless compute service that allows you to run your code without having to manage the underlying infrastructure. In this guide, we'll walk you through the steps to create a Cloud Function in Google Cloud Platform.
 
-For our project, we have developed a customized function utilizing Retrieval Augmented Generation (RAG) to perform targeted queries within a domain-specific context. RAG integrates a language model's text generation capabilities with the ability to retrieve and incorporate external information, thereby improving question-answering by enabling the model to access a wider knowledge base for generating more precise and contextually relevant responses. The function retrieves a text file of scraped data from a companies website from our GCS bucket, stores its embeddings in a vector store using Llama Index, and subsequently queries the vector store to derive context-based responses. For an illustrative example of this function applied to our project's objectives, please refer to the end of the documentation.
+For our project, we have developed a cloud function utilizing Retrieval Augmented Generation (RAG) to perform targeted queries within a domain-specific context. RAG integrates a language model's text generation capabilities with the ability to retrieve and incorporate external information, thereby improving question-answering by enabling the model to access a wider knowledge base for generating more precise and contextually relevant responses. The function retrieves the text embeddings for a companys website from Weaviate that fit within the context of the query and and then provides that information along with the query to an LLM to return a context-based response. For an illustrative example of this function applied to our project's objectives, please refer to the end of the documentation.
 
 We have written a Google Cloud Function to conduct the Querying stage of RAG as described in the README.md. The Python code can be found [here.](./src/llama_index/gcf_query_llamaindex.py)
 
@@ -58,57 +58,92 @@ Before you start, you need the following:
 ## Step 3: Configure and Deploy Your Function
 
 1. Under "Runtime" select "Python 3.10".
-2. Replace the code in `main.py` with the following:
+2. Replace the code in `main.py` with you function. Here we have inserted our function that performs the querying stage of RAG:
 
 ```
+import functions_framework
 import os
-from google.cloud import storage
-from llama_index import download_loader, VectorStoreIndex, SimpleDirectoryReader, Document
 
-os.environ.get('OPENAI_API_KEY')
+os.environ.get("OPENAI_API_KEY")
+WEAVIATE_IP_ADDRESS = "34.133.13.119"
 
-def query_vector_store(request):
+import weaviate
+from weaviate import Client
+from llama_index import VectorStoreIndex
+from llama_index.storage import StorageContext
+from llama_index.vector_stores import WeaviateVectorStore
+from llama_index.vector_stores.types import ExactMatchFilter, MetadataFilters
+from llama_index.prompts import PromptTemplate
+
+template = ("We have provided context information below. If the answer to a query is not contained in this context, "
+            "please only reply that it is not in the context."
+            "\n---------------------\n"
+            "{context_str}"
+            "\n---------------------\n"
+            "Given this information, please answer the question: {query_str}\n"
+)
+qa_template = PromptTemplate(template)
+
+@functions_framework.http
+def query_llamaindex(request):
 
     request_json = request.get_json(silent=True)
     request_args = request.args
 
-    bucket_name = 'ac215_scraper_bucket'
-    object_name = 'data/verily.com_2023-10-06T19-26-47.csv'
-    query = 'What is Verily?'
+    website = "ai21.com.com"
+    query = "What does Kojin Therapeutics study?"
 
-    if request_args and 'bucket_name' in request_args:
-        bucket_name = request_args['bucket_name']
-    if request_args and 'object_name' in request_args:
-        object_name = request_args['object_name']
+    if request_args and 'website' in request_args:
+        website = request_args['website']
     if request_args and 'query' in request_args:
         query = request_args['query']
 
-    storage_client = storage.Client()
-    bucket = storage_client.get_bucket(bucket_name)
-    blob = bucket.blob(object_name)
-    data = blob.download_as_text()
-    documents = [Document(text=data)]
-    index = VectorStoreIndex.from_documents(documents)
-    query_engine = index.as_query_engine()
+    # client setup
+    client = weaviate.Client(url="http://" + WEAVIATE_IP_ADDRESS + ":8080")
+
+    # construct vector store
+    vector_store = WeaviateVectorStore(weaviate_client=client, index_name="Pages", text_key="text")
+
+    # setting up the indexing strategy 
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+
+    # setup an index for the Vector Store
+    index = VectorStoreIndex.from_vector_store(vector_store, storage_context=storage_context)
+
+    # Create exact match filters for websiteAddress
+    # value = website
+    website_address_filter = ExactMatchFilter(key="websiteAddress", value=website)
+
+    # Create a metadata filters instance with the above filters
+    metadata_filters = MetadataFilters(filters=[website_address_filter]) 
+
+    # Create a query engine with the filters
+    query_engine = index.as_query_engine(text_qa_template=qa_template, filters=metadata_filters)
+
+    # Execute the query
     response = query_engine.query(query)
 
+    # Print the response 
     print(response)
     return f"Response: {response}"
+
 ```
 3. Replace the contents of `requirements.txt` with the following:
 
 ```
 functions-framework==3.*
-google-cloud-storage==2.12.0
+llama-cpp-python==0.2.11
 llama_index==0.8.46
+weaviate-client==3.24.2
+transformers==4.34.1
 ```
-4. Set "Entry point" to the name of your function `query_vector_store`.
+4. Set "Entry point" to the name of your function `query_llamaindex`.
 5. Click "DEPLOY". Wait for the deployment to complete. Google Cloud will provide you with a URL endpoint for HTTP-triggered functions.
 ![gc-function-build](../img/gc-function-build.png)
 
 ## Step 4: Test Your Function
 
-Use the provided URL endpoint to test your function: https://us-central1-rag-detective.cloudfunctions.net/rag-detective.
+Use the provided URL endpoint to test your function: https://us-east1-rag-detective.cloudfunctions.net/querying_with_llamaindex.
 
 When you test the function for the first time you'll get the following error:
 
@@ -118,7 +153,7 @@ Go back to the Google Cloud Function console and select the tab "Permissions". T
 
 ![gc-function-permissions1](../img/gc-function-permissions1.png)
 
-Go to the Cloud Run console, and select the checkbox next to the function `rag-detective`. A window will appear to the right of the screen that will allow you to add permissions.
+Go to the Cloud Run console, and select the checkbox next to the function `query_llamaindex`. A window will appear to the right of the screen that will allow you to add permissions.
 
 ![gc-function-permissions2](../img/gc-function-permissions2.png)
 
@@ -157,59 +192,15 @@ For more advanced features and customization, refer to the [Google Cloud Functio
 
 The limitations of LLMs include their potential for generating incorrect or biased information and their inability to access real-time or specific external data; RAG improves queries by combining LLMs with the capacity to retrieve and incorporate external, contextually relevant information, addressing these limitations and enhancing the accuracy and relevance of responses.
 
-For example, ChatGPT (based on the GPT-3.5 architecture developed by OpenAI) can only provide information up to its last training data in September 2021, and it cannot access or provide knowledge of events or developments that occurred after that date.
+For example, ChatGPT (based on the GPT-3.5 architecture developed by OpenAI) can only provide information up to its last training data and it cannot access or provide knowledge of events or developments that occurred after that date.
 
 If we ask ChatGPT a question about a company that was not included in its training data we will get a response like this:
 
 ![gc-function-response](../img/example-chatgpt.jpg)
 
-Querying information on Kojin Therapeutics, a small molecule drug discovery company within relatively specialized domain, highlights a scenario where RAG proves valuable.
+Querying information on a company that GTP-3.5 has no training data on highlights a scenario where RAG proves valuable.
 
-In our function, we can pass in the scraped data file from Kojin's sitemap.xml and then pass in the same query: "What is Kojin Therapeutics?"
-
-We've revised the earlier function below to provide additional context.
-
-```
-import os
-from google.cloud import storage
-from llama_index import download_loader, VectorStoreIndex, SimpleDirectoryReader, Document
-
-os.environ.get('OPENAI_API_KEY')
-
-def query_vector_store(request):
-
-    request_json = request.get_json(silent=True)
-    request_args = request.args
-
-    bucket_name = 'ac215_scraper_bucket'
-    object_name = 'data/kojintx.com_2023-10-06T22-53-54.csv'
-    query = 'What is Kojin Therapeutics?'
-
-    if request_args and 'bucket_name' in request_args:
-        bucket_name = request_args['bucket_name']
-    if request_args and 'object_name' in request_args:
-        object_name = request_args['object_name']
-    if request_args and 'query' in request_args:
-        query = request_args['query']
-
-    # Client for interacting with GCS API
-    storage_client = storage.Client()
-    # Performs a call to GCS API to get the bucket
-    bucket = storage_client.get_bucket(bucket_name)
-    # Specify the name of the object in the GCS bucket and download as text
-    blob = bucket.blob(object_name)
-    data = blob.download_as_text()
-    # Pass the scraped text data into a document object
-    document = [Document(text=data)]
-    # Store document embeddings in a vector store
-    index = VectorStoreIndex.from_documents(document)
-    # Query the vector store for a context-relevant response
-    query_engine = index.as_query_engine()
-    response = query_engine.query(query)
-
-    print(response)
-    return f"Response: {response}"
-```
+In our function, we can pass in the scraped data file from Kojin's sitemap.xml and then pass in the same query: "What does Kojin Therapeutics study?"
 
 Now the url endpoint from our cloud function will return a response to our query based on the given context.
 
