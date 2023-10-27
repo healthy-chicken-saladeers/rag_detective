@@ -92,6 +92,9 @@ Project Organization
             │   │   └── paul_graham_essay.txt
             │   ├── entrypoint.sh
             │   ├── gcf
+            |   |   ├── add_to_weaviate_schema
+            |   |   |   ├── add_to_weaviate.py
+            |   |   |   ├── requirements.txt
             |   |   ├── create_weaviate_schema
             |   |   |   ├── gcf_create_weaviate_schema.py
             |   |   |   ├── requirements.txt
@@ -237,7 +240,7 @@ For our project, we've created a custom Cloud Function designed to retrieve scra
 6. **Testing**: Use the provided URL to test the function's output, ensuring it's returning the expected results.
 7. **Monitoring**: GCP offers tools to keep track of the function's performance, helping you identify any potential issues.
 
-We have written Google Cloud Functions to conduct both the indexing and querying stages of RAG and a function to create or recreate the Weaviate schema. The Python code can be found here for [indexing](./src/llama_index/gcf/index_llama_index/gcf_index_llamaindex.py), [querying](./src/llama_index/gcf/query_llama_index/gcf_query_llamaindex.py), and [creating the Weaviate schema.](./src/llama_index/gcf/create_weaviate_schema//gcf_create_weaviate_schema.py)
+We have written Google Cloud Functions to conduct both the indexing and querying stages of RAG, to create or recreate the Weaviate schema, and to index new data to Weaviate triggered by the addition of a scraped data file to our GCS bucket. The Python code can be found here for [indexing](./src/llama_index/gcf/index_llama_index/gcf_index_llamaindex.py), [querying](./src/llama_index/gcf/query_llama_index/gcf_query_llamaindex.py), [creating the Weaviate schema](./src/llama_index/gcf/create_weaviate_schema//gcf_create_weaviate_schema.py), and [triggered indexing](./src/llama_index/gcf/add_to_weaviate/add_to_weaviate.py).
 
 For the detailed, step-by-step guide with images, please refer to our [comprehensive documentation.](./docs/gc-function-instructions.md)
 
