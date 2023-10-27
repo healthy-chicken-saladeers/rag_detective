@@ -4,7 +4,7 @@ Google Cloud Functions are a serverless compute service that allows you to run y
 
 For our project, we have developed a cloud function utilizing Retrieval Augmented Generation (RAG) to perform targeted queries within a domain-specific context. RAG integrates a language model's text generation capabilities with the ability to retrieve and incorporate external information, thereby improving question-answering by enabling the model to access a wider knowledge base for generating more precise and contextually relevant responses. The function retrieves the text embeddings for a companys website from Weaviate that fit within the context of the query and and then provides that information along with the query to an LLM to return a context-based response. For an illustrative example of this function applied to our project's objectives, please refer to the end of the documentation.
 
-We have written a Google Cloud Function to conduct the Querying stage of RAG as described in the README.md. The Python code can be found [here.](./src/llama_index/gcf_query_llamaindex.py)
+We have written a Google Cloud Function to conduct both the indexing and querying stages of RAG as described in the README.md. The Python code can be found here for [indexing](./src/llama_index/gcf_index_llamaindex.py), [querying](./src/llama_index/gcf_query_llamaindex.py), and [creating the Weaviate schema.](./src/llama_index/gcf_create_weaviate_schema.py)
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ Before you start, you need the following:
 1. Click the "Create Function" button.
 2. If you have not enabled the required APIs, a popup will showup. Click "ENABLE".
 3. Fill in the following details:
-   - **Function Name**: Choose a unique name for your function.
+   - **Function Name**: Choose a unique name for your function. In our example images, we have named the function `rag-detective`.
    - **Region**: Select the region where you want to deploy your cloud function. The region determines the physical location of the data center where your function will run. Choose the region that is geographically closest to your intended users to reduce latency.
    - **Authentication**: 
       - **Allow Unauthenticated Invocations (recommended for testing)**: Enabling this option allows anyone to call your function without requiring authentication. It's useful during development and testing phases to simplify access for testing purposes. However, it's not recommended for production functions that require strict access control.
@@ -58,7 +58,7 @@ Before you start, you need the following:
 ## Step 3: Configure and Deploy Your Function
 
 1. Under "Runtime" select "Python 3.10".
-2. Replace the code in `main.py` with you function. Here we have inserted our function that performs the querying stage of RAG:
+2. Replace the code in `main.py` with your function. Here we have inserted our function that performs the querying stage of RAG as an example:
 
 ```
 import functions_framework
@@ -137,7 +137,7 @@ llama_index==0.8.46
 weaviate-client==3.24.2
 transformers==4.34.1
 ```
-4. Set "Entry point" to the name of your function `query_llamaindex`.
+4. Set "Entry point" to the name of your function. In the example function above, the function is called `query_llamaindex`.
 5. Click "DEPLOY". Wait for the deployment to complete. Google Cloud will provide you with a URL endpoint for HTTP-triggered functions.
 ![gc-function-build](../img/gc-function-build.png)
 
@@ -145,15 +145,18 @@ transformers==4.34.1
 
 Use the provided URL endpoint to test your function: https://us-east1-rag-detective.cloudfunctions.net/querying_with_llamaindex.
 
-When you test the function for the first time you'll get the following error:
+When you test the function for the first time you'll get the an error that the client does not have permission to access the URL. 
 
+The following steps explain how to grant permission to a URL using an example function called `rag-detetctive`. We applied the same steps to enable permissions to our own cloud functions.
+
+Here is the error message you will see before enabling permssions:
 ![gc-function-error](../img/gc-function-error.png)
 
 Go back to the Google Cloud Function console and select the tab "Permissions". The warning states that you must assign the Invoker role (roles/run.invoker) through Cloud Run for 2nd gen functions.
 
 ![gc-function-permissions1](../img/gc-function-permissions1.png)
 
-Go to the Cloud Run console, and select the checkbox next to the function `query_llamaindex`. A window will appear to the right of the screen that will allow you to add permissions.
+Go to the Cloud Run console, and select the checkbox next to your function. A window will appear to the right of the screen that will allow you to add permissions.
 
 ![gc-function-permissions2](../img/gc-function-permissions2.png)
 
@@ -172,13 +175,12 @@ Now when you view the function again under Google Cloud Run, it says "Allow Unau
 Now when you test the url endpoint again, you get the following output:
 ![gc-function-response](../img/gc-function-response.png)
 
-You can test out additional queries on the same scraped data file by adding a new `query` to the end of the url endpoint.
+We can do the same with our function `querying_with_llamaindex`.
 
-example: `https://us-central1-rag-detective.cloudfunctions.net/rag-detective?query=When%20was%20Verily%20founded?`
+Here is the result:
+https://us-east1-rag-detective.cloudfunctions.net/querying_with_llamaindex
 
-You can also test out a query on other scraped data files in the GCS bucket by adding both a new `object_name` and `query` to the end of the url endpoint.
-
-example: `https://us-central1-rag-detective.cloudfunctions.net/rag-detective?object_name=data/assemblyai.com_2023-10-06T18-15-31.csv&query=What%20is%20Assembly%20AI?`
+![gc-function-response](../img/gc-function-response1.jpg)
 
 ## Step 5: Monitor and Troubleshoot Function
 
@@ -200,21 +202,18 @@ If we ask ChatGPT a question about a company that was not included in its traini
 
 Querying information on a company that GTP-3.5 has no training data on highlights a scenario where RAG proves valuable.
 
-In our function, we can pass in the scraped data file from Kojin's sitemap.xml and then pass in the same query: "What does Kojin Therapeutics study?"
+We can pass in the vector embeddings for the companys website and the same query to the url endpoint of our cloud function and it will now return a response to our query based on the given context.
 
-Now the url endpoint from our cloud function will return a response to our query based on the given context.
-
-https://us-central1-rag-detective.cloudfunctions.net/rag-detective
+https://us-east1-rag-detective.cloudfunctions.net/querying_with_llamaindex?website=kojintx.com&query=What%20does%20Kojin%20Therapeutics%20study?
 
 ![gc-function-response](../img/example-function1.jpg)
 
-Additionally we can pass in other queries: for example, we could ask: "When was Kojin founded?"
-
-https://us-central1-rag-detective.cloudfunctions.net/rag-detective?query=When%20was%20Kojin%20founded?
+Additionally, when using a different company's website (ai21.com) and the same query, we receive a response indicating that the information is outside of the given context.
+https://us-east1-rag-detective.cloudfunctions.net/querying_with_llamaindex?website=ai21.com&query=What%20does%20Kojin%20Therapeutics%20study?
 
 ![gc-function-response](../img/example-function2.jpg)
 
-If we pose a question that falls outside the predefined context, for example "Who is Kim Kardashian?" would elicit a response from RAG indicating that it's beyond the provided context and cannot provide an answer. In contrast, querying the same question in ChatGPT would have generated a response because it relies on its general knowledge base to answer widely known information.
+When using RAG, the LLM must rely solely on the provided context, refraining from adding its training data or generating false answers. To test this, we can pose a widely recognized question like "Who is Kim Kardashian?" and confirm that the model responds that the information is outside of the provided context.
 
 https://us-central1-rag-detective.cloudfunctions.net/rag-detective?query=Who%20is%20Kim%20Kardashian?
 
