@@ -204,6 +204,8 @@ For our project, we've created a custom Cloud Function designed to retrieve scra
 6. **Testing**: Use the provided URL to test the function's output, ensuring it's returning the expected results.
 7. **Monitoring**: GCP offers tools to keep track of the function's performance, helping you identify any potential issues.
 
+We have written a Google Cloud Function to conduct the Querying stage of RAG as described below. The Python code can be found [here.](./src/llama_index/gcf_query_llamaindex.py)
+
 For the detailed, step-by-step guide with images, please refer to our [comprehensive documentation.](./docs/gc-function-instructions.md)
 
 # *New* Serverless Model training with Vertex AI

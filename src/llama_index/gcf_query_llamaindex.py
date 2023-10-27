@@ -1,3 +1,6 @@
+# The following code implements the querying stage for RAG of the Weaviate vector store
+# for use as a Google Cloud function 
+
 import functions_framework
 import os
 
@@ -27,11 +30,12 @@ def query_llamaindex(request):
     request_json = request.get_json(silent=True)
     request_args = request.args
 
+    # Default example values
     website = "ai21.com"
     timestamp = "2023-10-06T18-11-24"
-    # query = "How was AI21 Studio a game changer?"
-    query = "Who is Kim Kardashian?"
+    query = "How was AI21 Studio a game changer?"
 
+    # Get actual values from query string
     if request_json and 'website' in request_json:
         website = request_json['website']
     if request_args and 'timestamp' in request_args:
