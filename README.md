@@ -230,7 +230,7 @@ For our project, we've created a custom Cloud Function designed to retrieve scra
 6. **Testing**: Use the provided URL to test the function's output, ensuring it's returning the expected results.
 7. **Monitoring**: GCP offers tools to keep track of the function's performance, helping you identify any potential issues.
 
-We have written a Google Cloud Function to conduct both the indexing and querying stages of RAG as described in the README.md. The Python code can be found here for [indexing](./src/llama_index/gcf_index_llamaindex.py), [querying](./src/llama_index/gcf_query_llamaindex.py), and [creating the Weaviate schema.](./src/llama_index/gcf_create_weaviate_schema.py)
+We have written Google Cloud Functions to conduct both the indexing and querying stages of RAG and a function to create or recreate the Weaviate schema. The Python code can be found here for [indexing](./src/llama_index/gcf_index_llamaindex.py), [querying](./src/llama_index/gcf_query_llamaindex.py), and [creating the Weaviate schema.](./src/llama_index/gcf_create_weaviate_schema.py)
 
 For the detailed, step-by-step guide with images, please refer to our [comprehensive documentation.](./docs/gc-function-instructions.md)
 
