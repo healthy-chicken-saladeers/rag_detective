@@ -4,6 +4,8 @@ Google Cloud Functions are a serverless compute service that allows you to run y
 
 For our project, we have developed a customized function utilizing Retrieval Augmented Generation (RAG) to perform targeted queries within a domain-specific context. RAG integrates a language model's text generation capabilities with the ability to retrieve and incorporate external information, thereby improving question-answering by enabling the model to access a wider knowledge base for generating more precise and contextually relevant responses. The function retrieves a text file of scraped data from a companies website from our GCS bucket, stores its embeddings in a vector store using Llama Index, and subsequently queries the vector store to derive context-based responses. For an illustrative example of this function applied to our project's objectives, please refer to the end of the documentation.
 
+We have written a Google Cloud Function to conduct the Querying stage of RAG as described in the README.md. The Python code can be found [here.](./src/llama_index/gcf_query_llamaindex.py)
+
 ## Prerequisites
 
 Before you start, you need the following:
