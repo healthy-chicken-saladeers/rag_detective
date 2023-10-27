@@ -8,6 +8,7 @@ For our project, we have developed several cloud functions utilizing Retrieval A
 - The `indexing` function consumes a csv file containing scraped data from a companys sitemap.xml file from our GCS bucket, converts it to a Document, and then adds its to Weaviates vector store index. To check that that the relevant information has been added to the vector store you can visit the Weaviate server url endpoint: http://34.133.13.119:8080/v1/objects and search for the companys website. The url endpoint of the function will also return a "success" message if the function runs to completion.
 - The `querying` function retrieves the text embeddings for a specified companys website from Weaviate and passes that along with a query to an LLM which returns a context-based response. For an illustrative example of this function applied to our project's objectives, please refer to the end of the documentation. This function also supplies an additional prompt to the query_engine called `qa_template`, which informs the LLM to only provide responses within the provided context. This prevents the LLM from using its own training data when responding to queries.
 - The function for `creating the Weaviate schema` allows us to either create a schema from scratch or to delete and recreate an existing schema. 
+- The function for `triggered indexing` will add new data to the Weaviate vectore store when a new scarped data file is added to the GCS bucket.
 
 We have written Google Cloud Functions to conduct both the indexing and querying stages of RAG, to create or recreate the Weaviate schema, and to index new data to Weaviate triggered by the addition of a scraped data file to our GCS bucket. The Python code can be found here for [indexing](./src/llama_index/gcf/index_llama_index/gcf_index_llamaindex.py), [querying](./src/llama_index/gcf/query_llama_index/gcf_query_llamaindex.py), [creating the Weaviate schema](./src/llama_index/gcf/create_weaviate_schema//gcf_create_weaviate_schema.py), and [triggered indexing](./src/llama_index/gcf/add_to_weaviate/add_to_weaviate.py).
 
@@ -195,6 +196,20 @@ You can monitor your function's performance and view logs in the Google Cloud Co
 Don't forget to delete your Cloud Function if you no longer need it to avoid incurring additional charges.
 
 For more advanced features and customization, refer to the [Google Cloud Functions documentation](https://cloud.google.com/functions/docs).
+
+## Additional notes: triggered indexing
+
+Add trigger to your function on creation:
+
+- Event: use `google.cloud.storage.object.v1.finalized`
+- Bucket: select GCS bucket 
+- Service Account: use `Compute Engine Default Service Account`
+
+![gc-trigger](../img/gc-trigger.jpg)
+
+Be sure that your project service account has "Pub/Sub Publisher" role under the "IAM & Admin" console.
+
+See here for more information on Cloud Storage Triggers: https://cloud.google.com/functions/docs/calling/storage.
 
 # RAG LLM Example
 
