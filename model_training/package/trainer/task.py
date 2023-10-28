@@ -266,7 +266,7 @@ optimizer = keras.optimizers.Adam(learning_rate=lr_schedule)
 model.compile(optimizer=optimizer, loss=loss_fn, metrics=['accuracy'])
 
 # Initializing wandb run
-wandb.init(project="bert-sentiment")
+wandb.init(project="temp-project")
 
 # Prepare for F1 score evaluation
 val_dataset_temp = val_dataset.batch(args.batch_size)
