@@ -1,0 +1,15 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+user-agent = "*"
+requests = "*"
+beautifulsoup4 = "*"
+google-cloud-storage = "*"
+
+[requires]
+python_version = "3.9"

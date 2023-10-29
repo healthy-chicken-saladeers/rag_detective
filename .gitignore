@@ -4,11 +4,12 @@
 __pycache__/
 .ipynb_checkpoints/
 
-model_training/secrets/*.json
 
 .idea/
-
+model_training/secrets/*.json
 model_training/trainer.tar.gz
+
+secrets/*.json
 
 
 
