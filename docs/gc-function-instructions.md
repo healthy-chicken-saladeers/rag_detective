@@ -2,7 +2,16 @@
 
 Google Cloud Functions are a serverless compute service that allows you to run your code without having to manage the underlying infrastructure. In this guide, we'll walk you through the steps to create a Cloud Function in Google Cloud Platform.
 
-In the context of our project, we have developed a custom function that retrieves a scraped data file from our GCS bucket, adds the file to a vector store using Llama Index, and queries the document to get a response based on its contents.
+For our project, we have developed several cloud functions utilizing Retrieval Augmented Generation (RAG) to perform targeted queries within a domain-specific context. RAG integrates a language model's text generation capabilities with the ability to retrieve and incorporate external information, thereby improving question-answering by enabling the model to access a wider knowledge base for generating more precise and contextually relevant responses. 
+
+- For each of these functions the weaviate docker container in our projects VM must be running!
+- The `indexing` function consumes a csv file containing scraped data from a companys sitemap.xml file from our GCS bucket, converts it to a Document, and then adds its to Weaviates vector store index. To check that that the relevant information has been added to the vector store you can visit the Weaviate server url endpoint: http://34.133.13.119:8080/v1/objects and search for the companys website. The url endpoint of the function will also return a "success" message if the function runs to completion.
+- The `querying` function retrieves the text embeddings for a specified companys website from Weaviate and passes that along with a query to an LLM which returns a context-based response. For an illustrative example of this function applied to our project's objectives, please refer to the end of the documentation. This function also supplies an additional prompt to the query_engine called `qa_template`, which informs the LLM to only provide responses within the provided context. This prevents the LLM from using its own training data when responding to queries.
+- The function for `creating the Weaviate schema` allows us to either create a schema from scratch or to delete and recreate an existing schema. 
+- The function for `triggered indexing` will add new data to the Weaviate vectore store when a new scarped data file is added to the GCS bucket.
+
+We have written Google Cloud Functions to conduct both the indexing and querying stages of RAG, to create or recreate the Weaviate schema, and to index new data to Weaviate triggered by the addition of a scraped data file to our GCS bucket. The Python code can be found here for [indexing](./src/llama_index/gcf/index_llama_index/gcf_index_llamaindex.py), [querying](./src/llama_index/gcf/query_llama_index/gcf_query_llamaindex.py), [creating the Weaviate schema](./src/llama_index/gcf/create_weaviate_schema//gcf_create_weaviate_schema.py), and [triggered indexing](./src/llama_index/gcf/add_to_weaviate/add_to_weaviate.py).
+
 
 ## Prerequisites
 
@@ -21,7 +30,7 @@ Before you start, you need the following:
 1. Click the "Create Function" button.
 2. If you have not enabled the required APIs, a popup will showup. Click "ENABLE".
 3. Fill in the following details:
-   - **Function Name**: Choose a unique name for your function.
+   - **Function Name**: Choose a unique name for your function. In our example images, we have named the function `rag-detective`.
    - **Region**: Select the region where you want to deploy your cloud function. The region determines the physical location of the data center where your function will run. Choose the region that is geographically closest to your intended users to reduce latency.
    - **Authentication**: 
       - **Allow Unauthenticated Invocations (recommended for testing)**: Enabling this option allows anyone to call your function without requiring authentication. It's useful during development and testing phases to simplify access for testing purposes. However, it's not recommended for production functions that require strict access control.
@@ -56,67 +65,105 @@ Before you start, you need the following:
 ## Step 3: Configure and Deploy Your Function
 
 1. Under "Runtime" select "Python 3.10".
-2. Replace the code in `main.py` with the following:
+2. Replace the code in `main.py` with your function. Here we have inserted our function that performs the querying stage of RAG as an example:
 
 ```
+import functions_framework
 import os
-from google.cloud import storage
-from llama_index import download_loader, VectorStoreIndex, SimpleDirectoryReader, Document
 
-os.environ.get('OPENAI_API_KEY')
+os.environ.get("OPENAI_API_KEY")
+WEAVIATE_IP_ADDRESS = "34.133.13.119"
 
-def query_vector_store(request):
+import weaviate
+from weaviate import Client
+from llama_index import VectorStoreIndex
+from llama_index.storage import StorageContext
+from llama_index.vector_stores import WeaviateVectorStore
+from llama_index.vector_stores.types import ExactMatchFilter, MetadataFilters
+from llama_index.prompts import PromptTemplate
+
+template = ("We have provided context information below. If the answer to a query is not contained in this context, "
+            "please only reply that it is not in the context."
+            "\n---------------------\n"
+            "{context_str}"
+            "\n---------------------\n"
+            "Given this information, please answer the question: {query_str}\n"
+)
+qa_template = PromptTemplate(template)
+
+@functions_framework.http
+def query_llamaindex(request):
 
     request_json = request.get_json(silent=True)
     request_args = request.args
 
-    bucket_name = 'ac215_scraper_bucket'
-    object_name = 'data/verily.com_2023-10-06T19-26-47.csv'
-    query = 'What is Verily?'
+    website = "ai21.com.com"
+    query = "What does Kojin Therapeutics study?"
 
-    if request_args and 'bucket_name' in request_args:
-        bucket_name = request_args['bucket_name']
-    if request_args and 'object_name' in request_args:
-        object_name = request_args['object_name']
+    if request_args and 'website' in request_args:
+        website = request_args['website']
     if request_args and 'query' in request_args:
         query = request_args['query']
 
-    storage_client = storage.Client()
-    bucket = storage_client.get_bucket(bucket_name)
-    blob = bucket.blob(object_name)
-    data = blob.download_as_text()
-    documents = [Document(text=data)]
-    index = VectorStoreIndex.from_documents(documents)
-    query_engine = index.as_query_engine()
+    # client setup
+    client = weaviate.Client(url="http://" + WEAVIATE_IP_ADDRESS + ":8080")
+
+    # construct vector store
+    vector_store = WeaviateVectorStore(weaviate_client=client, index_name="Pages", text_key="text")
+
+    # setting up the indexing strategy 
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+
+    # setup an index for the Vector Store
+    index = VectorStoreIndex.from_vector_store(vector_store, storage_context=storage_context)
+
+    # Create exact match filters for websiteAddress
+    # value = website
+    website_address_filter = ExactMatchFilter(key="websiteAddress", value=website)
+
+    # Create a metadata filters instance with the above filters
+    metadata_filters = MetadataFilters(filters=[website_address_filter]) 
+
+    # Create a query engine with the filters
+    query_engine = index.as_query_engine(text_qa_template=qa_template, filters=metadata_filters)
+
+    # Execute the query
     response = query_engine.query(query)
 
+    # Print the response 
     print(response)
     return f"Response: {response}"
+
 ```
 3. Replace the contents of `requirements.txt` with the following:
 
 ```
 functions-framework==3.*
-google-cloud-storage==2.12.0
+llama-cpp-python==0.2.11
 llama_index==0.8.46
+weaviate-client==3.24.2
+transformers==4.34.1
 ```
-4. Set "Entry point" to the name of your function `query_vector_store`.
+4. Set "Entry point" to the name of your function. In the example function above, the function is called `query_llamaindex`.
 5. Click "DEPLOY". Wait for the deployment to complete. Google Cloud will provide you with a URL endpoint for HTTP-triggered functions.
 ![gc-function-build](../img/gc-function-build.png)
 
 ## Step 4: Test Your Function
 
-Use the provided URL endpoint to test your function: https://us-central1-rag-detective.cloudfunctions.net/rag-detective.
+Use the provided URL endpoint to test your function: https://us-east1-rag-detective.cloudfunctions.net/querying_with_llamaindex.
 
-When you test the function for the first time you'll get the following error:
+When you test the function for the first time you'll get the an error that the client does not have permission to access the URL. 
 
+The following steps explain how to grant permission to a URL using an example function called `rag-detetctive`. We applied the same steps to enable permissions to our own cloud functions.
+
+Here is the error message you will see before enabling permssions:
 ![gc-function-error](../img/gc-function-error.png)
 
 Go back to the Google Cloud Function console and select the tab "Permissions". The warning states that you must assign the Invoker role (roles/run.invoker) through Cloud Run for 2nd gen functions.
 
 ![gc-function-permissions1](../img/gc-function-permissions1.png)
 
-Go to the Cloud Run console, and select the checkbox next to the function `rag-detective`. A window will appear to the right of the screen that will allow you to add permissions.
+Go to the Cloud Run console, and select the checkbox next to your function. A window will appear to the right of the screen that will allow you to add permissions.
 
 ![gc-function-permissions2](../img/gc-function-permissions2.png)
 
@@ -135,13 +182,12 @@ Now when you view the function again under Google Cloud Run, it says "Allow Unau
 Now when you test the url endpoint again, you get the following output:
 ![gc-function-response](../img/gc-function-response.png)
 
-You can test out additional queries on the same scraped data file by adding `?query=When was Verily founded?` to the end of the url endpoint.
+We can do the same with our function `querying_with_llamaindex`.
 
-example: `https://us-central1-rag-detective.cloudfunctions.net/rag-detective?query=When%20was%20Verily%20founded?`
+Here is the result:
+https://us-east1-rag-detective.cloudfunctions.net/querying_with_llamaindex
 
-You can also test out query on other scraped data file in the GCS bucket by adding `?object_name=data/assemblyai.com_2023-10-06T18-15-31.csv&query=What is Assembly AI?` to the end of the url endpoint.
-
-example: `https://us-central1-rag-detective.cloudfunctions.net/rag-detective?object_name=data/assemblyai.com_2023-10-06T18-15-31.csv&query=What%20is%20Assembly%20AI?`
+![gc-function-response](../img/gc-function-response1.jpg)
 
 ## Step 5: Monitor and Troubleshoot Function
 
@@ -150,3 +196,48 @@ You can monitor your function's performance and view logs in the Google Cloud Co
 Don't forget to delete your Cloud Function if you no longer need it to avoid incurring additional charges.
 
 For more advanced features and customization, refer to the [Google Cloud Functions documentation](https://cloud.google.com/functions/docs).
+
+## Additional notes: triggered indexing
+
+Add trigger to your function on creation:
+
+- Event: use `google.cloud.storage.object.v1.finalized`
+- Bucket: select GCS bucket 
+- Service Account: use `Compute Engine Default Service Account`
+
+![gc-trigger](../img/gc-trigger.jpg)
+
+Be sure that your project service account has "Pub/Sub Publisher" role under the "IAM & Admin" console.
+
+See here for more information on Cloud Storage Triggers: https://cloud.google.com/functions/docs/calling/storage.
+
+# RAG LLM Example
+
+The limitations of LLMs include their potential for generating incorrect or biased information and their inability to access real-time or specific external data; RAG improves queries by combining LLMs with the capacity to retrieve and incorporate external, contextually relevant information, addressing these limitations and enhancing the accuracy and relevance of responses.
+
+For example, ChatGPT (based on the GPT-3.5 architecture developed by OpenAI) can only provide information up to its last training data and it cannot access or provide knowledge of events or developments that occurred after that date.
+
+If we ask ChatGPT a question about a company that was not included in its training data we will get a response like this:
+
+![gc-function-response](../img/example-chatgpt.jpg)
+
+Querying information on a company that GTP-3.5 has no training data on highlights a scenario where RAG proves valuable.
+
+We can pass in the vector embeddings for the companys website and the same query to the url endpoint of our cloud function and it will now return a response to our query based on the given context.
+
+https://us-east1-rag-detective.cloudfunctions.net/querying_with_llamaindex?website=kojintx.com&query=What%20does%20Kojin%20Therapeutics%20study?
+
+![gc-function-response](../img/example-function1.jpg)
+
+Additionally, when using a different company's website (ai21.com) and the same query, we receive a response indicating that the information is outside of the given context.
+https://us-east1-rag-detective.cloudfunctions.net/querying_with_llamaindex?website=ai21.com&query=What%20does%20Kojin%20Therapeutics%20study?
+
+![gc-function-response](../img/example-function2.jpg)
+
+When using RAG, the LLM must rely solely on the provided context, refraining from adding its training data or generating false answers. To test this, we can pose a widely recognized question like "Who is Kim Kardashian?" and confirm that the model responds that the information is outside of the provided context.
+
+https://us-central1-rag-detective.cloudfunctions.net/rag-detective?query=Who%20is%20Kim%20Kardashian?
+
+![gc-function-response](../img/example-function3.jpg)
+
+The above example shows that RAG proves particularly valuable when handling information outside of a LLMs training and for domain-specific inquiries, as it can tap into a broader knowledge base/domain-specific data sources, ensuring more accurate and pertinent responses.

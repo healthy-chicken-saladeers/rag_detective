@@ -11,12 +11,29 @@ Project Organization
         ├── docs
         │   ├── docker-gcsfuse.md
         │   ├── experiment-bert.md
+        │   ├── gc-function-instructions.md
         │   ├── gcp-cli-instructions-macos.md
-        │   ├── gcp-scraper-commands.md
+        │   ├── gcp-docker-commands.md
         │   ├── gcp-setup-instructions.md
-        │   └── gcs-bucket-instructions.md
+        │   ├── gcs-bucket-instructions.md
+        │   ├── optimization.md
+        │   └── vertex-ai-model-training.md
         ├── img
         │   ├── <list_of_many_images_used_in_markdown>
+        ├── model_training
+        │   ├── Dockerfile
+        │   ├── Pipfile
+        │   ├── Pipfile.lock
+        │   ├── cli.sh
+        │   ├── docker-entrypoint.sh
+        │   ├── docker-shell.sh
+        │   ├── package
+        │   │   ├── setup.py
+        │   │   └── trainer
+        │   │       ├── __init__.py
+        │   │       └── task.py
+        │   ├── package-trainer.sh
+        │   └── secrets
         ├── notebooks
         │   ├── BERT_fine-tune_financials
         │   │   ├── 50Agree.ipynb
@@ -24,69 +41,88 @@ Project Organization
         │   │   ├── 75Agree.ipynb
         │   │   ├── AllAgree.ipynb
         │   │   └── finetune_bert_py_in_colab.ipynb
-        │   ├── rag_with_weaviate.ipynb
+        │   ├── BERT_fine-tune_financials_balanced
+        │   │   ├── 75Agree_balanced_30_checkpointed.ipynb
+        │   │   ├── 75Agree_balanced_30_checkpointed_vertex.ipynb
+        │   │   ├── intial_debiasing
+        │   │   │   ├── 50Agree_balanced.ipynb
+        │   │   │   ├── 66Agree_balanced.ipynb
+        │   │   │   ├── 75Agree_balanced.ipynb
+        │   │   │   └── AllAgree_balanced.ipynb
+        │   │   └── longer_diabiasing_20_epochs
+        │   │       ├── 50Agree_balanced_20.ipynb
+        │   │       ├── 66Agree_balanced_20.ipynb
+        │   │       ├── 75Agree_balanced_20.ipynb
+        │   │       └── AllAgree_balanced_20.ipynb
         │   ├── add_data_to_weaviate_old.ipynb
+        │   ├── distillation
+        │   │   ├── bert_lstm_distillation_66.ipynb
+        │   │   └── bert_lstm_distillation_75.ipynb
         │   ├── financial_data
         │   │   ├── Sentences_50Agree.txt
         │   │   ├── Sentences_66Agree.txt
         │   │   ├── Sentences_75Agree.txt
         │   │   └── Sentences_AllAgree.txt
+        │   ├── indexing_with_llamaindex.ipynb
+        │   ├── querying_with_llamaindex.ipynb
+        │   ├── rag_with_llamaindex.ipynb
+        │   ├── rag_with_weaviate.ipynb
         │   ├── sample_data
+        │   │   ├── ai21.com_2023-10-06T18-11-24.csv
         │   │   └── www.chooch.com_2023-10-03T15-30-00.csv
-        │   ├── scraping_notebook_milestone3.ipynb
+        │   ├── scraping_notebook_milestone4.ipynb
         │   └── sitemap.csv
         ├── reports
-        │   └── milestone2.md
+        │   ├── milestone2.md
+        │   └── milestone3.md
         └── src
-        │    ├── bert_financial
-        │    │   ├── Dockerfile
-        │    │   ├── Pipfile
-        │    │   ├── Pipfile.lock
-        │    │   ├── entrypoint.sh
-        │    │   ├── finetune_bert.py
-        │    │   └── gcsbucket
-        │    ├── llama_index
-        │    │   ├── Dockerfile
-        │    │   ├── Pipfile
-        │    │   ├── Pipfile.lock
-        │    │   ├── build_query.py
-        │    │   ├── data
-        │    │   │   └── paul_graham_essay.txt
-        │    │   ├── entrypoint.sh
-        │    │   └── gcsbucket
-        │    ├── prompts
-        │    │   └── prompts.py
-        │    ├── scraper
-        │    │   ├── Dockerfile
-        │    │   ├── Pipfile
-        │    │   ├── Pipfile.lock
-        │    │   ├── chromedriver
-        │    │   ├── log
-        │    │   ├── rag-detective-2ed9f2d52fde.json
-        │    │   ├── scraper.py
-        │    │   ├── scraperlib.py
-        │    │   └── sitemap.csv
-        │    └── vector_store
-        │        ├── schema.json
-        │        ├── schema_old.json
-        │        ├── weaviate.schema.md
-        │        └── weaviate.schema.old.md
-        ├── model_training
-            ├── docker-shell.sh
-            ├── Dockerfile
-            ├── docker-entrypoint.sh
-            ├── cli.sh
-            ├── package-trainer.sh
-            ├── Pipfile
-            ├── Pipfile.lock
-            ├── package
-            │   ├── setup.py
-            │   ├── trainer
-            │       ├──  __init__.py
-            │       ├──  task.py
-            ├── secrets
-            │   ├── .gitkeep
-
+            ├── bert_financial
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── entrypoint.sh
+            │   ├── finetune_bert.py
+            │   └── gcsbucket
+            ├── llama_index
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── build_query.py
+            │   ├── data
+            │   │   └── paul_graham_essay.txt
+            │   ├── entrypoint.sh
+            │   ├── gcf
+            |   |   ├── add_to_weaviate_schema
+            |   |   |   ├── add_to_weaviate.py
+            |   |   |   ├── requirements.txt
+            |   |   ├── create_weaviate_schema
+            |   |   |   ├── gcf_create_weaviate_schema.py
+            |   |   |   ├── requirements.txt
+            |   │   ├── gcf_index_llamaindex
+            |   |   |   ├── gcf_index_llamaindex.py
+            |   |   |   ├── requirements.txt
+            |   │   ├── gcf_query_llamaindex
+            |   |   |   ├── gcf_query_llamaindex.py
+            |   |   |   ├── requirements.txt
+            │   └── gcsbucket
+            ├── prompts
+            │   └── prompts.py
+            ├── scraper
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── chromedriver
+            │   ├── log
+            │   ├── rag-detective-2ed9f2d52fde.json
+            │   ├── scraper.py
+            │   ├── scraperlib.py
+            │   ├── scraping_notebook.ipynb
+            │   └── sitemap.csv
+            └── vector_store
+                ├── schema.json
+                ├── schema_old.json
+                ├── weaviate.schema.md
+                └── weaviate.schema.old.md
 
 --------
 # AC215 - Milestone4 - RAG Detective
@@ -203,6 +239,8 @@ For our project, we've created a custom Cloud Function designed to retrieve scra
 5. **Deployment**: After configuring, you'll deploy the function, which provides you with a unique URL endpoint for execution.
 6. **Testing**: Use the provided URL to test the function's output, ensuring it's returning the expected results.
 7. **Monitoring**: GCP offers tools to keep track of the function's performance, helping you identify any potential issues.
+
+We have written Google Cloud Functions to conduct both the indexing and querying stages of RAG, to create or recreate the Weaviate schema, and to index new data to Weaviate triggered by the addition of a scraped data file to our GCS bucket. The Python code can be found here for [indexing](./src/llama_index/gcf/index_llama_index/gcf_index_llamaindex.py), [querying](./src/llama_index/gcf/query_llama_index/gcf_query_llamaindex.py), [creating the Weaviate schema](./src/llama_index/gcf/create_weaviate_schema//gcf_create_weaviate_schema.py), and [triggered indexing](./src/llama_index/gcf/add_to_weaviate/add_to_weaviate.py).
 
 For the detailed, step-by-step guide with images, please refer to our [comprehensive documentation.](./docs/gc-function-instructions.md)
 
@@ -447,6 +485,10 @@ docker-compose up
 #### `notebooks`
 
 * This folder contains the code and output of our scraper in `scraping_notebook.ipynb`. The `sitemap.csv` is a list of sitemaps to scrape, currently set to only [apple.com](https://apple.com). It also contains the results of the scraping, `scraped_data1.csv`.
+
+#### `bert_lstm_distillation_66.ipynb`
+
+* Original balanced distillation of the `66Agree` dataset before we settled the superior `75Agree` dataset. It's kept here as a record of the research process and for reproducibility.
 
 #### `src`
 
