@@ -31,6 +31,7 @@ RUN set -ex; \
     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
     apt-get update && \
     apt-get install -y --no-install-recommends google-cloud-sdk docker-ce && \
+    apt-get install -y nano && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     pip install --no-cache-dir --upgrade pip && \
