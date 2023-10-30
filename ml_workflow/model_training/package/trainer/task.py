@@ -97,7 +97,7 @@ base_path = os.path.join("datasets", "datasets-1.0")
 WHICH_DATASET = f'{base_path}/Sentences_75Agree.txt'
 
 # Save our model checkpoints to
-bucket_name = "sentiment-trainer"
+bucket_name = "rag-detective-ml-workflow"
 SAVE_PATH = os.getcwd()
 seed_val = 42
 

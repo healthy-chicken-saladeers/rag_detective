@@ -22,7 +22,7 @@ def model_training(
     # Initialize Vertex AI SDK for Python
     aip.init(project=project, location=location, staging_bucket=staging_bucket)
 
-    container_uri = "us-docker.pkg.dev/vertex-ai/training/tf-cpu.2-12.py310:latest"
+    container_uri = "us-docker.pkg.dev/vertex-ai/training/tf-gpu.2-12.py310:latest"
     python_package_gcs_uri = f"{staging_bucket}/ragdetective-app-trainer.tar.gz"
 
     job = aip.CustomPythonPackageTrainingJob(
@@ -36,7 +36,6 @@ def model_training(
     CMDARGS = [
         f"--epochs={epochs}",
         f"--batch_size={batch_size}",
-        f"--bucket_name={bucket_name}",
         f"--wandb_key={wandb_key}"
 
     ]
@@ -55,8 +54,8 @@ def model_training(
         args=CMDARGS,
         replica_count=1,
         machine_type=TRAIN_COMPUTE,
-        # accelerator_type=TRAIN_GPU,
-        # accelerator_count=TRAIN_NGPU,
+        accelerator_type=TRAIN_GPU,
+        accelerator_count=TRAIN_NGPU,
         base_output_dir=MODEL_DIR,
         sync=True,
     )
