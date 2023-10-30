@@ -160,6 +160,51 @@ def main(args=None):
 
         job.run(service_account=GCS_SERVICE_ACCOUNT)
 
+    if args.sample1:
+        print("Sample Pipeline 1")
+
+        # Define Component
+        @dsl.component
+        def square(x: float) -> float:
+            return x**2
+
+        # Define Component
+        @dsl.component
+        def add(x: float, y: float) -> float:
+            return x + y
+
+        # Define Component
+        @dsl.component
+        def square_root(x: float) -> float:
+            return x**0.5
+
+        # Define a Pipeline
+        @dsl.pipeline
+        def sample_pipeline(a: float = 3.0, b: float = 4.0) -> float:
+            a_sq_task = square(x=a)
+            b_sq_task = square(x=b)
+            sum_task = add(x=a_sq_task.output, y=b_sq_task.output)
+            return square_root(x=sum_task.output).output
+
+        # Build yaml file for pipeline
+        compiler.Compiler().compile(
+            sample_pipeline, package_path="sample-pipeline1.yaml"
+        )
+
+        # Submit job to Vertex AI
+        aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
+
+        job_id = generate_uuid()
+        DISPLAY_NAME = "sample-pipeline-" + job_id
+        job = aip.PipelineJob(
+            display_name=DISPLAY_NAME,
+            template_path="sample-pipeline1.yaml",
+            pipeline_root=PIPELINE_ROOT,
+            enable_caching=False,
+        )
+
+        job.run(service_account=GCS_SERVICE_ACCOUNT)
+
 
 if __name__ == "__main__":
     # Generate the inputs arguments parser
@@ -185,6 +230,13 @@ if __name__ == "__main__":
         "--pipeline",
         action="store_true",
         help="Rag Detective App Pipeline",
+    )
+
+    parser.add_argument(
+        "-s1",
+        "--sample1",
+        action="store_true",
+        help="Sample Pipeline 1",
     )
 
     args = parser.parse_args()
