@@ -11,5 +11,5 @@ model_training/trainer.tar.gz
 
 secrets/*.json
 
-
+.env
 
