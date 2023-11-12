@@ -16,13 +16,12 @@ export PERSISTENT_DIR=$(pwd)/../../../persistent-folder/
 docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
 
 # Run the container
-docker run --rm --name "$IMAGE_NAME" -ti \
+docker run --rm --name $IMAGE_NAME -ti \
 -v "$BASE_DIR":/app \
 -v "$SECRETS_DIR":/secrets \
 -v "$PERSISTENT_DIR":/persistent \
 -p 9000:9000 \
 -e DEV=1 \
-$IMAGE_NAME
-
 # -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/ml-workflow.json \
 # -e GCS_BUCKET_NAME=$GCS_BUCKET_NAME \
+$IMAGE_NAME
