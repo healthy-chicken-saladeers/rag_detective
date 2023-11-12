@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>🍄 Mushroom Identifier: Model Details</title>
+    <!-- Add reference to Google fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Google Material Design Styles -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <!-- Add javascript package axios for accesing APIs -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- Add Stylesheet -->
+    <style>
+        body {
+            margin: 0;
+            background-color: #efefef;
+        }
+
+        .mdc-top-app-bar {
+            background-color: #A41034;
+        }
+
+        .content {
+
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 650px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .MuiTable-root {
+            width: 100%;
+            display: table;
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+
+        .MuiTableRow-root {
+            color: inherit;
+            display: table-row;
+            outline: 0;
+            vertical-align: middle;
+        }
+
+        .MuiTableCell-head {
+            color: rgba(0, 0, 0, 0.87);
+            font-weight: 500;
+            line-height: 1.5rem;
+        }
+
+        .MuiTableCell-root {
+            display: table-cell;
+            padding: 16px;
+            font-size: 0.875rem;
+            text-align: left;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 400;
+            line-height: 1.43;
+            border-bottom: 1px solid rgba(224, 224, 224, 1);
+            letter-spacing: 0.01071em;
+            vertical-align: inherit;
+        }
+
+        .MuiTableCell-body {
+            color: rgba(0, 0, 0, 0.87);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="mdc-top-app-bar" style="align-items: center;position: relative;">
+        <div class="mdc-top-app-bar__row" style="max-width: 700px;">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
+                    aria-label="Open navigation menu">menu</button>
+                <span class="mdc-top-app-bar__title" style="font-weight: 900; font-size: 30px;">🍄 Mushroom
+                    Identifier</span>
+            </section>
+        </div>
+    </header>
+    <!-- Header -->
+
+    <!-- Content -->
+    <div class="content">
+
+    </div>
+    <!-- Content -->
+</body>
+<!-- Add Javascript -->
+<script>
+    // API URL
+    axios.defaults.baseURL = 'http://localhost:9000/';
+</script>

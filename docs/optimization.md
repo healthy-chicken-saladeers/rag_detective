@@ -219,6 +219,87 @@ Our dataset containing a column of sentences and a corresponding column of label
 
 3. **Label Encoding**: For the labels, one common practice is to convert the target labels to one-hot encodings. For instance, if your model is performing a classification task over n classes, each label will be transformed into a vector of length n, where all elements are 0, except for the index representing the class, which will be 1.
 
+# Tokenization
+
+The tokenization process for LSTM and BERT models is fundamentally different due to the nature of the two models and the tokenization methods they employ.
+
+### LSTM Tokenization:
+
+1. **Vocabulary Creation**: The LSTM model uses a `Tokenizer` from Keras, which creates a vocabulary index based on word frequency. Every word gets a unique integer value, and the most frequent word gets the lowest integer, which is 1.
+
+2. **Text to Sequences**: The `texts_to_sequences` method is used to transform each text in the dataset into a sequence of integers. It converts the text into a list of word indexes, looking up each word in the previously constructed word index.
+
+3. **Padding**: The `pad_sequences` method is then used to ensure that all sequences in a list have the same length, by padding them with zeros at the end (post-padding).
+
+4. **Vocabulary Size Limit**: There is a `VOCAB_SIZE` parameter that limits the number of words to be considered in the vocabulary. This truncates the vocabulary to keep only the top `VOCAB_SIZE` words.
+
+### BERT Tokenization:
+
+1. **Pretrained Tokenizer**: BERT uses a pretrained tokenizer (`BertTokenizer`) that is designed to match the tokenization used in the BERT model during its pretraining. This tokenizer splits words into tokens that BERT has been trained on.
+
+2. **WordPiece Tokenization**: BERT utilizes the WordPiece tokenization method. This method breaks words down into sub-word units, which helps the model to deal with out-of-vocabulary words more effectively.
+
+3. **Special Tokens**: The BERT tokenizer also adds special tokens, like `[CLS]` at the beginning of each sequence and `[SEP]` at the end of each sequence, which are required by BERT for classification tasks and differentiating sentence pairs.
+
+4. **Fixed Vocabulary**: BERT has a fixed vocabulary size (e.g., 30,522 words for `bert-base-uncased`), and every word or sub-word is represented by a unique ID within this fixed vocabulary.
+
+5. **Padding and Attention Mask**: In addition to padding sequences, BERT requires an attention mask to let the model know which tokens are padding and which are not, as BERT processes fixed-length sequences.
+
+The LSTM tokenizer is more straightforward, creating a simple index and transforming texts into sequences of integers. In contrast, the BERT tokenizer is tailored to the needs of the BERT model, using sub-word tokenization and additional metadata like special tokens and attention masks.
+
+# Out-of-vocabulary (OOV) Words for the LSTM
+
+The LSTM tokenizer provided by Keras' `Tokenizer` class does not inherently handle out-of-vocabulary (OOV) words in the same way that BERT's WordPiece tokenizer does.
+
+1. **Limited Vocabulary**: When the `Tokenizer` is instantiated with a `num_words` argument (we use the `VOCAB_SIZE` constant), it only keeps that many most frequent words in the vocabulary. All other words are considered out-of-vocabulary.
+
+2. **Ignoring OOV Words**: During the `texts_to_sequences` call, words that were not seen during the `fit_on_texts` call or that are not in the top `VOCAB_SIZE` words are simply ignored (not included in the sequences).
+
+3. **OOV Token**: To handle OOV words explicitly, set the `oov_token` parameter when creating the `Tokenizer` instance. This will assign a specific index to OOV words. All OOV words will be replaced with this token in the sequences.
+
+In the basic configuration, if a word is not in the top `VOCAB_SIZE` most frequent words that the `Tokenizer` was trained on, it will be skipped in the sequence. To handle OOV words by including them as a special token in the sequences, add the `oov_token` parameter to the `Tokenizer`:
+
+```python
+lstm_tokenizer = Tokenizer(num_words=VOCAB_SIZE, oov_token='<OOV>')
+```
+
+With this enabled, during text conversion to sequences, any word that is not in the `Tokenizer`'s vocabulary will be represented by `<OOV>`. This is can make the model robust against words it hasn't seen before.
+
+The decision to handle out-of-vocabulary (OOV) tokens explicitly or to ignore them depends on the specific use case, the characteristics of the dataset, and the goals of the model. 
+
+### Decision Factors:
+
+- **Task Relevance**: If OOV words are likely to carry important meaning for the prediction task, then we should handle them.
+- **Frequency of OOV Words**: If the training data is large and diverse enough that OOV words are rare, the impact of ignoring them might be negligible.
+- **Dataset Consistency**: If the dataset used for training is representative of the data encountered in production, ignoring OOV words might be acceptable.
+- **Model Capacity**: If the model is smaller with limited capacity, handling OOV tokens might be a way to prevent it from being overwhelmed by the variety of words it needs to learn.
+
+In practice, it's common to handle OOV tokens, especially in tasks like sentiment analysis, where the sentiment might be significantly altered by a single word. Using an OOV token allows the model to potentially learn the impact of unknown words in context, even if it doesn't know the word itself. In contrast, for large-scale models trained on extensive corpora, the OOV rate might be low enough that the trade-off of ignoring these words could be acceptable.
+
+The best approach is empirical: we try both methods and then evaluate the model's performance on a validation set. We found that handling OOV was better for our smaller dataset with more financial terms that could be OOV than regular English text.  However, this method doesn't provide the granularity of handling that sub-word tokenization in models like BERT offers.
+
+# Out-of-vocabulary (OOV) Words for BERT
+
+BERT's WordPiece tokenization is designed to effectively handle out-of-vocabulary (OOV) words through the use of subword tokenization.
+
+1. **Splitting into Subwords**: WordPiece breaks down words into known subwords or characters. A word like "embeddings" might be split into "embed" and "##dings" if "embed" is a known token but "embeddings" is not in the vocabulary.
+
+2. **Using Subwords for Rare Words**: For words that are not in the vocabulary, WordPiece tries to find the longest subword that is present in the vocabulary and then continues with the rest of the word, breaking it down further. This means that almost any word can be represented as a sequence of subword tokens.
+
+3. **Handling the Remaining Characters**: If a subword or character sequence is not found in the vocabulary, it will be broken down to individual characters. This ensures that WordPiece can tokenize any word, even if it has never been seen before, by falling back to character-level tokenization.
+
+4. **Start of Word Marker**: Subwords that appear in the middle of a word are typically preceded by '##' to indicate that they are not standalone words but are part of a larger word.
+
+As an example, the phrase "I just bought a Technotronix smartphone" might be tokenized like this:
+
+["I", "just", "bought", "a", "Tech", "##not", "##ron", "##ix", "smartphone"]
+
+To tokenize the word "Technotroix", it could be broken down into ["Tech", "##not", "##ron", "##ix"].
+
+The tokenizer would start by trying to find the longest substring starting from the beginning of the word that exists in its vocabulary. "Tech" might be a recognizable token associated with technology-related terms. Since "notronix" is not in the vocabulary, the tokenizer would then look for the next largest substring it recognizes, which might be "not", and so on until the entire word is tokenized into recognizable pieces.
+
+This subword tokenization strategy enables the BERT model to understand and process words that weren't in its training data, which greatly enhances its ability to understand and generate language, even when faced with new or rare words.
+
 ## Training Process
 
 We now prepare the LSTM model for training, train it, and then evaluate it.
