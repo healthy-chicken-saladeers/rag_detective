@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 # import asyncio
 # from api.tracker import TrackerService
@@ -7,6 +7,31 @@ from starlette.middleware.cors import CORSMiddleware
 # from fastapi import File
 # from tempfile import TemporaryDirectory
 # from api import model
+from pydantic import BaseModel
+import os
+
+# Set the OpenAI key as an Environment Variable (for when it's run on GCS)
+os.environ["OPENAI_API_KEY"] = "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"
+
+# Current Weaviate IP
+WEAVIATE_IP_ADDRESS = "34.42.138.162"
+
+import weaviate
+from weaviate import Client
+from llama_index import VectorStoreIndex
+from llama_index.storage import StorageContext
+from llama_index.vector_stores import WeaviateVectorStore
+from llama_index.vector_stores.types import ExactMatchFilter, MetadataFilters
+from llama_index.prompts import PromptTemplate
+
+template = ("We have provided context information below. If the answer to a query is not contained in this context, "
+            "please only reply that it is not in the context."
+            "\n---------------------\n"
+            "{context_str}"
+            "\n---------------------\n"
+            "Given this information, please answer the question: {query_str}\n"
+)
+qa_template = PromptTemplate(template)
 
 # # Initialize Tracker Service
 # tracker_service = TrackerService()
@@ -35,6 +60,44 @@ app.add_middleware(
 @app.get("/")
 async def get_index():
     return {"message": "Welcome to the RAG Detective App!"}
+
+class QueryParams(BaseModel):
+    website: str = "ai21.com"
+    query: str = "How was AI21 Studio a game changer?"
+
+@app.get("/query_llamaindex")
+async def query_llamaindex(params: QueryParams):
+    website = params.website
+    query = params.query
+
+    # client setup
+    client = weaviate.Client(url=f"http://{WEAVIATE_IP_ADDRESS}:8080")
+
+    # construct vector store
+    vector_store = WeaviateVectorStore(weaviate_client=client, index_name="Pages", text_key="text")
+
+    # setting up the indexing strategy
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+
+    # setup an index for the Vector Store
+    index = VectorStoreIndex.from_vector_store(vector_store, storage_context=storage_context)
+
+    # Create exact match filters for websiteAddress
+    # value = website
+    website_address_filter = ExactMatchFilter(key="websiteAddress", value=website)
+
+    # Create a metadata filters instance with the above filters
+    metadata_filters = MetadataFilters(filters=[website_address_filter])
+
+    # Create a query engine with the filters
+    query_engine = index.as_query_engine(text_qa_template=qa_template, filters=metadata_filters)
+
+    # Execute the query
+    response = query_engine.query(query)
+
+    # Print the response
+    print(response)
+    return {"response": response}
 
 
 # @app.get("/experiments")

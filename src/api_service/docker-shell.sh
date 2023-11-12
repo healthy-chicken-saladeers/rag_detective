@@ -8,11 +8,7 @@ export IMAGE_NAME="rag-detective-api-service"
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../../../secrets/
 export PERSISTENT_DIR=$(pwd)/../../../persistent-folder/
-<<<<<<< HEAD
 export GCS_BUCKET_NAME="ac215_scraper_bucket"
-=======
-# export GCS_BUCKET_NAME="mushroom-app-models"
->>>>>>> 3b132bfe43a2715fef5c920d56008a73d4dffdb0
 
 # Build the image based on the Dockerfile
 docker build -t $IMAGE_NAME -f Dockerfile .
@@ -26,12 +22,5 @@ docker run --rm --name "$IMAGE_NAME" -ti \
 -v "$PERSISTENT_DIR":/persistent \
 -p 9000:9000 \
 -e DEV=1 \
-<<<<<<< HEAD
 -e GCS_BUCKET_NAME=$GCS_BUCKET_NAME \
 $IMAGE_NAME
-=======
-$IMAGE_NAME
-
-# -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/ml-workflow.json \
-# -e GCS_BUCKET_NAME=$GCS_BUCKET_NAME \
->>>>>>> 3b132bfe43a2715fef5c920d56008a73d4dffdb0
