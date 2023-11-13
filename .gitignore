@@ -13,3 +13,4 @@ secrets/*.json
 
 .env
 
+.DS_Store

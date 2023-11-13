@@ -2,13 +2,13 @@
 <html>
 
 <head>
-    <title>🍄 Mushroom Identifier: Experiments</title>
+    <title>🔍 Rag Detective</title>
     <!-- Add reference to Google fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <!-- Google Material Design Styles -->
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
-    <!-- Add javascript package axios for accesing APIs -->
+    <!-- Add javascript package axios for accessing APIs -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <!-- Add Stylesheet -->
@@ -16,6 +16,7 @@
         body {
             margin: 0;
             background-color: #efefef;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
         }
 
         .mdc-top-app-bar {
@@ -23,54 +24,53 @@
         }
 
         .content {
-
             display: flex;
             flex-direction: column;
             width: 100%;
             align-items: center;
         }
 
-        .container {
-            max-width: 650px;
-            width: 100%;
-            box-sizing: border-box;
+        #textForm {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .MuiTable-root {
-            width: 100%;
-            display: table;
-            border-spacing: 0;
-            border-collapse: collapse;
+        #websiteInput,
+        #promptInput {
+            width: 80%;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 16px;
+            resize: none;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif; /* Added font-family */
         }
 
-        .MuiTableRow-root {
-            color: inherit;
-            display: table-row;
-            outline: 0;
-            vertical-align: middle;
+        #promptInput {
+            height: 150px;
         }
 
-        .MuiTableCell-head {
-            color: rgba(0, 0, 0, 0.87);
-            font-weight: 500;
-            line-height: 1.5rem;
+        #searchButton {
+            background-color: #A41034;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
-        .MuiTableCell-root {
-            display: table-cell;
-            padding: 16px;
-            font-size: 0.875rem;
-            text-align: left;
-            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-            font-weight: 400;
-            line-height: 1.43;
-            border-bottom: 1px solid rgba(224, 224, 224, 1);
-            letter-spacing: 0.01071em;
-            vertical-align: inherit;
-        }
-
-        .MuiTableCell-body {
-            color: rgba(0, 0, 0, 0.87);
+        #output {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
         }
     </style>
 </head>
@@ -82,8 +82,7 @@
             <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
                 <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
                     aria-label="Open navigation menu">menu</button>
-                <span class="mdc-top-app-bar__title" style="font-weight: 900; font-size: 30px;">🍄 Mushroom
-                    Identifier</span>
+                <span class="mdc-top-app-bar__title" style="font-weight: 900; font-size: 30px;">🔍 Rag Detective</span>
             </section>
         </div>
     </header>
@@ -91,73 +90,26 @@
 
     <!-- Content -->
     <div class="content">
-        <table class="MuiTable-root">
-            <thead class="MuiTableHead-root">
-                <tr class="MuiTableRow-root MuiTableRow-head">
-                    <th class="MuiTableCell-root MuiTableCell-head" scope="col"></th>
-                    <th class="MuiTableCell-root MuiTableCell-head" scope="col">Model</th>
-                    <th class="MuiTableCell-root MuiTableCell-head" scope="col">Trainable Parameters</th>
-                    <th class="MuiTableCell-root MuiTableCell-head" scope="col">Training Time (mins)</th>
-                    <th class="MuiTableCell-root MuiTableCell-head" scope="col">Loss</th>
-                    <th class="MuiTableCell-root MuiTableCell-head" scope="col">Accuracy</th>
-                    <th class="MuiTableCell-root MuiTableCell-head" scope="col">Model Size (Mb)</th>
-                    <th class="MuiTableCell-root MuiTableCell-head" scope="col">Learning Rate</th>
-                    <th class="MuiTableCell-root MuiTableCell-head" scope="col">Batch Size</th>
-                    <th class="MuiTableCell-root MuiTableCell-head" scope="col">Epochs</th>
-                    <th class="MuiTableCell-root MuiTableCell-head" scope="col">Optimizer</th>
-                </tr>
-            </thead>
-            <tbody class="MuiTableBody-root" id="table_rows">
+        <!-- Text Input Form -->
+        <div id="textForm">
+            <label for="websiteInput">Enter website:</label>
+            <input type="text" id="websiteInput" placeholder="Type website here...">
+            <label for="promptInput">Enter prompt:</label>
+            <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
+            <button id="searchButton" onclick="processText()">Search</button>
+        </div>
 
-            </tbody>
-        </table>
+        <!-- Output Section -->
+        <div id="output"></div>
     </div>
     <!-- Content -->
+
+    <!-- Add Javascript -->
+    <script>
+        // API URL
+        axios.defaults.baseURL = 'http://localhost:9000/';
+    </script>
 </body>
-<!-- Add Javascript -->
-<script>
-    // API URL
-    axios.defaults.baseURL = 'http://localhost:9000/';
-
-    // Our experiments list
-    var experiments = [];
-
-    // Call the API
-    axios.get('/experiments')
-        .then((response) => {
-            console.log(response.data);
-            // Save the response to a list
-            experiments = response.data;
-
-            // Build the table
-            buildExperimentsTable(experiments)
-        });
-
-    // Add a function to build the experiments table
-    function buildExperimentsTable(experiments) {
-        // Get a reference to the UI element table_rows
-        var table_rows = document.getElementById("table_rows");
-
-        // build rows
-        let rows = "";
-        experiments.forEach(function (item, index) {
-            rows += "<tr class='MuiTableRow-root'>";
-            rows += "<td class='MuiTableCell-root MuiTableCell-body'>" + item["id"] + "</td>";
-            rows += "<td class='MuiTableCell-root MuiTableCell-body'>" + item["model_name"] + "</td>";
-            rows += "<td class='MuiTableCell-root MuiTableCell-body'>" + item["trainable_parameters"] + "</td>";
-            rows += "<td class='MuiTableCell-root MuiTableCell-body'>" + Math.round(item["execution_time"], 2) + "</td>";
-            rows += "<td class='MuiTableCell-root MuiTableCell-body'>" + Math.round(item["loss"], 3) + "</td>";
-            rows += "<td class='MuiTableCell-root MuiTableCell-body'>" + Math.round(item["accuracy"] * 100.0, 2) + "</td>";
-            rows += "<td class='MuiTableCell-root MuiTableCell-body'>" + Math.round(item["model_size"] / 1000000.00, 0) + "</td>";
-            rows += "<td class='MuiTableCell-root MuiTableCell-body'>" + item["learning_rate"] + "</td>";
-            rows += "<td class='MuiTableCell-root MuiTableCell-body'>" + item["batch_size"] + "</td>";
-            rows += "<td class='MuiTableCell-root MuiTableCell-body'>" + item["epochs"] + "</td>";
-            rows += "<td class='MuiTableCell-root MuiTableCell-body'>" + item["optimizer"] + "</td>";
-            rows += "</tr>"
-        });
-
-        table_rows.innerHTML = rows;
-    }
-</script>
 
 </html>
+
