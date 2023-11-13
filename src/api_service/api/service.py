@@ -22,7 +22,7 @@ from llama_index.storage.storage_context import StorageContext
 from llama_index.vector_stores.types import ExactMatchFilter, MetadataFilters
 
 # Set the OpenAI key as an Environment Variable (for when it's run on GCS)
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "sk-OPENAI_API_KEY"
 
 # Current Weaviate IP
 WEAVIATE_IP_ADDRESS = "34.42.138.162"
