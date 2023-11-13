@@ -12,8 +12,10 @@ pandas = "*"
 google-cloud-storage = "*"
 tensorflow-hub = "*"
 python-multipart = "*"
-tensorflow-aarch64 = "==2.13.1"
 google-cloud-aiplatform = "*"
+weaviate-client = "*"
+openai = "*"
+llama-index = "*"
 
 [requires]
 python_version = "3.9"
