@@ -7,6 +7,7 @@ from llama_index.storage.storage_context import StorageContext
 from llama_index.vector_stores.types import ExactMatchFilter, MetadataFilters
 from llama_index.prompts import PromptTemplate
 
+
 def query_weaviate(WEAVIATE_IP_ADDRESS, website, query):
     # client setup
     client = weaviate.Client(url="http://" + WEAVIATE_IP_ADDRESS + ":8080")
@@ -39,10 +40,10 @@ def query_weaviate(WEAVIATE_IP_ADDRESS, website, query):
 
     # Create a query engine with the filters
     query_engine = index.as_query_engine(text_qa_template=qa_template,
-                                         streaming=True,
+                                        #  streaming=True, # turn off for now
                                          filters=metadata_filters)
 
     # Execute the query
     response = query_engine.query(query)
 
-    return(response)
+    return response
