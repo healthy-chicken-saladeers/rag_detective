@@ -43,7 +43,7 @@
 
         #websiteInput,
         #promptInput {
-            width: 80%;
+            width: 100%;
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -54,7 +54,7 @@
         }
 
         #promptInput {
-            height: 150px;
+            height: 200px;
         }
 
         #searchButton {
@@ -71,6 +71,8 @@
             margin-top: 20px;
             border: 1px solid #ccc;
             padding: 10px;
+            width: 50%;
+            height: 300px;
         }
     </style>
 </head>
@@ -96,11 +98,11 @@
             <input type="text" id="websiteInput" placeholder="Type website here...">
             <label for="promptInput">Enter prompt:</label>
             <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
-            <button id="searchButton" onclick="processText()">Search</button>
+            <button id="searchButton" onclick="generate_response()">Search</button>
         </div>
 
         <!-- Output Section -->
-        <div id="output"></div>
+        <textarea id="output" readonly></textarea>
     </div>
     <!-- Content -->
 
@@ -108,7 +110,50 @@
     <script>
         // API URL
         axios.defaults.baseURL = 'http://localhost:9000/';
+
+        // // Function to handle streaming response
+        // function handleStreamingResponse(event) {
+        //     // Append the received data to the output div
+        //     document.getElementById('output').innerText += event.data + '\n';
+        // }
+
+        // Function to generate streaming response
+        function generate_response() {
+            // Clear previous output
+            document.getElementById('output').innerText = '';
+
+            // Get the values from the input fields
+            // var output = document.getElementById("output");
+            var website = document.getElementById('websiteInput').value;
+            var query = document.getElementById('promptInput').value;
+
+            // Make an HTTP request to your predict API
+            axios.post('/rag_query', {
+                website: website,
+                query: query
+            })
+            .then(function (response) {
+                // Handle the response from the API
+                // document.getElementById('output').innerText = response.data.result;
+                var response = response.data;
+                console.log(response);
+
+                // Display the results
+                // document.getElementById('output').value = JSON.stringify(result, null, 2); 
+                document.getElementById('output').innerText = response;
+            })
+            .catch(function (error) {
+                console.error('Error:', error.response.data);  // Log the error response
+                document.getElementById('output').value = 'Error: ' + JSON.stringify(error.response.data, null, 2);
+            });
+            // .catch(function (error) {
+            //     // Handle errors
+            //     console.error('Error:', error);
+            // });
+        }
+
     </script>
+
 </body>
 
 </html>

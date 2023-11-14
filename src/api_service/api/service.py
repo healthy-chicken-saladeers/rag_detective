@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
 from starlette.middleware.cors import CORSMiddleware
 import pandas as pd
@@ -46,7 +46,12 @@ async def astreamer(generator):
 
 
 @app.post("/rag_query")
-async def rag_query(website, query):
+# async def rag_query(website, query):
+async def rag_query(request: Request):
+    data = await request.json()
+    website = data.get('website')
+    query = data.get('query')
+
     # Query Weaviate
     response = helper.query_weaviate(WEAVIATE_IP_ADDRESS, website, query)
 
