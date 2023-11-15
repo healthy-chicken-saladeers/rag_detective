@@ -1,0 +1,63 @@
+/* styles.css */
+
+body {
+    margin: 0;
+    background-color: #efefef;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
+.mdc-top-app-bar {
+    background-color: #A41034;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+#textForm {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#websiteInput,
+#promptInput {
+    width: 100%;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 16px;
+    resize: none;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif; /* Added font-family */
+}
+
+#promptInput {
+    height: 200px;
+}
+
+#searchButton {
+    background-color: #A41034;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#output {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 50%;
+    height: 300px;
+}

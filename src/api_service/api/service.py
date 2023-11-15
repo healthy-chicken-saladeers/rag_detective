@@ -5,13 +5,14 @@ import pandas as pd
 import os
 from fastapi import File
 from api import helper
+import asyncio 
 
 # # Suppress Pydantic warnings since it's based in llamaindex
 import warnings
 warnings.simplefilter(action='ignore', category=Warning)
 
 # Set the OpenAI key as an Environment Variable (for when it's run on GCS)
-os.environ["OPENAI_API_KEY"] = "sk-OPENAI_API_KEY"
+os.environ["OPENAI_API_KEY"] = "sk-OpenAIKEY"
 
 # Current Weaviate IP
 WEAVIATE_IP_ADDRESS = "34.42.138.162"
@@ -35,31 +36,34 @@ async def get_index():
     return {"message": "Welcome to the RAG Detective App!"}
 
 
-# https://stackoverflow.com/questions/76288582/is-there-a-way-to-stream-output-in-fastapi-from-the-response-i-get-from-llama-in
-async def astreamer(generator):
+async def process_streaming_response(streaming_response):
+    financial = False
     try:
-        for i in generator:
-            yield (i)
-            await asyncio.sleep(.1)
-    except asyncio.CancelledError as e:
-        print('cancelled')
+        for i, text in enumerate(streaming_response.response_gen):
+            if i == 0:  # Skip the initial null character
+                continue
+            elif i == 1:  # Check for the financial flag
+                financial = text == "1"
+            elif i == 2:  # Handle the first word (strip leading space)
+                yield(text.lstrip())
+            else:         # For subsequent words, print as is
+                yield(text)
 
+            await asyncio.sleep(0.1)  # Add a slight delay to enable streaming behavior
+    except asyncio.CancelledError as e:
+        print('Streaming cancelled', flush=True)
+
+    if financial:
+        print(" Financial flag set!", flush=True)
 
 @app.post("/rag_query")
-# async def rag_query(website, query):
 async def rag_query(request: Request):
     data = await request.json()
     website = data.get('website')
     query = data.get('query')
 
     # Query Weaviate
-    response = helper.query_weaviate(WEAVIATE_IP_ADDRESS, website, query)
+    streaming_response = helper.query_weaviate(WEAVIATE_IP_ADDRESS, website, query)
 
-    # Return the response (convert to string)
-    response = str(response) 
-    # print(response)
-
-    # streaming_response = StreamingResponse(astreamer(response.response_gen), media_type="text/event-stream")
-    # print(streaming_response)
-
-    return response
+    # Generate the streaming response and return it
+    return StreamingResponse(process_streaming_response(streaming_response), media_type="text/plain")

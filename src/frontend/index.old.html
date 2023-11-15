@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>🔍 Rag Detective</title>
+    <!-- Add reference to Google fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Google Material Design Styles -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <!-- Add javascript package axios for accessing APIs -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- Add Stylesheet -->
+    <style>
+        body {
+            margin: 0;
+            background-color: #efefef;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+        }
+
+        .mdc-top-app-bar {
+            background-color: #A41034;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            align-items: center;
+        }
+
+        #textForm {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #websiteInput,
+        #promptInput {
+            width: 100%;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 16px;
+            resize: none;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif; /* Added font-family */
+        }
+
+        #promptInput {
+            height: 200px;
+        }
+
+        #searchButton {
+            background-color: #A41034;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #output {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 50%;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="mdc-top-app-bar" style="align-items: center;position: relative;">
+        <div class="mdc-top-app-bar__row" style="max-width: 700px;">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
+                    aria-label="Open navigation menu">menu</button>
+                <span class="mdc-top-app-bar__title" style="font-weight: 900; font-size: 30px;">🔍 Rag Detective</span>
+            </section>
+        </div>
+    </header>
+    <!-- Header -->
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Text Input Form -->
+        <div id="textForm">
+            <label for="websiteInput">Enter website:</label>
+            <input type="text" id="websiteInput" placeholder="Type website here...">
+            <label for="promptInput">Enter prompt:</label>
+            <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
+            <button id="searchButton" onclick="generate_response()">Search</button>
+        </div>
+
+        <!-- Output Section -->
+        <textarea id="output" readonly></textarea>
+    </div>
+    <!-- Content -->
+
+    <!-- Add Javascript -->
+    <script>
+        // API URL
+        axios.defaults.baseURL = 'http://localhost:9000/';
+
+        // // Function to handle streaming response
+        // function handleStreamingResponse(event) {
+        //     // Append the received data to the output div
+        //     document.getElementById('output').innerText += event.data + '\n';
+        // }
+
+        // Function to generate streaming response
+        function generate_response() {
+            // Clear previous output
+            document.getElementById('output').innerText = '';
+
+            // Get the values from the input fields
+            // var output = document.getElementById("output");
+            var website = document.getElementById('websiteInput').value;
+            var query = document.getElementById('promptInput').value;
+
+            // Make an HTTP request to your predict API
+            axios.post('/rag_query', {
+                website: website,
+                query: query
+            })
+            .then(function (response) {
+                // Handle the response from the API
+                // document.getElementById('output').innerText = response.data.result;
+                var response = response.data;
+                console.log(response);
+
+                // Display the results
+                // document.getElementById('output').value = JSON.stringify(result, null, 2); 
+                document.getElementById('output').innerText = response;
+            })
+            .catch(function (error) {
+                console.error('Error:', error.response.data);  // Log the error response
+                document.getElementById('output').value = 'Error: ' + JSON.stringify(error.response.data, null, 2);
+            });
+            // .catch(function (error) {
+            //     // Handle errors
+            //     console.error('Error:', error);
+            // });
+        }
+
+    </script>
+
+</body>
+
+</html>
+
