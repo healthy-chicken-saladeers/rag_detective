@@ -7,6 +7,7 @@ from llama_index.storage.storage_context import StorageContext
 from llama_index.vector_stores.types import ExactMatchFilter, MetadataFilters
 from llama_index.prompts import PromptTemplate
 
+import time
 
 def query_weaviate(WEAVIATE_IP_ADDRESS, website, query):
     # client setup
@@ -51,7 +52,17 @@ def query_weaviate(WEAVIATE_IP_ADDRESS, website, query):
                                          streaming=True,
                                          filters=metadata_filters)
 
+
+    # Start timer
+    start_time = time.time()
     # Execute the query
     streaming_response = query_engine.query(query)
+    # End timer
+    end_time = time.time()
+
+    # Calculate the duration
+    duration = end_time - start_time
+
+    print(f"Query execution time: {duration} seconds")
 
     return streaming_response
