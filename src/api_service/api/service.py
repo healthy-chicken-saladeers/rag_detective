@@ -15,7 +15,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=Warning)
 
 # Set the OpenAI key as an Environment Variable (for when it's run on GCS)
-os.environ["OPENAI_API_KEY"] = "sk-OPENAI-KEY"
+os.environ["OPENAI_API_KEY"] = "sk-OpenAI-KEY"
 
 # Current Weaviate IP
 WEAVIATE_IP_ADDRESS = "34.42.138.162"
@@ -24,13 +24,13 @@ WEAVIATE_IP_ADDRESS = "34.42.138.162"
 app = FastAPI(title="API Server", description="API Server", version="v1")
 
 # Enable CORSMiddleware
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_credentials=False,
-#     allow_origins=["*"],
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=False,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Dummy function for testing streaming
 @app.get("/streaming")

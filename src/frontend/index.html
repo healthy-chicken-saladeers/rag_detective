@@ -65,32 +65,11 @@
         })
         .then(response => {
             const reader = response.body.getReader();
-            return new ReadableStream({
-                start(controller) {
-                    // The following function handles each data chunk
-                    function push() {
-                        // "done" is a Boolean and "value" is a "Uint8Array"
-                        reader.read().then(({ done, value }) => {
-                            // If there is no more data to read
-                            if (done) {
-                                controller.close();
-                                return;
-                            }
-                            // Get the data and encode it as a text string
-                            controller.enqueue(value);
-                            push();
-                        }).catch(err => {
-                            controller.error(err);
-                            controller.close();
-                        });
-                    }
-                    push();
-                }
+            reader.read().then(function processText({ done, value }) {
+                if (done) return;
+                outputElement.value += new TextDecoder().decode(value, { stream: true });
+                reader.read().then(processText); // Read the next chunk
             });
-        })
-        .then(stream => {
-            // Response is now a stream
-            new Response(stream).text().then(text => outputElement.value = text);
         })
         .catch(err => {
             outputElement.value = `Fetch error: ${err.message}`;
