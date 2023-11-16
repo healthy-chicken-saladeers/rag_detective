@@ -1,19 +1,13 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>🔍 Rag Detective</title>
-    <!-- Add reference to Google fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <!-- Google Material Design Styles -->
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
-    <!-- Include your separated stylesheet -->
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
-
 <body>
-    <!-- Header -->
     <header class="mdc-top-app-bar">
         <div class="mdc-top-app-bar__row">
             <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
@@ -23,37 +17,107 @@
             </section>
         </div>
     </header>
-    <!-- Header -->
 
-    <!-- Content -->
     <div class="content">
-        <!-- Text Input Form -->
-        <div id="textForm">
-            <label for="websiteInput">Enter website:</label>
-            <input type="text" id="websiteInput" placeholder="Type website here...">
-            <label for="promptInput">Enter prompt:</label>
-            <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
-            <button id="searchButton" onclick="generate_response()">Search</button>
+        <label for="websiteDropdown">Select website:</label>
+        <select id="websiteDropdown" onchange="updateScrapeSession()">
+            <option value="" selected>Please select</option>
+        </select>
+
+        <label for="scrapeSessionDropdown">Scrape session:</label>
+        <select id="scrapeSessionDropdown">
+            <!-- Options will be populated based on website selection -->
+        </select>
+
+        <label for="promptInput">Enter prompt:</label>
+        <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
+        <button id="searchButton" onclick="generate_response()">Search</button>
+        
+        <!-- Output Section with Overlay -->
+        <div id="outputSection" style="position: relative;">
+            <textarea id="output" readonly></textarea>
+            <!-- Loading Overlay -->
+            <div id="loadingOverlay" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.8); justify-content: center; align-items: center;">
+                <div class="spinner"></div>
+            </div>
         </div>
 
-        <!-- Output Section -->
-        <textarea id="output" readonly></textarea>
+
     </div>
-    <!-- Content -->
 
-    <!-- Add Javascript to handle streaming -->
     <script>
-    function generate_response() {
-        const outputElement = document.getElementById('output');
-        outputElement.value = ''; // Clear previous output
+    document.addEventListener('DOMContentLoaded', function() {
+        // Populate the websites dropdown on initial load
+        fetchWebsites();
+    });
 
-        const website = document.getElementById('websiteInput').value;
+    function fetchWebsites() {
+        fetch('http://localhost:9000/websites')
+            .then(response => response.json())
+            .then(websites => {
+                const websiteDropdown = document.getElementById('websiteDropdown');
+                websites.forEach(website => {
+                    const option = document.createElement('option');
+                    option.value = website;
+                    option.textContent = website;
+                    websiteDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching websites:', error));
+    }
+
+    function updateScrapeSession() {
+        const website = document.getElementById('websiteDropdown').value;
+        if (!website) {
+            return;
+        }
+
+        fetch(`http://localhost:9000/timestamps/${website}`)
+            .then(response => response.json())
+            .then(timestamps => {
+                const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
+                scrapeSessionDropdown.innerHTML = ''; // Clear existing options
+                timestamps.forEach(timestamp => {
+                    const option = document.createElement('option');
+                    option.value = timestamp;
+                    option.textContent = timestamp;
+                    scrapeSessionDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching timestamps:', error));
+    }
+
+    // Update this to use the website, timestamp, and query fields
+    function generate_response() {
+        // Get the overlay, spinner, and output elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const outputElement = document.getElementById('output');
+
+        // Clear previous output and show the overlay with spinner
+        outputElement.value = '';
+        loadingOverlay.style.display = 'flex'; // Show overlay
+
+
+        // Retrieve values from the dropdown and the prompt input
+        const websiteDropdown = document.getElementById('websiteDropdown');
+        const website = websiteDropdown.options[websiteDropdown.selectedIndex].value;
+
+        // Added: Retrieve the timestamp from the scrapeSessionDropdown
+        const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
+        const timestamp = scrapeSessionDropdown.options[scrapeSessionDropdown.selectedIndex].value;
+
         const query = document.getElementById('promptInput').value;
         
         const postData = {
             website: website,
+            timestamp: timestamp,
             query: query
         };
+
+        if (!website || website === 'Please select') {
+            alert('Please select a website before searching.');
+            return;
+        }
 
         // Using fetch with a POST request
         fetch('http://localhost:9000/rag_query', {
@@ -66,6 +130,9 @@
         .then(response => {
             const reader = response.body.getReader();
             reader.read().then(function processText({ done, value }) {
+                // Hide the overlay with spinner when the streaming starts
+                loadingOverlay.style.display = 'none';
+
                 if (done) return;
                 outputElement.value += new TextDecoder().decode(value, { stream: true });
                 reader.read().then(processText); // Read the next chunk
@@ -73,8 +140,10 @@
         })
         .catch(err => {
             outputElement.value = `Fetch error: ${err.message}`;
+            loadingOverlay.style.display = 'none'; // Hide overlay on error
         });
     }
+
     </script>
 
 </body>

@@ -66,12 +66,54 @@ body {
     font-size: 18px;
     border-radius: 4px;
     cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+/* Adjust the styles.css file or add these styles in your HTML within <style> tags */
+#outputSection {
+    position: relative;
+    width: 100%; /* Ensure full width */
+    max-width: 600px; /* You can set a max-width if you like */
+    margin: auto; /* Center the output section if there's a max-width */
 }
 
 #output {
-    margin-top: 20px;
-    border: 1px solid #ccc;
+    width: 100%;
+    height: 200px; /* Modify this if you change the actual height of the textarea */
     padding: 10px;
-    width: 50%;
-    height: 300px;
+    margin: 0; /* Make sure the margin is 0 or adjust the overlay styles to account for it */
+    box-sizing: border-box;
+}
+
+#loadingOverlay {
+    display: none;
+    position: absolute;
+    top: 0; /* Align the top edge with the textarea's top edge */
+    left: 0; /* Align the left edge with the textarea's left edge */
+    right: 0; /* Align the right edge with the textarea's right edge */
+    height: 200px; /* Height of the textarea plus any additional padding/border/margin (200px + 10px padding top + 10px padding bottom in this case) */
+    background: rgba(255, 255, 255, 0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: #09f;
+    animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
