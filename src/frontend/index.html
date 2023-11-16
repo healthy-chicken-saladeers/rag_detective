@@ -41,8 +41,9 @@
                 <div class="spinner"></div>
             </div>
         </div>
-
-
+        <div id="urlsContainer">
+            <!-- URLs will be listed here -->
+        </div>
     </div>
 
     <script>
@@ -98,6 +99,7 @@
         // Get the overlay, spinner, and output elements
         const loadingOverlay = document.getElementById('loadingOverlay');
         const outputElement = document.getElementById('output');
+        const urlsContainer = document.getElementById('urlsContainer');
 
         // Retrieve values from the dropdown and the prompt input
         const websiteDropdown = document.getElementById('websiteDropdown');
@@ -110,6 +112,7 @@
 
         // Clear previous output and show the overlay with spinner
         outputElement.value = '';
+        urlsContainer.innerHTML = '';
         loadingOverlay.style.display = 'flex'; // Show overlay
 
         // Added: Retrieve the timestamp from the scrapeSessionDropdown
@@ -131,24 +134,64 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(postData)
-        })
-        .then(response => {
+        }).then(response => {
+            // Assuming your server is designed to send the final query_id as a response header
+            const queryId = response.headers.get('X-Query-ID');
             const reader = response.body.getReader();
-            reader.read().then(function processText({ done, value }) {
-                // Hide the overlay with spinner when the streaming starts
+            function processText({ done, value }) {
                 loadingOverlay.style.display = 'none';
-
-                if (done) return;
+                if (done) {
+                    // Here, call the function to fetch URLs with the received query_id
+                    fetchURLs(queryId);
+                    return;
+                }
                 outputElement.value += new TextDecoder().decode(value, { stream: true });
-                reader.read().then(processText); // Read the next chunk
-            });
-        })
-        .catch(err => {
+                reader.read().then(processText); // Keep reading the next chunk of data
+            }
+            reader.read().then(processText);
+        }).catch(err => {
             outputElement.value = `Fetch error: ${err.message}`;
             loadingOverlay.style.display = 'none'; // Hide overlay on error
         });
     }
 
+
+    function fetchURLs(queryId) {
+        if (queryId) {
+            // Make the GET request to the get_urls endpoint
+            fetch(`http://localhost:9000/get_urls/${queryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.urls) {
+                        displayURLs(data.urls); // Call a function to display URLs
+                    } else {
+                        throw new Error('URLs not found.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching URLs:', error);
+                    const urlsContainer = document.getElementById('urlsContainer');
+                    urlsContainer.textContent = 'Error fetching URLs.';
+                });
+        } else {
+           console.error('Query ID not found.');
+        }
+    }
+
+    function displayURLs(urls) {
+        // Assuming there's a container for URLs
+        const urlsContainer = document.getElementById('urlsContainer');
+        urlsContainer.innerHTML = 'The following pages were used to generate this answer:'; // Clear previous URLs
+
+        // Update the HTML with the new URLs
+        const ulElement = document.createElement('ul');
+        urls.forEach(function(url) {
+            const li = document.createElement('li');
+            li.textContent = url;
+            ulElement.appendChild(li);
+        });
+        urlsContainer.appendChild(ulElement);
+    }
     </script>
 
 </body>

@@ -117,3 +117,9 @@ body {
         transform: rotate(360deg);
     }
 }
+
+#urlsContainer {
+    text-align: left; 
+    margin-top: 10px; 
+}
+

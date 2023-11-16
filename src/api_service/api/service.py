@@ -1,5 +1,5 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, Request, BackgroundTasks 
+from fastapi.responses import StreamingResponse, JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 import pandas as pd
 import os
@@ -7,7 +7,12 @@ from fastapi import File
 from api import helper
 from typing import List
 import asyncio 
+from asyncio import Lock
 import weaviate
+import uuid
+
+query_url_storage = {}
+storage_lock = Lock()
 
 # Test using this line of curl:
 # curl -N -H "Content-Type: application/json" -d "{\"website\": \"ai21.com\", \"query\": \"How was AI21 Studio a game changer\"}" http://localhost:9000/rag_query
@@ -73,19 +78,39 @@ async def process_streaming_response(local_streaming_response):
         print(" Financial flag set!", flush=True)
 
 @app.post("/rag_query")
-async def rag_query(request: Request):
+async def rag_query(request: Request, background_tasks: BackgroundTasks):
     data = await request.json()
     website = data.get('website')
     timestamp = data.get('timestamp')
     query = data.get('query')
 
+    # Generate a unique ID for this specific query
+    query_id = str(uuid.uuid4())
+    print("Query ID:", query_id)
+
     # Query Weaviate
     streaming_response = helper.query_weaviate(app.state.weaviate_client, website, timestamp, query)
 
+    # Add the URL processing function as a background task
+    background_tasks.add_task(process_url_extraction, query_id, streaming_response)
+
     # Generate the streaming response and return it
-    headers = {'Cache-Control': 'no-cache'}
-    return StreamingResponse(process_streaming_response(streaming_response),
-                             media_type="text/plain", headers=headers)
+    headers = {
+        'Cache-Control': 'no-cache',
+        'Access-Control-Expose-Headers': 'X-Query-ID',  # Ensure the custom header is exposed
+        'X-Query-ID': query_id  # set the header
+    }
+    return StreamingResponse(
+        process_streaming_response(streaming_response),
+        media_type="text/plain",
+        headers=headers
+    )
+async def process_url_extraction(query_id: str, streaming_response):
+    extracted_urls = helper.extract_document_urls(streaming_response)
+    # Store the extracted URLs in a dictionary or some persistent storage,
+    # accessible by the unique query_id.
+    async with storage_lock:
+        query_url_storage[query_id] = extracted_urls
 
 # Test using: curl -X 'GET' 'http://localhost:9000/websites' -H 'accept: application/json'
 @app.get("/websites", response_model=List[str])
@@ -97,3 +122,15 @@ def read_websites():
 @app.get("/timestamps/{website_address}", response_model=List[str])
 def read_timestamps(website_address: str):
     return helper.get_all_timestamps_for_website(app.state.weaviate_client, website_address)
+
+@app.get("/get_urls/{query_id}")
+async def get_urls(query_id: str):
+    async with storage_lock:
+        # Use the query_id to retrieve the stored URLs
+        urls = query_url_storage.get(query_id)
+        if urls is None:
+            # Correctly format the response with a custom status code
+            return JSONResponse(content={"error": "URLs not available yet or invalid query ID"}, status_code=404)
+        # Once retrieved, you may want to delete the entry if it's no longer needed
+        del query_url_storage[query_id] 
+    return {"urls": urls}

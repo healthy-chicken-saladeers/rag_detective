@@ -136,3 +136,12 @@ def get_all_timestamps_for_website(client, website_address: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
         return []
+
+def extract_document_urls(streaming_response):
+    urls = []
+    for node_with_score in streaming_response.source_nodes:
+        relationships = node_with_score.node.relationships
+        for related_node_info in relationships.values():
+            if related_node_info.node_type == "4":  # Corresponds to ObjectType.DOCUMENT
+                urls.append(related_node_info.node_id)
+    return urls
