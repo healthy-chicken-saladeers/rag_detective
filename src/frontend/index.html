@@ -67,8 +67,14 @@
     }
 
     function updateScrapeSession() {
-        const website = document.getElementById('websiteDropdown').value;
-        if (!website) {
+        const websiteDropdown = document.getElementById('websiteDropdown');
+        const website = websiteDropdown.value;
+        const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
+
+        // Clear out the scrape session dropdown
+        scrapeSessionDropdown.innerHTML = '';
+
+        if (!website || website === 'Please select') {
             return;
         }
 
@@ -93,14 +99,18 @@
         const loadingOverlay = document.getElementById('loadingOverlay');
         const outputElement = document.getElementById('output');
 
-        // Clear previous output and show the overlay with spinner
-        outputElement.value = '';
-        loadingOverlay.style.display = 'flex'; // Show overlay
-
-
         // Retrieve values from the dropdown and the prompt input
         const websiteDropdown = document.getElementById('websiteDropdown');
         const website = websiteDropdown.options[websiteDropdown.selectedIndex].value;
+
+        if (!website || website === 'Please select') {
+            alert('Please select a website before searching.');
+            return;
+        }
+
+        // Clear previous output and show the overlay with spinner
+        outputElement.value = '';
+        loadingOverlay.style.display = 'flex'; // Show overlay
 
         // Added: Retrieve the timestamp from the scrapeSessionDropdown
         const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
@@ -113,11 +123,6 @@
             timestamp: timestamp,
             query: query
         };
-
-        if (!website || website === 'Please select') {
-            alert('Please select a website before searching.');
-            return;
-        }
 
         // Using fetch with a POST request
         fetch('http://localhost:9000/rag_query', {
