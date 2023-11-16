@@ -98,7 +98,7 @@ async def rag_query(request: Request, background_tasks: BackgroundTasks):
     headers = {
         'Cache-Control': 'no-cache',
         'Access-Control-Expose-Headers': 'X-Query-ID',  # Ensure the custom header is exposed
-        'X-Query-ID': query_id  # set the header
+        'X-Query-ID': query_id  # set the header to track the query_id for the reference retrieval
     }
     return StreamingResponse(
         process_streaming_response(streaming_response),
@@ -136,7 +136,7 @@ async def get_urls(query_id: str):
         if urls is None:
             # Correctly format the response with a custom status code
             return JSONResponse(content={"error": "URLs not available yet or invalid query ID"}, status_code=404)
-        # Once retrieved, you may want to delete the entry if it's no longer needed
+        # Once retrieved, delete the entry to keep things simple
         del query_url_storage[query_id]
         print(urls)
     return {"urls": urls}
