@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🔍 Rag Detective</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <header class="mdc-top-app-bar">
+        <div class="mdc-top-app-bar__row">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
+                    aria-label="Open navigation menu">menu</button>
+                <span class="mdc-top-app-bar__title">🔍 Rag Detective</span>
+            </section>
+        </div>
+    </header>
+
+    <div class="content">
+        <label for="websiteDropdown">Select website:</label>
+        <select id="websiteDropdown" onchange="updateScrapeSession()">
+            <option value="" selected>Please select</option>
+        </select>
+
+        <label for="scrapeSessionDropdown">Scrape session:</label>
+        <select id="scrapeSessionDropdown">
+            <!-- Options will be populated based on website selection -->
+        </select>
+
+        <label for="promptInput">Enter prompt:</label>
+        <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
+        <button id="searchButton" onclick="generate_response()">Search</button>
+        
+        <textarea id="output" readonly></textarea>
+        <!-- Add a div to indicate loading progress -->
+        <div id="loadingIndicator" style="display: none;">
+            Loading response...
+        </div>
+
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Populate the websites dropdown on initial load
+        fetchWebsites();
+    });
+
+    function fetchWebsites() {
+        fetch('http://localhost:9000/websites')
+            .then(response => response.json())
+            .then(websites => {
+                const websiteDropdown = document.getElementById('websiteDropdown');
+                websites.forEach(website => {
+                    const option = document.createElement('option');
+                    option.value = website;
+                    option.textContent = website;
+                    websiteDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching websites:', error));
+    }
+
+    function updateScrapeSession() {
+        const website = document.getElementById('websiteDropdown').value;
+        if (!website) {
+            return;
+        }
+
+        fetch(`http://localhost:9000/timestamps/${website}`)
+            .then(response => response.json())
+            .then(timestamps => {
+                const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
+                scrapeSessionDropdown.innerHTML = ''; // Clear existing options
+                timestamps.forEach(timestamp => {
+                    const option = document.createElement('option');
+                    option.value = timestamp;
+                    option.textContent = timestamp;
+                    scrapeSessionDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching timestamps:', error));
+    }
+
+    // Update this to use the website, timestamp, and query fields
+    function generate_response() {
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const outputElement = document.getElementById('output');
+
+        outputElement.value = ''; // Clear previous output
+        loadingIndicator.style.display = 'block'; // Show loading indicator
+
+
+        // Retrieve values from the dropdown and the prompt input
+        const websiteDropdown = document.getElementById('websiteDropdown');
+        const website = websiteDropdown.options[websiteDropdown.selectedIndex].value;
+
+        // Added: Retrieve the timestamp from the scrapeSessionDropdown
+        const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
+        const timestamp = scrapeSessionDropdown.options[scrapeSessionDropdown.selectedIndex].value;
+
+        const query = document.getElementById('promptInput').value;
+        
+        const postData = {
+            website: website,
+            timestamp: timestamp,
+            query: query
+        };
+
+        if (!website || website === 'Please select') {
+            alert('Please select a website before searching.');
+            return;
+        }
+
+        // Using fetch with a POST request
+        fetch('http://localhost:9000/rag_query', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(postData)
+        })
+        .then(response => {
+            const reader = response.body.getReader();
+            reader.read().then(function processText({ done, value }) {
+                // Hide the loading indicator when the streaming starts
+                loadingIndicator.style.display = 'none';
+
+                if (done) return;
+                outputElement.value += new TextDecoder().decode(value, { stream: true });
+                reader.read().then(processText); // Read the next chunk
+            });
+        })
+        .catch(err => {
+            outputElement.value = `Fetch error: ${err.message}`;
+            loadingIndicator.style.display = 'none'; // Hide loading indicator on error
+
+        });
+    }
+
+    </script>
+
+</body>
+</html>

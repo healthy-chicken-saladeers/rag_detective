@@ -9,7 +9,7 @@ from llama_index.prompts import PromptTemplate
 
 import time
 
-def query_weaviate(client, website, query):
+def query_weaviate(client, website, timestamp, query):
     # construct vector store
     vector_store = WeaviateVectorStore(weaviate_client=client, index_name="Pages", text_key="text")
 
@@ -22,9 +22,10 @@ def query_weaviate(client, website, query):
     # Create exact match filters for websiteAddress
     # value = website
     website_address_filter = ExactMatchFilter(key="websiteAddress", value=website)
+    timestamp_filter = ExactMatchFilter(key="timestamp", value=timestamp)
 
     # Create a metadata filters instance with the above filters
-    metadata_filters = MetadataFilters(filters=[website_address_filter]) 
+    metadata_filters = MetadataFilters(filters=[website_address_filter, timestamp_filter])
 
     # Custom prompt to exclude out of context answers
     template = ("We have provided context information below. If the answer to a query is not contained in this context, "

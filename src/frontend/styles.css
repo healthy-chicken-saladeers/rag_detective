@@ -40,15 +40,18 @@ body {
 }
 
 #websiteInput,
+#websiteDropdown,      /* Style for website dropdown */
+#scrapeSessionDropdown,/* Style for scrape session dropdown */
 #promptInput {
-    width: 100%;
+    width: 100%;            /* Set width to automatic */
+    max-width: 700px;      /* Increased max-width like the app bar row; adjust as needed */
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     padding: 10px;
     font-size: 16px;
     resize: none;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif; /* Added font-family */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
 
 #promptInput {

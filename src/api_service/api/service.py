@@ -76,10 +76,11 @@ async def process_streaming_response(local_streaming_response):
 async def rag_query(request: Request):
     data = await request.json()
     website = data.get('website')
+    timestamp = data.get('timestamp')
     query = data.get('query')
 
     # Query Weaviate
-    streaming_response = helper.query_weaviate(app.state.weaviate_client, website, query)
+    streaming_response = helper.query_weaviate(app.state.weaviate_client, website, timestamp, query)
 
     # Generate the streaming response and return it
     headers = {'Cache-Control': 'no-cache'}
