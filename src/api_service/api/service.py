@@ -5,7 +5,9 @@ import pandas as pd
 import os
 from fastapi import File
 from api import helper
+from typing import List
 import asyncio 
+import weaviate
 
 # Test using this line of curl:
 # curl -N -H "Content-Type: application/json" -d "{\"website\": \"ai21.com\", \"query\": \"How was AI21 Studio a game changer\"}" http://localhost:9000/rag_query
@@ -15,7 +17,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=Warning)
 
 # Set the OpenAI key as an Environment Variable (for when it's run on GCS)
-os.environ["OPENAI_API_KEY"] = "sk-OpenAI-KEY"
+os.environ["OPENAI_API_KEY"] = "sk-KEY"
 
 # Current Weaviate IP
 WEAVIATE_IP_ADDRESS = "34.42.138.162"
@@ -31,6 +33,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+async def startup_event():
+    # Create a Weaviate client when the app starts and store it in the app state
+    app.state.weaviate_client = weaviate.Client(url=f"http://{WEAVIATE_IP_ADDRESS}:8080")
 
 # Dummy function for testing streaming
 @app.get("/streaming")
@@ -72,8 +79,20 @@ async def rag_query(request: Request):
     query = data.get('query')
 
     # Query Weaviate
-    streaming_response = helper.query_weaviate(WEAVIATE_IP_ADDRESS, website, query)
+    streaming_response = helper.query_weaviate(app.state.weaviate_client, website, query)
 
     # Generate the streaming response and return it
     headers = {'Cache-Control': 'no-cache'}
-    return StreamingResponse(process_streaming_response(streaming_response), media_type="text/plain", headers=headers)
+    return StreamingResponse(process_streaming_response(streaming_response),
+                             media_type="text/plain", headers=headers)
+
+# Test using: curl -X 'GET' 'http://localhost:9000/websites' -H 'accept: application/json'
+@app.get("/websites", response_model=List[str])
+def read_websites():
+    return helper.get_website_addresses(app.state.weaviate_client)
+
+
+# Test using: curl -X 'GET' 'http://localhost:9000/timestamps/ai21.com' -H 'accept: application/json'
+@app.get("/timestamps/{website_address}", response_model=List[str])
+def read_timestamps(website_address: str):
+    return helper.get_all_timestamps_for_website(app.state.weaviate_client, website_address)

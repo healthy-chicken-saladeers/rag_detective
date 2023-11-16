@@ -9,10 +9,7 @@ from llama_index.prompts import PromptTemplate
 
 import time
 
-def query_weaviate(WEAVIATE_IP_ADDRESS, website, query):
-    # client setup
-    client = weaviate.Client(url="http://" + WEAVIATE_IP_ADDRESS + ":8080")
-
+def query_weaviate(client, website, query):
     # construct vector store
     vector_store = WeaviateVectorStore(weaviate_client=client, index_name="Pages", text_key="text")
 
@@ -66,3 +63,75 @@ def query_weaviate(WEAVIATE_IP_ADDRESS, website, query):
     print(f"Query execution time: {duration} seconds")
 
     return streaming_response
+
+def get_website_addresses(client):
+    # Construct the GraphQL query to fetch all websiteAddress values from the Pages class
+    graphql_query = '''
+    {
+        Get {
+            Pages {
+                websiteAddress
+            }
+        }
+    }
+    '''
+
+    # Initialize a set to collect unique website addresses
+    website_addresses_set = set()
+
+    try:
+        # Perform the query
+        result = client.query.raw(graphql_query)
+
+        # Extract website addresses from the 'Pages' class results
+        pages = result.get('data', {}).get('Get', {}).get('Pages', [])
+        for page in pages:
+            if 'websiteAddress' in page and page['websiteAddress']:
+                # Add to set to ensure uniqueness
+                website_addresses_set.add(page['websiteAddress'])
+
+        # Convert the set back to a list to return
+        return list(website_addresses_set)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        return []
+
+def get_all_timestamps_for_website(client, website_address: str):
+    # GraphQL query that fetches timestamps for a particular websiteAddress
+    graphql_query = f'''
+    {{
+        Get {{
+            Pages(
+                where: {{
+                    operator: Equal
+                    path: ["websiteAddress"]
+                    valueString: "{website_address}"
+                }}
+            ) {{
+                timestamp
+            }}
+        }}
+    }}
+    '''
+    
+    # Initialize a set to collect unique timestamps
+    timestamps_set = set()
+
+    try:
+        # Perform the query
+        result = client.query.raw(graphql_query)
+
+        # Extract timestamps from the 'Pages' class results
+        pages = result.get('data', {}).get('Get', {}).get('Pages', [])
+        for page in pages:
+            if 'timestamp' in page and page['timestamp']:
+                # Add to set to ensure uniqueness
+                timestamps_set.add(page['timestamp'])
+
+        # Convert the set back to a list to return
+        return list(timestamps_set)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        return []

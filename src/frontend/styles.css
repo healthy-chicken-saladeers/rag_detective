@@ -7,7 +7,18 @@ body {
 }
 
 .mdc-top-app-bar {
+    align-items: center;
+    position: relative;
     background-color: #A41034;
+}
+
+.mdc-top-app-bar__row {
+    max-width: 700px;
+}
+
+.mdc-top-app-bar__title {
+    font-weight: 900; 
+    font-size: 30px;
 }
 
 .content {
