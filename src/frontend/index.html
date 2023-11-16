@@ -135,13 +135,12 @@
             },
             body: JSON.stringify(postData)
         }).then(response => {
-            // Assuming your server is designed to send the final query_id as a response header
             const queryId = response.headers.get('X-Query-ID');
             const reader = response.body.getReader();
             function processText({ done, value }) {
                 loadingOverlay.style.display = 'none';
                 if (done) {
-                    // Here, call the function to fetch URLs with the received query_id
+                    // Call the function to fetch URLs with the received query_id
                     fetchURLs(queryId);
                     return;
                 }
@@ -181,7 +180,7 @@
     function displayURLs(urls) {
         // Assuming there's a container for URLs
         const urlsContainer = document.getElementById('urlsContainer');
-        urlsContainer.innerHTML = 'The following pages were used to generate this answer:'; // Clear previous URLs
+        urlsContainer.innerHTML = 'The following page(s) were used to generate this answer:'; // Clear previous URLs
 
         // Update the HTML with the new URLs
         const ulElement = document.createElement('ul');

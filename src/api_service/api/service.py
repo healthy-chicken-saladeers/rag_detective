@@ -105,12 +105,17 @@ async def rag_query(request: Request, background_tasks: BackgroundTasks):
         media_type="text/plain",
         headers=headers
     )
+
 async def process_url_extraction(query_id: str, streaming_response):
     extracted_urls = helper.extract_document_urls(streaming_response)
-    # Store the extracted URLs in a dictionary or some persistent storage,
-    # accessible by the unique query_id.
+    unique_urls = []
+    # Use a loop to maintain order and avoid duplicates
+    for url in extracted_urls:
+        if url not in unique_urls:
+            unique_urls.append(url)
+    # Store the ordered, unique URLs in the storage
     async with storage_lock:
-        query_url_storage[query_id] = extracted_urls
+        query_url_storage[query_id] = unique_urls
 
 # Test using: curl -X 'GET' 'http://localhost:9000/websites' -H 'accept: application/json'
 @app.get("/websites", response_model=List[str])
@@ -132,5 +137,6 @@ async def get_urls(query_id: str):
             # Correctly format the response with a custom status code
             return JSONResponse(content={"error": "URLs not available yet or invalid query ID"}, status_code=404)
         # Once retrieved, you may want to delete the entry if it's no longer needed
-        del query_url_storage[query_id] 
+        del query_url_storage[query_id]
+        print(urls)
     return {"urls": urls}
