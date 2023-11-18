@@ -40,15 +40,14 @@ class CustomModelPredictor(object):
   def predict(self, instances): 
     return self.model.predict(instances)
 
+
   def preprocess(self, instances):
-    tokenized_inputs = []
-    for instance in instances:
-      tokenized_text = self.tokenizer([instance], truncation=True, padding=True)
-      input_dict = {name: tf.squeeze(tf.constant([val]), axis=1) for name, val in tokenized_text.items()}
-      tokenized_inputs.append(input_dict)
-    return tokenized_inputs
+    tokenized_inputs = self.tokenizer(instances, truncation=True, padding=True, return_tensors="tf")
+    return tokenized_inputs.data
 
   def postprocess(self, predictions):
-    probabilities = tf.nn.softmax(predictions['logits'], axis=-1)
+    logits = predictions.get('logits', predictions)
+    probabilities = tf.nn.softmax(logits, axis=-1)
     predicted_class = tf.argmax(probabilities, axis=-1)
-    return {'class': predicted_class.numpy(), 'probabilities': probabilities.numpy()}
+    return {'class': predicted_class.numpy().tolist(), 'probabilities': probabilities.numpy().tolist()}
+
