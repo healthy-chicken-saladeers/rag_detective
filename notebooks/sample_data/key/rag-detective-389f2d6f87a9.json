@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "rag-detective",
+  "private_key_id": "389f2d6f87a9df232ce112979501587c527a0a97",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQC15p9HeEV2fDlU\nUZq3CbW8QhZcsd7VrPuWR5NyV37QuFId9xF/I148EuBrpUExY6jwqAOPIz0lXIN+\n4WvBy65kVdebkQI39Ov+eO+VVCe5WdUi5NhKAjnHkjzSCnvsZXdXsy8rIw0mnkgY\nUizPPf0Kx2OLMsxZuDE937TBtYhOjQHmIw+r/QmWKZavwVuixYD8LIl965wQJ6Qs\nY4F+FKiKZEklU4+GPvBMNKxHqY8yAMvaZF/cTh+u1bcF4kdwfkSUjR7GMqd7b5IM\nO0QM7UTDqx4uEnyEMwbgZLSrvIp7f3YEBZn1Zh8HwVcko62V4lgqF/YoS97MfGHB\nMLeMfbT9AgMBAAECggEAParD0Oz7T6HppaZMt0T5catN/XrnurT8TgRR/m+fNI9o\nd3QtYFbTObaEkrnhkibhPUUYf8xIjIQCqF8vsvGkW6umfrz4bZQA9bJ2Nr/i/7lu\nwnemw+BhSkFPkT2wqYH0pay/jvZBHRiIBIbHXjL7uE3Ed4pvMPN67ikLFKjAXzBo\nOAj29givTNVokOYC6D0izjPICHKF7LOhDJc0TxhJFlcBVCUMh9fd1+yOT5aPTfcz\nnUno17QZrY1xajlgjSuLATwoigUy0Ys8fKp2Q9uNATnOF1wrWmGr0ksubaBxqVbw\n/6n+XWnEqlCKEQjB1mmoOEA0givj6Ophw29LNKe42QKBgQDir2YTIDm14hz+Bsyx\nEZ3sr6+Xc15bHhg8KwEx3sc7dsd7itjYfTET1ZSqZdStu3qmcyKy6fw0z2BhzNL7\nnNKeW1dLyoGnaZ4gM9/qxQhJ11W2xr0oXPf0wKRVwX2uRyKW6MHM9Uw5cvHJLJKM\n2peForty0vYJxT27M1cygPdpAwKBgQDNbJozeOTLiiV311xGqq/xotoE3aeohBMS\nvRnBx9qMObQsiHRNBVzKstXb/tuB2Iaih1b9d9QIfSlAlDbU16f1z07UdLk3qsk9\nlOUe0EXw49ImqJeM0CJdaREt2B9jxvDtgJRdFKe76oWfse7xaHQcUWL06iyguzfM\ncPCaUMkJ/wKBgQC03J8DiYWiEbtyDnjImja3fmEJ5FmXN4a8ks9MO+QYFKgKcPic\nmh5LJfCMl9y9lMTCA0DfIQNCG2daALMhX7lH8bbP2M3jhchNBzaTuQro528S+rQ3\nfR204PL9HPkq0MTPRPxDjD954rT4/qAa09lrHTCT56+4ke+z6b2bpPxBgwKBgQDL\nSiZvubvyEYxyxJV0+YWUw2yuVAyPH+UgLjNHKdiF3LUJPSCa+CuUDNbHF7dzECxs\nuzLDM8qJfBNO7V411BVLlRSV+80v4bu1TZxQmhwc/9gAmecgWvknJ8rwa2jk/QOA\nhjZMxxwXQ0dpelTUYmJFg+VCKlxv09asYzg3/qp1UQKBgQC9OY/l+M79XWlXLrLk\nxhPLvwc441WH0zFUM73rSM9VnHRF2kSrHI9wgAxrXYgR+rovMv7xMNhzepxoqmyy\nallQL41OsHKwIEMyF8nGqe59IJXwnvEz8YqIt5KY4kQmcqBP2ii1YaTOVInyMAAn\n1qwnud6DSE5XvEP8M6dExtH4lg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "bucket-access-weaviate@rag-detective.iam.gserviceaccount.com",
+  "client_id": "108193956222754122043",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/bucket-access-weaviate%40rag-detective.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
