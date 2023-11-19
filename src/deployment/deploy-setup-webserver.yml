@@ -1,0 +1,27 @@
+- name: Configure webserver on the server instance
+  hosts: appserver
+  connection: ssh
+  become: true
+
+  tasks:
+    # Create and Setup Nginx
+    - name: Copy nginx config files
+      copy:
+        src: "./nginx-conf/nginx"
+        dest: "/conf"
+    - name: Create nginx container
+      docker_container:
+        name: "nginx"
+        image: "nginx:stable"
+        state: started
+        recreate: yes
+        published_ports:
+          - 80:80
+          - 443:443
+        networks:
+          - name: "{{docker_network_name}}"
+        volumes:
+          - /conf/nginx/nginx.conf:/etc/nginx/nginx.conf
+
+    - name: "Restart nginx container"
+      shell: "docker container restart nginx"
