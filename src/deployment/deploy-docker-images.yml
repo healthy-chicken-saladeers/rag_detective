@@ -1,0 +1,41 @@
+---
+- name: "Build docker images and push them to GCR"
+  hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: "Get timestamp for docker tag"
+    shell: "(date +%Y%m%d%H%M%S)"
+    register: tag
+  - name: Print tag
+    debug:
+      var: tag
+  - name: Build frontend container image
+    community.general.docker_image:
+      build:
+        path: /frontend
+        platform: linux/amd64/v2
+      name: gcr.io/{{ gcp_project }}/rag-detective-app-frontend:{{ tag.stdout}}
+      source: build
+  - name: Push frontend image to GCR
+    community.general.docker_image:
+      name: gcr.io/{{ gcp_project }}/rag-detective-app-frontend:{{ tag.stdout}}
+      repository: gcr.io/{{ gcp_project }}/rag-detective-app-frontend:{{ tag.stdout}}
+      push: yes
+      source: local
+  - name: Build api-service container image
+    community.general.docker_image:
+      build:
+        path: /api_service
+        platform: linux/amd64/v2
+      name: gcr.io/{{ gcp_project }}/rag-detective-app-api-service:{{ tag.stdout}}
+      source: build
+  - name: Push api-service image to GCR
+    community.general.docker_image:
+      name: gcr.io/{{ gcp_project }}/rag-detective-app-api-service:{{ tag.stdout}}
+      repository: gcr.io/{{ gcp_project }}/rag-detective-app-api-service:{{ tag.stdout}}
+      push: yes
+      source: local
+  - name: "Save docker tag"
+    shell: echo {{ tag.stdout}} > .docker-tag
+  - name: "Remove all unused containers"
+    shell: docker system prune -a

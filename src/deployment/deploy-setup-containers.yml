@@ -1,0 +1,80 @@
+- name: Configure containers on app server
+  hosts: appserver
+  connection: ssh
+  become: true
+
+  tasks:
+    # Setup secrets so containers can have access to GCP resources 
+    - name: Create secrets directory
+      file:
+        path: "/srv/secrets"
+        state: "directory"
+        mode: 0755
+    - name: Copy service account key file
+      copy:
+        src: ../secrets/gcp-service.json
+        dest: "/srv/secrets/gcp-service.json"
+        mode: 0644
+    - name: Authenticate gcloud using service account
+      shell: "gcloud auth activate-service-account --key-file /srv/secrets/gcp-service.json"
+    
+    # Create common network for all containers
+    - name: Create network
+      docker_network:
+          name: "{{docker_network_name}}"
+          driver: "bridge"
+          attachable: "yes"
+
+    - name: Copy docker tag file
+      copy:
+        src: .docker-tag
+        dest: .docker-tag
+        mode: 0644
+    - name: "Get docker tag"
+      shell: "cat .docker-tag"
+      register: tag
+    - name: Print tag
+      debug:
+        var: tag
+    - name: Create frontend container
+      docker_container:
+        name: "frontend"
+        image: "gcr.io/{{ gcp_project }}/rag-detective-app-frontend:{{ tag.stdout}}"
+        state: started
+        recreate: yes
+        pull: yes
+        restart: yes
+        published_ports:
+          - 8080:8080
+        networks:
+          - name: "{{docker_network_name}}"
+
+    # Create a folder on persistent disk
+    - name: Create persistent directory
+      file:
+        path: "/mnt/disk-1/persistent"
+        state: "directory"
+        mode: 0777
+
+    - name: Create api-service container
+      docker_container:
+        name: "api_service"
+        image: "gcr.io/{{ gcp_project }}/rag-detective-app-api-service:{{ tag.stdout}}"
+        state: started
+        recreate: yes
+        published_ports:
+          - 9000:9000
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp-service.json"
+          GCS_BUCKET_NAME: "ac215_scraper_bucker"
+        networks:
+          - name: "{{docker_network_name}}"
+        volumes:
+          - /mnt/disk-1/persistent:/persistent
+          - /srv/secrets:/secrets
+  
+    - name: Check if containers are running
+      shell: docker ps
+    
+    - name: "Remove all unused containers"
+      shell: docker system prune -a -f

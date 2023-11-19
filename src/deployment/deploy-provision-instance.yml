@@ -1,0 +1,102 @@
+- name: Configure app server instance
+  hosts: appserver
+  connection: ssh
+  become: true
+
+  tasks:
+    # Format and mount persistent volume
+    - name: "Format persistent disk if it does not contain a filesystem"
+      shell: "blkid -o value -s TYPE /dev/disk/by-id/google-persistent-disk-1 || mkfs.ext4 /dev/disk/by-id/google-persistent-disk-1"
+
+    - name: "Create mount directory"
+      file:
+        dest: "/mnt/disk-1"
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: "Mount persistent disk"
+      mount: 
+        path: "/mnt/disk-1"
+        src: "/dev/disk/by-id/google-persistent-disk-1"
+        fstype: ext4
+        opts: discard,defaults
+        state: mounted
+
+    - name: "Disable unattended upgrade timers"
+      raw: "systemctl disable --now {{item}}"
+      with_items:
+        - "apt-daily.timer"
+        - "apt-daily-upgrade.timer"
+    
+    - name: "Reload systemctl daemon"
+      raw: "systemctl daemon-reload"
+    
+    - name: "Wait for unattended upgrade to finish if running"
+      raw: "systemd-run --property=\"After=apt-daily.service apt-daily-upgrade.service\" --wait /bin/true"
+    - name: Update apt catalog
+      apt:
+        update_cache: "yes"
+        upgrade: "yes"
+        force_apt_get: "yes"
+
+    - name: Install dependencies
+      apt:
+        name:
+          # For docker
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+
+          # For the pip ansible module
+          - python3-setuptools
+          - python3-pip
+        force_apt_get: "yes"
+        state: present
+
+    - name: Get the current Debian distributor ID
+      shell: lsb_release -is | tr '[:upper:]' '[:lower:]'
+      register: debian_distributor
+
+    - name: Add Docker GPG apt key
+      apt_key:
+        url: "https://download.docker.com/linux/{{ debian_distributor.stdout }}/gpg"
+        state: present
+
+    - name: Get the current Debian release name
+      shell: lsb_release -cs
+      register: debian_version
+
+    - name: Add Docker apt repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/{{ debian_distributor.stdout }} {{ debian_version.stdout }} stable"
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: "docker-ce"
+        force_apt_get: "yes"
+        update_cache: "yes"
+        state: present
+    
+    - name: Install Pip Packages
+      pip:
+          name: 
+            - requests
+            - docker
+            
+    - name: Create Docker group
+      group:
+        name: "docker"
+        state: present
+
+    - name: Authenticate Docker with service account
+      command: gcloud auth configure-docker --quiet
+
+    - name: Start docker service
+      service:
+        name: docker
+        state: started

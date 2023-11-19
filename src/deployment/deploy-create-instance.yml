@@ -1,0 +1,98 @@
+- name: Create App Application Machine
+  hosts: localhost
+  environment:
+    GCP_AUTH_KIND: "{{gcp_auth_kind}}"
+    GCP_SERVICE_ACCOUNT_FILE: "{{ gcp_service_account_file }}"
+    GCP_SCOPES: "{{gcp_scopes}}"
+
+  tasks:
+    # Add firewall rules for http
+    - name: "Create http firewall rule"
+      gce_net:
+        name: default
+        fwname: "default-allow-http"
+        allowed: "tcp:80"
+        state: "present"
+        src_range: "0.0.0.0/0"
+        project_id: "{{ gcp_project }}"
+        target_tags: "http-server"
+        credentials_file: "{{ gcp_service_account_file }}"
+        service_account_email: "{{ gcp_service_account_email }}"
+      when: cluster_state == "present"
+
+    # Add firewall rules for https
+    - name: "Create https firewall rule"
+      gce_net:
+        name: default
+        fwname: "default-allow-https"
+        allowed: "tcp:443"
+        state: "present"
+        src_range: "0.0.0.0/0"
+        project_id: "{{ gcp_project }}"
+        target_tags: "http-server"
+        credentials_file: "{{ gcp_service_account_file }}"
+        service_account_email: "{{ gcp_service_account_email }}"
+      when: cluster_state == "present"
+
+    # Create Persistent Disk
+    - name: Create Compute disk
+      gcp_compute_disk:
+        auth_kind: "{{gcp_auth_kind}}"
+        service_account_file: "{{ gcp_service_account_file }}"
+        scopes: "{{gcp_scopes}}"
+        zone: "{{ gcp_zone }}"
+        project: "{{ gcp_project }}"
+        name: "{{ persistent_disk_name }}"
+        size_gb: "{{ persistent_disk_size }}"
+        state: present
+      register: disk
+      when: cluster_state == "present"
+
+    # Create Compute Instance
+    - name: Create instance
+      gcp_compute_instance:
+        name: "{{ machine_instance_name }}"
+        machine_type: "{{ machine_type }}"
+        disks:
+          - auto_delete: true
+            boot: true
+            initialize_params:
+                source_image: "projects/debian-cloud/global/images/family/debian-11"
+                disk_size_gb: "{{ machine_disk_size }}"
+          - auto_delete: false
+            boot: false
+            source: "{{ disk }}"
+        network_interfaces:
+          - access_configs:
+              - name: "External NAT"
+                type: "ONE_TO_ONE_NAT"
+        tags:
+          items:
+            - http-server
+            - https-server
+        zone: "{{ gcp_zone }}"
+        project: "{{ gcp_project }}"
+        state: "{{ cluster_state }}"
+      register: instance
+
+    # Remove Persistent Disk
+    - name: Remove Compute disk
+      gcp_compute_disk:
+        auth_kind: "{{gcp_auth_kind}}"
+        service_account_file: "{{ gcp_service_account_file }}"
+        scopes: "{{gcp_scopes}}"
+        zone: "{{ gcp_zone }}"
+        project: "{{ gcp_project }}"
+        name: "{{ persistent_disk_name }}"
+        size_gb: "{{ persistent_disk_size }}"
+        state: absent
+      register: disk
+      when: cluster_state == "absent"
+
+    - name: Wait for SSH to come up
+      wait_for: host={{ instance.networkInterfaces[0].accessConfigs[0].natIP }} port=22 delay=10 timeout=120
+      when: cluster_state == "present"
+
+    - name: Add host to groupname
+      add_host: hostname={{ instance.networkInterfaces[0].accessConfigs[0].natIP }} groupname=new_instances
+      when: cluster_state == "present"
