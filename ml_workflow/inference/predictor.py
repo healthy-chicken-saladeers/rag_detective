@@ -1,6 +1,13 @@
+from transformers import BertTokenizer
+import tensorflow as tf
+import numpy as np
+
 class CustomPredictor(object):
   def __init__(self, model):
     self._model = model
+
+  def is_ready(self):
+    return self._model is not None and self._model.model is not None and self._model.tokenizer is not None
 
   def predict(self, instances, **kwargs):
     """
@@ -26,11 +33,6 @@ class CustomPredictor(object):
 
     model = CustomModelPredictor(model_dir)
     return cls(model)
-  
-
-from transformers import BertTokenizer
-import tensorflow as tf
-import numpy as np
 
 class CustomModelPredictor(object):
   def __init__(self, model_path):

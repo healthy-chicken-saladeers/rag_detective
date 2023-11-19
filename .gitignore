@@ -9,6 +9,8 @@ __pycache__/
 model_training/secrets/*.json
 model_training/trainer.tar.gz
 
+ml_workflow/inference/best_model/
+
 secrets/*.json
 
 .env
