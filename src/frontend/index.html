@@ -136,17 +136,22 @@
             body: JSON.stringify(postData)
         }).then(response => {
             const queryId = response.headers.get('X-Query-ID');
-            const reader = response.body.getReader();
+            const reader = response.body.getReader(); 
+            let responseData = '';
+
             function processText({ done, value }) {
                 loadingOverlay.style.display = 'none';
                 if (done) {
-                    // Call the function to fetch URLs with the received query_id
-                    fetchURLs(queryId);
+                    // Call the function to fetch URLs with the received query_id first to determine the financial flag
+                    fetchURLs(queryId, responseData);
                     return;
                 }
-                outputElement.value += new TextDecoder().decode(value, { stream: true });
+                const decodedValue = new TextDecoder().decode(value, { stream: true });
+                responseData += decodedValue;
+                outputElement.value += decodedValue;
                 reader.read().then(processText); // Keep reading the next chunk of data
             }
+
             reader.read().then(processText);
         }).catch(err => {
             outputElement.value = `Fetch error: ${err.message}`;
@@ -154,31 +159,7 @@
         });
     }
 
-
-    function fetchURLs(queryId) {
-        if (queryId) {
-            // Make the GET request to the get_urls endpoint
-            fetch(`http://localhost:9000/get_urls/${queryId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.urls) {
-                        // Pass the entire data to the displayURLs function
-                        displayURLs(data);
-                    } else {
-                        throw new Error('URLs not found.');
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching URLs:", error);
-                    const urlsContainer = document.getElementById("urlsContainer");
-                    urlsContainer.textContent = "Error fetching URLs.";
-                });
-        } else {
-            console.error("Query ID not found.");
-        }
-    }
-
-    function displayURLs(data) {
+    function displayURLs(data, responseData) {
         // Assuming there's a container for URLs
         const urlsContainer = document.getElementById("urlsContainer");
         urlsContainer.innerHTML = "The following page(s) were used to generate this answer:"; // Clear previous URLs
@@ -197,6 +178,62 @@
             const financialNotice = document.createElement("p");
             financialNotice.textContent = "This response might be financial in nature! Let's ask BERT if it's good, bad, or neutral news.";
             urlsContainer.appendChild(financialNotice);
+
+            // Calling Vertex API for sentiment analysis as the response is financial in nature
+            fetch(`http://localhost:9000/vertexai_predict`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ "text": responseData }) // Corrected
+            })
+            .then(response => response.json())
+            .then(sentimentData => {
+                // Display the sentiment data
+                const sentimentText = document.createElement("p");
+
+                let sentiment = "Neutral";
+                switch (sentimentData.sentiment) {
+                    case 0:
+                        sentiment = "Negative";
+                        sentimentText.style.color = 'red'; // Change text color to red
+                        break;
+                    case 1:
+                        sentiment = "Neutral";
+                        sentimentText.style.color = 'green'; // Change text color to green
+                        break;
+                    case 2:
+                        sentiment = "Positive";
+                        sentimentText.style.color = 'blue'; // Change text color to blue
+                        break;
+                }
+
+                sentimentText.textContent = `BERT says: ${sentiment}! Probabilities are - Negative: ${sentimentData.probabilities[0].toFixed(2)}, Neutral: ${sentimentData.probabilities[1].toFixed(2)}, Positive: ${sentimentData.probabilities[2].toFixed(2)}`;
+                urlsContainer.appendChild(sentimentText);
+            });
+        }
+    }
+
+    function fetchURLs(queryId, responseData) {
+        if (queryId) {
+            // Make the GET request to the get_urls endpoint
+            fetch(`http://localhost:9000/get_urls/${queryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.urls) {
+                        // Pass the entire data and response text to the displayURLs function
+                        displayURLs(data, responseData);
+                    } else {
+                        throw new Error('URLs not found.');
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching URLs:", error);
+                    const urlsContainer = document.getElementById("urlsContainer");
+                    urlsContainer.textContent = "Error fetching URLs.";
+                });
+        } else {
+            console.error("Query ID not found.");
         }
     }
 
