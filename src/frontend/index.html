@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
@@ -191,28 +192,57 @@
             .then(sentimentData => {
                 // Display the sentiment data
                 const sentimentText = document.createElement("p");
+                const canvas = document.createElement('canvas');
 
                 let sentiment = "Neutral";
                 switch (sentimentData.sentiment) {
                     case 0:
                         sentiment = "Negative";
-                        sentimentText.style.color = 'red'; // Change text color to red
+                        sentimentText.style.color = 'red';
                         break;
                     case 1:
                         sentiment = "Neutral";
-                        sentimentText.style.color = 'green'; // Change text color to green
+                        sentimentText.style.color = 'green';
                         break;
                     case 2:
                         sentiment = "Positive";
-                        sentimentText.style.color = 'blue'; // Change text color to blue
+                        sentimentText.style.color = 'blue';
                         break;
                 }
 
-                sentimentText.textContent = `BERT says: ${sentiment}! Probabilities are - Negative: ${sentimentData.probabilities[0].toFixed(2)}, Neutral: ${sentimentData.probabilities[1].toFixed(2)}, Positive: ${sentimentData.probabilities[2].toFixed(2)}`;
+                sentimentText.textContent = `BERT says: ${sentiment}!`;
                 urlsContainer.appendChild(sentimentText);
+
+                // Append canvas to the container 
+                urlsContainer.appendChild(canvas);
+
+                // Generate the chart
+                new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Negative', 'Neutral', 'Positive'],
+                        datasets: [{
+                            label: 'Sentiment probabilities',
+                            data: [sentimentData.probabilities[0], sentimentData.probabilities[1], sentimentData.probabilities[2]],
+                            backgroundColor: [
+                                'red',
+                                'green',
+                                'blue'
+                            ]
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
             });
         }
     }
+
 
     function fetchURLs(queryId, responseData) {
         if (queryId) {
