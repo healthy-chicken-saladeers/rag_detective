@@ -162,35 +162,44 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.urls) {
-                        displayURLs(data.urls); // Call a function to display URLs
+                        // Pass the entire data to the displayURLs function
+                        displayURLs(data);
                     } else {
                         throw new Error('URLs not found.');
                     }
                 })
                 .catch(error => {
-                    console.error('Error fetching URLs:', error);
-                    const urlsContainer = document.getElementById('urlsContainer');
-                    urlsContainer.textContent = 'Error fetching URLs.';
+                    console.error("Error fetching URLs:", error);
+                    const urlsContainer = document.getElementById("urlsContainer");
+                    urlsContainer.textContent = "Error fetching URLs.";
                 });
         } else {
-           console.error('Query ID not found.');
+            console.error("Query ID not found.");
         }
     }
 
-    function displayURLs(urls) {
+    function displayURLs(data) {
         // Assuming there's a container for URLs
-        const urlsContainer = document.getElementById('urlsContainer');
-        urlsContainer.innerHTML = 'The following page(s) were used to generate this answer:'; // Clear previous URLs
+        const urlsContainer = document.getElementById("urlsContainer");
+        urlsContainer.innerHTML = "The following page(s) were used to generate this answer:"; // Clear previous URLs
 
         // Update the HTML with the new URLs
-        const ulElement = document.createElement('ul');
-        urls.forEach(function(url) {
-            const li = document.createElement('li');
+        const ulElement = document.createElement("ul");
+        data.urls.forEach(function (url) {
+            const li = document.createElement("li");
             li.textContent = url;
             ulElement.appendChild(li);
         });
         urlsContainer.appendChild(ulElement);
+
+        // Check the financial_flag and add the line if needed
+        if (data.financial_flag) {
+            const financialNotice = document.createElement("p");
+            financialNotice.textContent = "This response might be financial in nature! Let's ask BERT if it's good, bad, or neutral news.";
+            urlsContainer.appendChild(financialNotice);
+        }
     }
+
     </script>
 
 </body>

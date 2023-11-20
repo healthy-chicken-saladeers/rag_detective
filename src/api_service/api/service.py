@@ -18,6 +18,7 @@ from google.oauth2 import service_account
 
 query_url_storage = {}
 storage_lock = Lock()
+financial = False
 
 # Test using this line of curl:
 # curl -N -H "Content-Type: application/json" -d "{\"website\": \"ai21.com\", \"query\": \"How was AI21 Studio a game changer\"}" http://localhost:9000/rag_query
@@ -65,7 +66,7 @@ async def get_index():
     return {"message": "Welcome to the RAG Detective App!"}
 
 async def process_streaming_response(local_streaming_response):
-    financial = False
+    global financial
     try:
         # If local_streaming_response.response_gen is an asynchronous generator, you should use an async for.
         for i, text in enumerate(local_streaming_response.response_gen):
@@ -84,6 +85,7 @@ async def process_streaming_response(local_streaming_response):
 
 @app.post("/rag_query")
 async def rag_query(request: Request, background_tasks: BackgroundTasks):
+    global financial
     data = await request.json()
     website = data.get('website')
     timestamp = data.get('timestamp')
@@ -97,7 +99,7 @@ async def rag_query(request: Request, background_tasks: BackgroundTasks):
     streaming_response = helper.query_weaviate(app.state.weaviate_client, website, timestamp, query)
 
     # Add the URL processing function as a background task
-    background_tasks.add_task(process_url_extraction, query_id, streaming_response)
+    background_tasks.add_task(process_url_extraction, query_id, streaming_response, financial)
 
     # Generate the streaming response and return it
     headers = {
@@ -111,7 +113,7 @@ async def rag_query(request: Request, background_tasks: BackgroundTasks):
         headers=headers
     )
 
-async def process_url_extraction(query_id: str, streaming_response):
+async def process_url_extraction(query_id: str, streaming_response, financial: bool):
     extracted_urls = helper.extract_document_urls(streaming_response)
     unique_urls = []
     # Use a loop to maintain order and avoid duplicates
@@ -120,7 +122,7 @@ async def process_url_extraction(query_id: str, streaming_response):
             unique_urls.append(url)
     # Store the ordered, unique URLs in the storage
     async with storage_lock:
-        query_url_storage[query_id] = unique_urls
+        query_url_storage[query_id] = financial, unique_urls
 
 # Test using: curl -X 'GET' 'http://localhost:9000/websites' -H 'accept: application/json'
 @app.get("/websites", response_model=List[str])
@@ -137,14 +139,14 @@ def read_timestamps(website_address: str):
 async def get_urls(query_id: str):
     async with storage_lock:
         # Use the query_id to retrieve the stored URLs
-        urls = query_url_storage.get(query_id)
+        financial_flag, urls = query_url_storage.get(query_id)
         if urls is None:
             # Correctly format the response with a custom status code
             return JSONResponse(content={"error": "URLs not available yet or invalid query ID"}, status_code=404)
         # Once retrieved, delete the entry to keep things simple
         del query_url_storage[query_id]
         print(urls)
-    return {"urls": urls}
+    return {"urls": urls, "financial_flag": financial_flag}
 
 
 # Test using: curl -N -H "Content-Type: application/json" -d "{\"text\": \"Turnover surged to EUR61 .8 m from EUR47 .6 m due to increasing service demand , especially in the third quarter , and the overall growth of its business .\"}" "http://localhost:9000/vertexai_predict"
