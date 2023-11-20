@@ -26,5 +26,3 @@ def predict(item: Item):
 
 # To test this API, use:
 # curl -X POST "http://localhost:8000/predict" -H "accept: application/json" -H "Content-Type: application/json" -d "{\"instances\":[\"Turnover surged to EUR61 .8 m from EUR47 .6 m due to increasing service demand , especially in the third quarter , and the overall growth of its business .\"]}"
-
-

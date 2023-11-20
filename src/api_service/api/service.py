@@ -1,3 +1,5 @@
+# You need to have the OPENAI_APIKEY environment variable set for this.
+# As well, ml-workflow.ml has to be placed in the /secrets folder of the repo
 from fastapi import FastAPI, Request, BackgroundTasks 
 from fastapi.responses import StreamingResponse, JSONResponse
 from starlette.middleware.cors import CORSMiddleware
@@ -10,6 +12,9 @@ import asyncio
 from asyncio import Lock
 import weaviate
 import uuid
+from google.cloud import aiplatform
+from google.auth import exceptions
+from google.oauth2 import service_account
 
 query_url_storage = {}
 storage_lock = Lock()
@@ -21,8 +26,8 @@ storage_lock = Lock()
 import warnings
 warnings.simplefilter(action='ignore', category=Warning)
 
-# Set the OpenAI key as an Environment Variable (for when it's run on GCS)
-os.environ["OPENAI_API_KEY"] = "sk-KEY"
+# Set the OpenAI key as an Environment Variable (the different underscore notation is weaviate vs llamaindex)
+os.environ["OPENAI_API_KEY"] = os.environ.get('OPENAI_APIKEY')
 
 # Current Weaviate IP
 WEAVIATE_IP_ADDRESS = "34.42.138.162"
@@ -140,3 +145,47 @@ async def get_urls(query_id: str):
         del query_url_storage[query_id]
         print(urls)
     return {"urls": urls}
+
+
+# Test using: curl -N -H "Content-Type: application/json" -d "{\"text\": \"Turnover surged to EUR61 .8 m from EUR47 .6 m due to increasing service demand , especially in the third quarter , and the overall growth of its business .\"}" "http://localhost:9000/vertexai_predict"
+@app.post("/vertexai_predict")
+async def vertexai_predict(request: Request):
+    ENDPOINT_ID = "7054451210648027136"
+    PROJECT_ID = "rag-detective"
+    SERVICE_ACCOUNT_FILE = '../secrets/ml-workflow.json'
+
+    # Load data received from your HTML file's JavaScript fetch function
+    data = await request.json()
+    text = data.get('text')
+
+    # Before sending to the AI Platform Prediction, convert to needed format
+    instances = [text]  # this is now a list with a single string
+
+    # Location of your service account key json file
+    
+
+    # Authenticate and create the AI Platform (Unified) client
+    try:
+        # Load credentials from the service account file
+        credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
+        aiplatform.init(credentials=credentials)
+    except exceptions.DefaultCredentialsError:
+        return {"error": "Couldn't authenticate with Google Cloud."}
+
+    endpoint = f'projects/{PROJECT_ID}/locations/us-central1/endpoints/{ENDPOINT_ID}'
+    response = aiplatform.Endpoint(endpoint).predict(instances=instances)
+
+    # Extract the sentiment and probabilities from the predictions
+    sentiment, probabilities = response.predictions
+
+    # Convert the sentiment to an integer
+    sentiment_value = int(sentiment[0])
+    probabilities_value = probabilities[0]
+
+    # Construct the response structure
+    response_structure = {
+        "sentiment": sentiment_value,
+        "probabilities": probabilities_value
+    }
+
+    return response_structure

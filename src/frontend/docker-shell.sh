@@ -6,7 +6,7 @@ set -e
 # Define some environment variables
 # Automatic export to the environment of subsequently executed commands
 # source: the command 'help export' run in Terminal
-export IMAGE_NAME="mushroom-app-frontend-simple"
+export IMAGE_NAME="rag-detective-frontend-simple"
 export BASE_DIR=$(pwd)
 
 # Build the image based on the Dockerfile

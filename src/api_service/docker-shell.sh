@@ -6,9 +6,12 @@ set -e
 # Define some environment variables
 export IMAGE_NAME="rag-detective-api-service"
 export BASE_DIR=$(pwd)
-export SECRETS_DIR=$(pwd)/../../../secrets/
-export PERSISTENT_DIR=$(pwd)/../../../persistent-folder/
+export SECRETS_DIR=$(pwd)/../../secrets/
+export PERSISTENT_DIR=$(pwd)/../../persistent-folder/
 export GCS_BUCKET_NAME="ac215_scraper_bucket"
+
+echo "BASE_DIR is ${BASE_DIR}"
+echo "SECRETS_DIR is ${SECRETS_DIR}"
 
 # Build the image based on the Dockerfile
 #docker build -t $IMAGE_NAME -f Dockerfile .
@@ -23,4 +26,5 @@ docker run --rm --name "$IMAGE_NAME" -ti \
 -p 9000:9000 \
 -e DEV=1 \
 -e GCS_BUCKET_NAME=$GCS_BUCKET_NAME \
+-e OPENAI_APIKEY=$OPENAI_APIKEY \
 $IMAGE_NAME
