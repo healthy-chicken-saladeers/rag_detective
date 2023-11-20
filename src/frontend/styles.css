@@ -138,3 +138,39 @@ body {
     text-align: left; 
     margin-top: 10px; 
 }
+
+@keyframes fadeIn {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+.fadeIn {
+  animation-name: fadeIn;
+  animation-duration: 2s;
+}
+
+#buttonContainer {
+   display: flex;
+   justify-content: space-between;
+   align-items: flex-start;
+}
+
+#buttonContainer img {
+   width: 300px;
+   height: 300px;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); } /* Element starts from nothing */
+    75% { transform: scale(1.2); } /* Element grows past its normal size */
+    100% { transform: scale(1); } /* Element shrinks back to its normal size */
+}
+
+.popIn {
+    animation-name: popIn;
+    animation-duration: 0.5s;
+    animation-timing-function: ease;
+}
+
+
+

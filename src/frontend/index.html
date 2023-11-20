@@ -35,7 +35,9 @@
 
             <label for="promptInput">Enter prompt:</label>
             <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
-            <button id="searchButton" onclick="generate_response()">Search</button>
+            <div id="buttonContainer">
+                <button id="searchButton" onclick="generate_response()">Search</button>
+            </div>
 
         </div>
         
@@ -123,6 +125,10 @@
         urlsContainer.innerHTML = '';
         loadingOverlay.style.display = 'flex'; // Show overlay
 
+        // Clear previous sentiment image
+        const prevSentimentImg = document.querySelector("#searchButton + img"); 
+        if (prevSentimentImg) prevSentimentImg.remove();
+
         // Added: Retrieve the timestamp from the scrapeSessionDropdown
         const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
         const timestamp = scrapeSessionDropdown.options[scrapeSessionDropdown.selectedIndex].value;
@@ -199,6 +205,7 @@
             .then(sentimentData => {
                 // Display the sentiment data
                 const sentimentText = document.createElement("p");
+                const sentimentImg = document.createElement('img'); 
                 const canvas = document.createElement('canvas');
 
                 let sentiment = "Neutral";
@@ -206,19 +213,28 @@
                     case 0:
                         sentiment = "Negative";
                         sentimentText.style.color = 'red';
+                        sentimentImg.src = "img/negative.png";  
                         break;
                     case 1:
                         sentiment = "Neutral";
                         sentimentText.style.color = 'green';
+                        sentimentImg.src = "img/neutral.png";  
                         break;
                     case 2:
                         sentiment = "Positive";
                         sentimentText.style.color = 'blue';
+                        sentimentImg.src = "img/positive.png";  
                         break;
                 }
 
                 sentimentText.textContent = `BERT says: ${sentiment}!`;
                 urlsContainer.appendChild(sentimentText);
+
+                // Add the 'fadeIn' animation class to the image
+                sentimentImg.classList.add('popIn');
+
+                // Insert the image at the end of 'buttonContainer'
+                document.getElementById("buttonContainer").insertAdjacentElement('beforeend', sentimentImg);  
 
                 // Append canvas to the container 
                 urlsContainer.appendChild(canvas);
