@@ -96,7 +96,7 @@ def get_website_addresses(client):
                 website_addresses_set.add(page['websiteAddress'])
 
         # Convert the set back to a list to return
-        return list(website_addresses_set)
+        return sorted(list(website_addresses_set))
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -135,7 +135,7 @@ def get_all_timestamps_for_website(client, website_address: str):
                 timestamps_set.add(page['timestamp'])
 
         # Convert the set back to a list to return
-        return list(timestamps_set)
+        return sorted(list(timestamps_set))
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
