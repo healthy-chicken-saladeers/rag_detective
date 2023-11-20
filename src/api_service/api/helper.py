@@ -135,7 +135,7 @@ def get_all_timestamps_for_website(client, website_address: str):
                 timestamps_set.add(page['timestamp'])
 
         # Convert the set back to a list to return
-        return sorted(list(timestamps_set))
+        return sorted(list(timestamps_set), reverse=True)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
