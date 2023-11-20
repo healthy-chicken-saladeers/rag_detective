@@ -182,7 +182,11 @@
         const ulElement = document.createElement("ul");
         data.urls.forEach(function (url) {
             const li = document.createElement("li");
-            li.textContent = url;
+            const a = document.createElement("a");
+            a.href = url; 
+            a.textContent = url;
+            a.target = "_blank"; 
+            li.appendChild(a); 
             ulElement.appendChild(li);
         });
         urlsContainer.appendChild(ulElement);
