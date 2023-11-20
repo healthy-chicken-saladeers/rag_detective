@@ -26,6 +26,7 @@ body {
     flex-direction: column;
     width: 100%;
     align-items: center;
+    margin-top: 10px;
 }
 
 #textForm {
@@ -45,6 +46,7 @@ body {
 #promptInput {
     width: 100%;            /* Set width to automatic */
     max-width: 700px;      /* Increased max-width like the app bar row; adjust as needed */
+    margin-top: 10px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
