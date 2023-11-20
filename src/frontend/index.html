@@ -20,19 +20,24 @@
     </header>
 
     <div class="content">
-        <label for="websiteDropdown">Select website:</label>
-        <select id="websiteDropdown" onchange="updateScrapeSession()">
-            <option value="" selected>Please select</option>
-        </select>
 
-        <label for="scrapeSessionDropdown">Scrape session:</label>
-        <select id="scrapeSessionDropdown">
-            <!-- Options will be populated based on website selection -->
-        </select>
+        <!-- Input Section -->
+        <div id="inputSection">
+            <label for="websiteDropdown">Select website:</label>
+            <select id="websiteDropdown" onchange="updateScrapeSession()">
+                <option value="" selected>Please select</option>
+            </select>
 
-        <label for="promptInput">Enter prompt:</label>
-        <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
-        <button id="searchButton" onclick="generate_response()">Search</button>
+            <label for="scrapeSessionDropdown">Scrape session:</label>
+            <select id="scrapeSessionDropdown">
+                <!-- Options will be populated based on website selection -->
+            </select>
+
+            <label for="promptInput">Enter prompt:</label>
+            <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
+            <button id="searchButton" onclick="generate_response()">Search</button>
+
+        </div>
         
         <!-- Output Section with Overlay -->
         <div id="outputSection" style="position: relative;">
@@ -41,11 +46,13 @@
             <div id="loadingOverlay" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.8); justify-content: center; align-items: center;">
                 <div class="spinner"></div>
             </div>
+            <div id="urlsContainer">
+                <!-- URLs will be listed here -->
+            </div>
         </div>
-        <div id="urlsContainer">
-            <!-- URLs will be listed here -->
-        </div>
+
     </div>
+
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {

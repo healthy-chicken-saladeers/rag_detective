@@ -23,11 +23,16 @@ body {
 
 .content {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
     width: 100%;
-    align-items: center;
+    max-width: 1400px; /* You might need to adjust this value */
+    align-items: flex-start; /* Adjusts the vertical alignment of the columns */
     margin-top: 10px;
+    padding: 0 20px; /* Adds some padding on the left and right of the content container */
+    box-sizing: border-box; /* Makes sure width includes padding */
 }
+
 
 #textForm {
     margin-top: 20px;
@@ -72,13 +77,22 @@ body {
     margin-bottom: 20px;
 }
 
+#inputSection {
+    width: 45%; /* Adjust these values as needed */
+}
+
 /* Adjust the styles.css file or add these styles in your HTML within <style> tags */
 #outputSection {
     position: relative;
-    width: 100%; /* Ensure full width */
-    max-width: 600px; /* You can set a max-width if you like */
-    margin: auto; /* Center the output section if there's a max-width */
+    width: 45%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15px;
 }
+
 
 #output {
     width: 100%;
@@ -124,4 +138,3 @@ body {
     text-align: left; 
     margin-top: 10px; 
 }
-
