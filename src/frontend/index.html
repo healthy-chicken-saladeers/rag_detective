@@ -63,7 +63,7 @@
     });
 
     function fetchWebsites() {
-        fetch('http://localhost:9000/websites')
+        fetch('http://34.148.60.62:9000/websites')
             .then(response => response.json())
             .then(websites => {
                 const websiteDropdown = document.getElementById('websiteDropdown');
@@ -89,7 +89,7 @@
             return;
         }
 
-        fetch(`http://localhost:9000/timestamps/${website}`)
+        fetch(`http://34.148.60.62:9000/timestamps/${website}`)
             .then(response => response.json())
             .then(timestamps => {
                 const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
@@ -142,7 +142,7 @@
         };
 
         // Using fetch with a POST request
-        fetch('http://localhost:9000/rag_query', {
+        fetch('http://34.148.60.62:9000/rag_query', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -198,7 +198,7 @@
             urlsContainer.appendChild(financialNotice);
 
             // Calling Vertex API for sentiment analysis as the response is financial in nature
-            fetch(`http://localhost:9000/vertexai_predict`, {
+            fetch(`http://34.148.60.62:9000/vertexai_predict`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -274,7 +274,7 @@
     function fetchURLs(queryId, responseData) {
         if (queryId) {
             // Make the GET request to the get_urls endpoint
-            fetch(`http://localhost:9000/get_urls/${queryId}`)
+            fetch(`http://34.148.60.62:9000/get_urls/${queryId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.urls) {
