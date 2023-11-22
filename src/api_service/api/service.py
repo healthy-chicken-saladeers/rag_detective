@@ -50,6 +50,11 @@ async def startup_event():
     # Create a Weaviate client when the app starts and store it in the app state
     app.state.weaviate_client = weaviate.Client(url=f"http://{WEAVIATE_IP_ADDRESS}:8080")
 
+# Routes
+@app.get("/")
+async def get_index():
+    return {"message": "Welcome to the RAG Detective App!"}
+
 # Dummy function for testing streaming
 @app.get("/streaming")
 async def streaming_endpoint():
@@ -58,12 +63,6 @@ async def streaming_endpoint():
             yield f"data: {i} "
             await asyncio.sleep(0.1)
     return StreamingResponse(event_generator(), media_type="text/event-stream")
-
-
-# Routes
-@app.get("/")
-async def get_index():
-    return {"message": "Welcome to the RAG Detective App!"}
 
 async def process_streaming_response(local_streaming_response):
     global financial
