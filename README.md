@@ -167,6 +167,39 @@ The repository offers comprehensive guidance on setting up and running the Docke
 
 For more information and detailed instructions, see [api-service-documentation.md](./docs/api-service-documentation.md).
 
+## *NEW* Frontend Service Summary
+
+This repository contains a Dockerized frontend application, suitable for deployment with a web server. It includes essential files for building and running the application in a Docker container.
+
+## Key Components
+
+### Docker Setup
+- `Dockerfile`: Creates a Docker image using nginx, copies HTML and CSS files into the container, and exposes port 80.
+- `docker-shell.sh`: A script for building the Docker image and running a container, mapping the container's port 8080 to the host's port 8080.
+- `README.txt`: Documentation on building and running the Docker container for both simple and React frontends.
+
+### Frontend Application
+- `index.html`: The main HTML file for the app, setting up the layout and interactive elements for the "Rag Detective" web application.
+- `styles.css`: Defines the visual design of the application, including animations, color schemes, and responsive elements for a user-friendly interface.
+
+## Detailed Overview
+
+### Dockerfile and Scripts
+- **Dockerfile**: Outlines steps for building the Docker image with a lightweight web server and deploying the frontend application.
+- **docker-shell.sh**: Automates the Docker image building and container running processes.
+- **README.txt**: Provides detailed instructions for Docker operations and frontend deployment.
+
+### index.html
+- Features interactive elements for selecting websites and timestamps, inputting queries, and displaying responses.
+- Implements API interactions for fetching website data, submitting queries, and retrieving URLs and sentiment analysis.
+- Displays dynamic content based on user interactions and server responses, including sentiment-driven images of a chatbot character, BERT.
+
+### styles.css
+- Applies modern styling to the web application, utilizing Google's Roboto font and various CSS animations.
+- Ensures a cohesive and appealing visual experience, with designated styles for different UI components.
+
+For a comprehensive guide on setting up and interacting with the frontend application, see [frontend.md](./docs/frontend.md).
+
 
 ### Quick Review: Fine-tuning BERT with Financial data for sentiment analysis
 
