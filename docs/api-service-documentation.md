@@ -124,7 +124,7 @@ async def vertexai_predict(request: Request):
 
 - `"GET /streaming"`: `streaming_endpoint`: This endpoint is a demonstration s for testing streaming responses in FastAPI. When accessed via a GET request at the "/streaming" path, it responds with an event stream. It uses an asynchronous function to generate events that consist of numbers from 0 to 9 in the format `"data: {i}"`, each separated by a 0.1-second delay. As these events are generated, they are sent out as part of the StreamingResponse. This can be useful for testing how the application or client handles streaming responses, because initially we didn't know to use the `-N` flag with cURL to prevent buffering of responses.
 
-- `"POST /rag_query"`: `rag_query`: This endpoint accepts POST requests and responds with a streaming response. It takes a JSON from the request's body and generates a query_id, then it uses a Weaviate client stored in the app state to query Weaviate. The function adds a background task and returns a streaming response, which is provided by a helper function.
+- `"POST /rag_query"`: `rag_query`: This endpoint accepts POST requests comprised of `website`, `timestamp` and `query` keys, and responds with a streaming response. It takes a JSON from the request's body and generates a `query_id`, then it uses a Weaviate client stored in the app state to query Weaviate. The function adds a background task and returns a streaming response, which is provided by a helper function.
 
 - `"GET /websites"`: `read_websites`: A GET route, which uses a helper function to return all website addresses.
 
