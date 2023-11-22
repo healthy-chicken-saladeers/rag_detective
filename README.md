@@ -148,6 +148,18 @@ To develop an application that uses Retrieval Augmented Generation (RAG) with an
 
 This section hosts a Dockerized FastAPI service designed for deployment on Google Cloud Platform's Vertex AI. It features a range of files facilitating Docker containerization and FastAPI application management.
 
+## Application Design
+
+Before we start implementing the website, we put together a detailed design document outlining the application’s architecture. We built a Solution Architecture abd Technical Architecture to ensure all our components work together.
+
+Here is our Solution Architecture:
+![Healthy Chicken Saladeers-3](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/15f3bb3e-9f04-4847-a44e-6c3785bf0696)
+
+![Healthy Chicken Saladeers](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/3243c801-cb92-4bc4-af8e-6152f4a1dea0)
+
+Here is our Technical Architecture:
+![Healthy Chicken Saladeers-2](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/f7b6a44d-a7c6-41ce-9bc9-a8b64098336e)
+
 ## Key Components
 
 ### Docker Setup
