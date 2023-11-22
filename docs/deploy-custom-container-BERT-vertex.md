@@ -79,11 +79,11 @@ which returns the `json`
 
 # Deployment onto Google Cloud Vertex AI
 
-Below are the instructions to guide you through the process of deploying your custom Docker image to Google Vertex AI. 
+Below are the instructions to guide you through the process of deploying the custom Docker image to Google Vertex AI. 
 
 ## Step 1: Build and Push Docker Image
 
-First, set your project ID, the name of the Docker image repository, and the Image URI using the following commands:
+First, set the project ID, the name of the Docker image repository, and the Image URI using the following commands:
 
 ```shell
 export PROJECT_ID="rag-detective"
@@ -91,7 +91,7 @@ export IMAGE_REPO_NAME="financial_sentiment_docker_image"
 export IMAGE_URI=gcr.io/$PROJECT_ID/$IMAGE_REPO_NAME
 ```
 
-Then use Docker to build your image and tag it with the Image URI:
+Then use Docker to build the image and tag it with the Image URI:
 
 ```shell
 docker build -f Dockerfile -t $IMAGE_URI .
@@ -103,11 +103,11 @@ Finally, push the Docker image to the Google Container Registry (GCR):
 docker push $IMAGE_URI
 ```
 
-The `-f` flag specifies the Dockerfile to use for building the image, and the `-t` flag tags the resulting image with the Image URI. Pushing the image uploads it to the GCR where it is stored in your Google Cloud project and is accessible by your Project ID.
+The `-f` flag specifies the Dockerfile to use for building the image, and the `-t` flag tags the resulting image with the Image URI. Pushing the image uploads it to the GCR where it is stored in the Google Cloud project and is accessible by the Project ID.
 
 ## Step 2: Upload Model to Vertex AI
 
-To upload your model to Vertex AI, execute the following command:
+To upload the model to Vertex AI, execute the following command:
 
 ```shell
 gcloud beta ai models upload \
@@ -118,7 +118,7 @@ gcloud beta ai models upload \
   --container-predict-route=/predict
 ```
 
-The `--container-image-uri` flag references the location of the pushed Docker image. The `--container-health-route` and `--container-predict-route` flags are the health check and prediction endpoints of your FastAPI app, respectively. 
+The `--container-image-uri` flag references the location of the pushed Docker image. The `--container-health-route` and `--container-predict-route` flags are the health check and prediction endpoints of the FastAPI app, respectively. 
 
 These custom endpoints replace the default Vertex AI health and prediction endpoints, which are `/v1/endpoints/${AIP_ENDPOINT_ID}/deployedModels/${AIP_DEPLOYED_MODEL_ID}` and `/v1/endpoints/${AIP_ENDPOINT_ID}/deployedModels/${AIP_DEPLOYED_MODEL_ID}:predict` respectively. 
 
@@ -137,7 +137,7 @@ Take note of the returned model ID for the next step.
 
 ## Step 3: Create Endpoint
 
-To create an endpoint for serving your model, run:
+To create an endpoint for serving the model, run:
 
 ```shell
 gcloud beta ai endpoints create \
@@ -167,13 +167,13 @@ gcloud beta ai endpoints deploy-model {ENDPOINT_ID} \
 ```
 Replace `{ENDPOINT_ID}` and `{MODEL_ID}` with the respective IDs you obtained from the previous steps.
 
-This command deploys your model to the specified endpoint. This process may take some time. If the operation times out, you can monitor it using:
+This command deploys the model to the specified endpoint. This process may take some time. If the operation times out, you can monitor it using:
 
 ```shell
 gcloud beta ai endpoints describe {ENDPOINT_ID} --region=us-central1
 ```
 
-You can then test your model and endpoint on the cloud console:
+You can then test the model and endpoint on the cloud console:
 
 ![](../vertex-json-request.jpg)
 
@@ -219,4 +219,4 @@ which returns
 }
 ```
 
-In order to incorporate this Vertex API call into our own API, see that document.
+In order to incorporate this Vertex API call into our own API, see that document.git
