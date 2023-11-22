@@ -227,7 +227,7 @@ Before we start implementing the website, we put together a detailed design docu
 
 ![Healthy Chicken Saladeers](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/3243c801-cb92-4bc4-af8e-6152f4a1dea0)
 
-Here is our Technical Architecture:
+## Technical Architecture:
 ![Healthy Chicken Saladeers-2](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/f7b6a44d-a7c6-41ce-9bc9-a8b64098336e)
 
 ## *NEW* Quick look: The new documentation files for this milestone
