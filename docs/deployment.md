@@ -46,6 +46,11 @@ Before deploying, enable the required APIs in GCP. Use the GCP search bar to fin
     - Storage Object Viewer
 Create and downlaod a json key renamed `gcp-service.json`  and save to `secrets/`.
 
+8. Be sure to export your OPENAI_APIKEY as an environment variable.
+```
+export OPENAI_APIKEY=sk-OPENAI_APIKEY
+```
+
 ## Setup Docker Container
 
 We will use Docker to build a container with all required software. The container will allow you to connect to GCP and create VMs.
