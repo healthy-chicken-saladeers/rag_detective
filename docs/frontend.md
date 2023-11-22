@@ -26,6 +26,29 @@ The repository `/src/frontend` folder includes the following files:
 
 **README.txt**: A text file that contains instructions on how to build the Docker image and run the Docker container for the simple frontend (and React frontend which we aren't currently using).
 
+## Instructions
+
+### Build docker image and run container
+
+In the cloned git repo cd into the `api_service` directory:
+
+```
+cd src/frontend
+```
+
+Execute the following command in your terminal to build the Docker image and run the container:
+
+```
+sh docker-shell.sh
+```
+
+### Run development web server (simple frontend)
+
+```
+http-server
+```
+Access at http://localhost:8080/
+
 ## index.html
 
 The index.html file is the main HTML document of the web app. It defines the structure and content of the web page.
