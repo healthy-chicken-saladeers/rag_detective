@@ -10,6 +10,7 @@ export SECRETS_DIR=$(pwd)/../../../secrets/
 export GCP_PROJECT="rag-detective" 
 export GCP_ZONE="us-central1-a"
 export GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json
+echo $OPENAI_APIKEY
 
 # Build the image based on the Dockerfile
 #docker build -t $IMAGE_NAME -f Dockerfile .
@@ -27,4 +28,5 @@ docker run --rm --name $IMAGE_NAME -ti \
 -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
 -e GCP_PROJECT=$GCP_PROJECT \
 -e GCP_ZONE=$GCP_ZONE \
+-e OPENAI_APIKEY=$OPENAI_APIKEY \
 $IMAGE_NAME

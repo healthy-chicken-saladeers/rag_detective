@@ -67,6 +67,7 @@
         env:
           GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp-service.json"
           GCS_BUCKET_NAME: "ac215_scraper_bucker"
+          OPENAI_APIKEY: "{{ lookup('env','OPENAI_APIKEY') }}"
         networks:
           - name: "{{docker_network_name}}"
         volumes:

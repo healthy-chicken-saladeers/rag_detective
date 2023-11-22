@@ -28,8 +28,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=Warning)
 
 # Set the OpenAI key as an Environment Variable (the different underscore notation is weaviate vs llamaindex)
-# os.environ["OPENAI_API_KEY"] = os.environ.get('OPENAI_APIKEY')
-os.environ["OPENAI_API_KEY"] = "sk-OPENAI_API_KEY"
+os.environ["OPENAI_API_KEY"] = os.environ.get('OPENAI_APIKEY')
 
 # Current Weaviate IP
 WEAVIATE_IP_ADDRESS = "34.42.138.162"
