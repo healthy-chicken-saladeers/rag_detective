@@ -265,6 +265,8 @@ This section hosts a Dockerized FastAPI service designed for deployment on Googl
 - `GET /get_urls/{query_id}`: Fetches URLs and financial flags for a query.
 - `POST /vertexai_predict`: Uses Vertex AI's Prediction API for sentiment analysis.
 
+![](img/api_server_docs.jpg)
+
 The repository offers comprehensive guidance on setting up and running the Dockerized FastAPI service, alongside detailed documentation accessible through the FastAPI's interactive documentation feature.
 
 For more information and detailed instructions, see [api-service-documentation.md.](./docs/api-service-documentation.md)
@@ -389,7 +391,7 @@ For more information and detailed instructions, see [deployment.md.](./docs/depl
 
 We also provide documentation on this functionality [here.](./docs/vscode-remote-ssh-extension-gcp-vm.md)
 
-## We've moved the rest of the readme content from previous milestones into `/reports`
+## We've archived the rest of the readme content from previous milestones
 
 This concludes what was shown in the [Milestone5](https://github.com/ac2152023/ac2152023_template/tree/milestone5) template, so to make this more organized we've moved all the previous content to [reports/milestone4.md.](reports/milestone4.md)
 
