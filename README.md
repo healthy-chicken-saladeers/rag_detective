@@ -138,7 +138,7 @@ To develop an application that uses Retrieval Augmented Generation (RAG) with an
 
 ## *NEW* FastAPI Service Summary
 
-This repository hosts a Dockerized FastAPI service designed for deployment on Google Cloud Platform's Vertex AI. It features a range of files facilitating Docker containerization and FastAPI application management.
+This section hosts a Dockerized FastAPI service designed for deployment on Google Cloud Platform's Vertex AI. It features a range of files facilitating Docker containerization and FastAPI application management.
 
 ## Key Components
 
@@ -169,7 +169,7 @@ For more information and detailed instructions, see [api-service-documentation.m
 
 ## *NEW* Frontend Service Summary
 
-This repository contains a Dockerized frontend application, suitable for deployment with a web server. It includes essential files for building and running the application in a Docker container.
+This section contains a Dockerized frontend application, suitable for deployment with a web server. It includes essential files for building and running the application in a Docker container.
 
 ## Key Components
 
@@ -198,11 +198,11 @@ This repository contains a Dockerized frontend application, suitable for deploym
 - Applies modern styling to the web application, utilizing Google's Roboto font and various CSS animations.
 - Ensures a cohesive and appealing visual experience, with designated styles for different UI components.
 
-For a comprehensive guide on setting up and interacting with the frontend application, see [frontend.md](./docs/frontend.md).
+For a comprehensive guide on setting up and interacting with the frontend application, see [frontend.md.](./docs/frontend.md)
 
 ## *NEW* Financial Sentiment BERT Custom Model Container
 
-This repository provides the setup for deploying a BERT model, fine-tuned for financial sentiment, using FastAPI, Docker, and Google Vertex AI.
+This section provides the setup for deploying a BERT model, fine-tuned for financial sentiment, using FastAPI, Docker, and Google Vertex AI.
 
 ## Key Components
 
@@ -245,8 +245,47 @@ This repository provides the setup for deploying a BERT model, fine-tuned for fi
 
 This repository offers comprehensive guidance on setting up, testing, and deploying the BERT model for financial sentiment analysis using Docker and Google Vertex AI.
 
-For more information and detailed instructions, see [deploy-custom-container-BERT-vertex.md](./docs/deploy-custom-container-BERT-vertex.md).
+For more information and detailed instructions, see [deploy-custom-container-BERT-vertex.md.](./docs/deploy-custom-container-BERT-vertex.md)
 
+## *NEW* Deployment & Scaling
+
+This section outlines the deployment and scaling procedures for the RAG Detective App using Ansible and Google Cloud Platform (GCP) services.
+
+## Key Components
+
+### Setup and Deployment
+- **Enable GCP APIs**: Compute Engine, Service Usage, Cloud Resource Manager, and Google Container Registry APIs.
+- **GCP Service Accounts**: Steps to create and configure service accounts like `deployment` and `gcp-service` with specific roles for deployment activities.
+
+### Docker Container Setup
+- Using Docker to build a container for connecting to GCP and creating VMs.
+- Detailed instructions for building and running the Docker container, including the expected output.
+
+### SSH Configuration
+- Enabling OS login and creating SSH keys for the service account.
+- Adding public SSH keys to instances for secure access.
+
+### Deployment Setup
+- **Build and Push Docker Containers to GCR**: Utilizing Ansible to automate the process.
+- **Create Compute Instance (VM) Server in GCP**: Steps to create a VM and update the inventory file with its external IP address.
+- **Provision Compute Instance in GCP**: Instructions for installing and setting up required deployment elements.
+- **Setup Docker Containers in the Compute Instance**: Configuring and launching necessary Docker containers.
+
+### Web Server Configuration
+- Creating and setting up an Nginx configuration file for the web server.
+- Deploying and restarting the Nginx container to reflect changes.
+
+## Testing and Verification
+- Commands to SSH into the server, check container statuses, and access logs.
+- Verification of the web server's functionality by accessing the deployed app via its external IP address.
+
+This repository provides a comprehensive guide for deploying and scaling the RAG Detective App using Ansible and GCP, ensuring a streamlined and secure deployment process.
+
+For more information and detailed instructions, see [deployment.md.](./docs/deployment.md)
+
+## *NEW* Using VS Code Remote - SSH Extension to Connect to GCP VM
+
+We also provide documentation on this functionality [here.](vscode-remote-ssh-extension-gcp-vm.md)
 
 ### Quick Review: Fine-tuning BERT with Financial data for sentiment analysis
 
