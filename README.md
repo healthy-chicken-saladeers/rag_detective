@@ -286,6 +286,9 @@ This section contains a Dockerized frontend application, suitable for deployment
 - `index.html`: The main HTML file for the app, setting up the layout and interactive elements for the "Rag Detective" web application.
 - `styles.css`: Defines the visual design of the application, including animations, color schemes, and responsive elements for a user-friendly interface.
 
+![](img/rag-detective-app.jpg)
+![](img/rag-detective-app2.jpg)
+
 ## Detailed Overview
 
 ### Dockerfile and Scripts
