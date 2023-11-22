@@ -219,7 +219,7 @@ Healthy Chicken Saladeers
 **Project**
 To develop an application that uses Retrieval Augmented Generation (RAG) with an LLM to create a chatbot that can answer specific questions about a company through the complete knowledge of all the information available publicly on their website in a manner that’s more specific and insightful than using a search engine.
 
-## Application Design
+## *NEW* Application Design
 
 Before we start implementing the website, we put together a detailed design document outlining the application’s architecture. We built a Solution Architecture and Technical Architecture to ensure all our components work together.
 
