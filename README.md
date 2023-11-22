@@ -185,7 +185,7 @@ Project Organization
 # AC215 - Milestone5 - RAG Detective
 
 **Team Members**
-Ian Kelk, Mandy Wong, Alyssa Lutservitz, Nitesh Kumar, Bailey Bailey
+Ian Kelk, Mandy Wong, Alyssa Lutservitz, Nitesh Kumar
 
 **Group Name**
 Healthy Chicken Saladeers
@@ -197,12 +197,13 @@ To develop an application that uses Retrieval Augmented Generation (RAG) with an
 
 We've put together a detailed design document outlining the application’s architecture, comprised of a Solution Architecture and Technical Architecture graphic to ensure all our components work together.
 
-![Healthy Chicken Saladeers-3](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/15f3bb3e-9f04-4847-a44e-6c3785bf0696)
+![](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/15f3bb3e-9f04-4847-a44e-6c3785bf0696)
 
-![Healthy Chicken Saladeers](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/3243c801-cb92-4bc4-af8e-6152f4a1dea0)
+![](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/3243c801-cb92-4bc4-af8e-6152f4a1dea0)
 
 ## Technical Architecture:
-![Healthy Chicken Saladeers-2](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/f7b6a44d-a7c6-41ce-9bc9-a8b64098336e)
+
+![](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/f7b6a44d-a7c6-41ce-9bc9-a8b64098336e)
 
 ## Quick look: The new documentation files for this milestone
 #### See below for descriptions of the contents of each file, but this is to show what's new.
