@@ -49,7 +49,7 @@ Project Organization
         │   │   │   ├── 66Agree_balanced.ipynb
         │   │   │   ├── 75Agree_balanced.ipynb
         │   │   │   └── AllAgree_balanced.ipynb
-        │   │   └── longer_diabiasing_20_epochs
+        │   │   └── longer_debiasing_20_epochs
         │   │       ├── 50Agree_balanced_20.ipynb
         │   │       ├── 66Agree_balanced_20.ipynb
         │   │       ├── 75Agree_balanced_20.ipynb
@@ -223,7 +223,7 @@ Links to the original notebooks, which are identical but used the four different
 There are also debiased versions of these notebooks with 10 and 20 epochs. We kept these in their own folders as they were used to generate the data for the Weights & Biases reports.
 
 * [10 epochs initial debiasing notebooks folder](./notebooks/BERT_fine-tune_financials_balanced/intial_debiasing)
-* [20 epochs further exploration notebooks folder](./notebooks/BERT_fine-tune_financials_balanced/longer_diabiasing_20_epochs)
+* [20 epochs further exploration notebooks folder](./notebooks/BERT_fine-tune_financials_balanced/longer_debiasing_20_epochs)
 
 # *New* Setting Up a Google Cloud Function
 
