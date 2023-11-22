@@ -219,6 +219,17 @@ Healthy Chicken Saladeers
 **Project**
 To develop an application that uses Retrieval Augmented Generation (RAG) with an LLM to create a chatbot that can answer specific questions about a company through the complete knowledge of all the information available publicly on their website in a manner that’s more specific and insightful than using a search engine.
 
+## Application Design
+
+Before we start implementing the website, we put together a detailed design document outlining the application’s architecture. We built a Solution Architecture and Technical Architecture to ensure all our components work together.
+
+![Healthy Chicken Saladeers-3](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/15f3bb3e-9f04-4847-a44e-6c3785bf0696)
+
+![Healthy Chicken Saladeers](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/3243c801-cb92-4bc4-af8e-6152f4a1dea0)
+
+Here is our Technical Architecture:
+![Healthy Chicken Saladeers-2](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/f7b6a44d-a7c6-41ce-9bc9-a8b64098336e)
+
 ## *NEW* Quick look: The new documentation files for this milestone
 #### See below for descriptions of the contents of each file, but this is to show what's new.
 - [api-service-documentation.md](./docs/api-service-documentation.md)
@@ -229,19 +240,7 @@ To develop an application that uses Retrieval Augmented Generation (RAG) with an
 
 ## *NEW* FastAPI Service Summary
 
-This section hosts a Dockerized FastAPI service designed for deployment on Google Cloud Platform's Vertex AI. It features a range of files facilitating Docker containerization and FastAPI application management.
-
-## Application Design
-
-Before we start implementing the website, we put together a detailed design document outlining the application’s architecture. We built a Solution Architecture abd Technical Architecture to ensure all our components work together.
-
-Here is our Solution Architecture:
-![Healthy Chicken Saladeers-3](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/15f3bb3e-9f04-4847-a44e-6c3785bf0696)
-
-![Healthy Chicken Saladeers](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/3243c801-cb92-4bc4-af8e-6152f4a1dea0)
-
-Here is our Technical Architecture:
-![Healthy Chicken Saladeers-2](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/f7b6a44d-a7c6-41ce-9bc9-a8b64098336e)
+This section hosts a Dockerized FastAPI service designed for deployment on Google Cloud. It features a range of files facilitating Docker containerization and FastAPI application management.
 
 ## Key Components
 
