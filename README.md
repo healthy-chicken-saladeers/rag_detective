@@ -9,63 +9,64 @@ Project Organization
         ├── README.md
         ├── docker-compose.yml
         ├── docs
-        |    ├── api-service-documentation.md
-        |    ├── deploy-custom-container-BERT-vertex.md
-        |    ├── deployment.md
-        |    ├── docker-gcsfuse.md
-        |    ├── experiment-bert.md
-        |    ├── frontend.md
-        |    ├── frontend_documentation.md
-        |    ├── gc-function-instructions.md
-        |    ├── gcp-cli-instructions-macos.md
-        |    ├── gcp-docker-commands.md
-        |    ├── gcp-setup-instructions.md
-        |    ├── gcs-bucket-instructions.md
-        |    ├── notebooks_env_file_setup.md
-        |    ├── optimization.md
-        |    ├── vertex-ai-model-training.md
-        |    └── vscode-remote-ssh-extension-gcp-vm.md
+        │   ├── api-service-documentation.md
+        │   ├── deploy-custom-container-BERT-vertex.md
+        │   ├── deployment.md
+        │   ├── docker-gcsfuse.md
+        │   ├── experiment-bert.md
+        │   ├── frontend.md
+        │   ├── frontend_documentation.md
+        │   ├── gc-function-instructions.md
+        │   ├── gcp-cli-instructions-macos.md
+        │   ├── gcp-docker-commands.md
+        │   ├── gcp-setup-instructions.md
+        │   ├── gcs-bucket-instructions.md
+        │   ├── notebooks_env_file_setup.md
+        │   ├── optimization.md
+        │   ├── vertex-ai-model-training.md
+        │   └── vscode-remote-ssh-extension-gcp-vm.md
         ├── img
-        │   └── <list_of_many_images_used_in_markdown>
+        │   ├── ...
         ├── ml_workflow
-        |    ├── data_collector
-        |    |      ├── Dockerfile
-        |    |      ├── Pipfile
-        |    |      ├── Pipfile.lock
-        |    |      ├── Untitled.ipynb
-        |    |      ├── cli.py
-        |    |      ├── data
-        |    |      ├── docker-entrypoint.sh
-        |    |      └── docker-shell.sh
-        |    ├── inference
-        |    |      ├── Dockerfile
-        |    |      ├── app.py
-        |    |      ├── docker-shell.sh
-        |    |      └── predictor.py
-        |    ├── model_training
-        |    |      ├── Dockerfile
-        |    |      ├── Pipfile
-        |    |      ├── Pipfile.lock
-        |    |      ├── cli.py
-        |    |      ├── docker-entrypoint.sh
-        |    |      ├── docker-shell.sh
-        |    |      ├── package
-        |    |      ├       ├── setup.py
-        |    |      ├       └── trainer
-        |    |      ├               ├── __init__.py
-        |    |      ├               └── task.py
-        |    |      ├── package-trainer.sh
-        |    |      └── ragdetective-app-trainer.tar.gz
-        |    └── workflow
-        |    |      ├── Dockerfile
-        |    |      ├── Pipfile
-        |    |      ├── Pipfile.lock
-        |    |      ├── cli.py
-        |    |      ├── docker-entrypoint.sh
-        |    |      ├── docker-shell.sh
-        |    |      ├── model.py
-        |    |      ├── model_training.yaml
-        |    |      └── sample-pipeline1.yaml
+        │   ├── data_collector
+        │   │   ├── Dockerfile
+        │   │   ├── Pipfile
+        │   │   ├── Pipfile.lock
+        │   │   ├── Untitled.ipynb
+        │   │   ├── cli.py
+        │   │   ├── data
+        │   │   │   └── v1.0.zip
+        │   │   ├── docker-entrypoint.sh
+        │   │   └── docker-shell.sh
+        │   ├── inference
+        │   │   ├── Dockerfile
+        │   │   ├── app.py
+        │   │   ├── docker-shell.sh
+        │   │   └── predictor.py
+        │   ├── model_training
+        │   │   ├── Dockerfile
+        │   │   ├── Pipfile
+        │   │   ├── Pipfile.lock
+        │   │   ├── cli.py
+        │   │   ├── docker-entrypoint.sh
+        │   │   ├── docker-shell.sh
+        │   │   ├── package
+        │   │   │   ├── setup.py
+        │   │   │   └── trainer
+        │   │   │       ├── __init__.py
+        │   │   │       └── task.py
+        │   │   ├── package-trainer.sh
+        │   │   └── ragdetective-app-trainer.tar.gz
+        │   └── workflow
+        │       ├── Dockerfile
+        │       ├── Pipfile
+        │       ├── Pipfile.lock
+        │       ├── cli.py
+        │       ├── docker-entrypoint.sh
+        │       ├── docker-shell.sh
+        │       ├── model.py
+        │       ├── model_training.yaml
+        │       └── sample-pipeline1.yaml
         ├── model_training
         │   ├── Dockerfile
         │   ├── Pipfile
@@ -82,59 +83,34 @@ Project Organization
         │   └── secrets
         ├── notebooks
         │   ├── BERT_fine-tune_financials
-        │   │   ├── 50Agree.ipynb
-        │   │   ├── 66Agree.ipynb
-        │   │   ├── 75Agree.ipynb
-        │   │   ├── AllAgree.ipynb
-        │   │   └── finetune_bert_py_in_colab.ipynb
+        │   │   └── ...
         │   ├── BERT_fine-tune_financials_balanced
-        │   │   ├── 75Agree_balanced_30_checkpointed.ipynb
-        │   │   ├── 75Agree_balanced_30_checkpointed_vertex.ipynb
+        │   │   ├── ...
         │   │   ├── intial_debiasing
-        │   │   │   ├── 50Agree_balanced.ipynb
-        │   │   │   ├── 66Agree_balanced.ipynb
-        │   │   │   ├── 75Agree_balanced.ipynb
-        │   │   │   └── AllAgree_balanced.ipynb
-        │   │   └── longer_diabiasing_20_epochs
-        │   │       ├── 50Agree_balanced_20.ipynb
-        │   │       ├── 66Agree_balanced_20.ipynb
-        │   │       ├── 75Agree_balanced_20.ipynb
-        │   │       └── AllAgree_balanced_20.ipynb
-        │   ├── add_data_to_weaviate_old.ipynb
+        │   │   │   ├── ...
+        │   │   └── longer_debiasing_20_epochs
+        │   │       ├── ...
         │   ├── distillation
-        │   │   ├── bert_lstm_distillation_66.ipynb
-        │   │   └── bert_lstm_distillation_75.ipynb
+        │   │   ├── ...
         │   ├── financial_data
-        │   │   ├── Sentences_50Agree.txt
-        │   │   ├── Sentences_66Agree.txt
-        │   │   ├── Sentences_75Agree.txt
-        │   │   └── Sentences_AllAgree.txt
-        │   ├── indexing_with_llamaindex.ipynb
-        |   |       └── rag-detective-389f2d6f87a9.json
-        │   ├── querying_with_llamaindex.ipynb
-        │   ├── rag_with_llamaindex.ipynb
-        │   ├── rag_with_weaviate.ipynb
-        │   ├── sample_data
-        │   │   ├── ai21.com_2023-10-06T18-11-24.csv
-        │   │   └── www.chooch.com_2023-10-03T15-30-00.csv
-        │   ├── scraping_notebook_milestone4.ipynb
-        │   └── sitemap.csv
+        │   │   ├── ...
+        │   └── ...
         ├── reports
         │   ├── milestone2.md
-        │   └── milestone3.md
+        │   ├── milestone3.md
         │   └── milestone4.md
         └── src
             ├── api_service
-            |   ├── Dockerfile
-            |   ├── Pipfile
-            |   ├── Pipfile.lock
-            |   ├── README.txt
-            |   ├── api
-            |   |   ├── helper.py
-            |   |   └── service.py
-            |   ├── docker-entrypoint.sh
-            |   ├── docker-shell.sh
-            |   └── secrets
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── README.txt
+            │   ├── api
+            │   │   ├── helper.py
+            │   │   └── service.py
+            │   ├── docker-entrypoint.sh
+            │   ├── docker-shell.sh
+            │   └── secrets
             ├── bert_financial
             │   ├── Dockerfile
             │   ├── Pipfile
@@ -154,17 +130,16 @@ Project Organization
             │   ├── docker-shell.sh
             │   ├── inventory.yml
             │   └── nginx-conf
+            │       └── nginx
+            │           └── nginx.conf
             ├── frontend
             │   ├── Dockerfile
             │   ├── Dockerfile.dev
             │   ├── README.txt
             │   ├── docker-shell.sh
             │   ├── img
-            │   |   ├── negative.png
-            │   |   ├── neutral.png
-            |   │   └── positive.png
+            │   │   └── ...
             │   ├── index.html
-            │   ├── index.old.html
             │   └── styles.css
             ├── llama_index
             │   ├── Dockerfile
@@ -172,21 +147,21 @@ Project Organization
             │   ├── Pipfile.lock
             │   ├── build_query.py
             │   ├── data
-            │   │   └── paul_graham_essay.txt
+            │   │   └── ...
             │   ├── entrypoint.sh
             │   ├── gcf
-            |   |   ├── add_to_weaviate_schema
-            |   |   |   ├── add_to_weaviate.py
-            |   |   |   ├── requirements.txt
-            |   |   ├── create_weaviate_schema
-            |   |   |   ├── gcf_create_weaviate_schema.py
-            |   |   |   ├── requirements.txt
-            |   │   ├── gcf_index_llamaindex
-            |   |   |   ├── gcf_index_llamaindex.py
-            |   |   |   ├── requirements.txt
-            |   │   ├── gcf_query_llamaindex
-            |   |   |   ├── gcf_query_llamaindex.py
-            |   |   |   ├── requirements.txt
+            │   │   ├── add_to_weaviate
+            │   │   │   ├── add_to_weaviate.py
+            │   │   │   └── requirements.txt
+            │   │   ├── create_weaviate_schema
+            │   │   │   ├── gcf_create_weaviate_schema.py
+            │   │   │   └── requirements.txt
+            │   │   ├── index_llama_index
+            │   │   │   ├── gcf_index_llamaindex.py
+            │   │   │   └── requirements.txt
+            │   │   └── query_llama_index
+            │   │       ├── gcf_query_llamaindex.py
+            │   │       └── requirements.txt
             │   └── gcsbucket
             ├── prompts
             │   └── prompts.py
@@ -196,7 +171,6 @@ Project Organization
             │   ├── Pipfile.lock
             │   ├── chromedriver
             │   ├── log
-            │   ├── rag-detective-2ed9f2d52fde.json
             │   ├── scraper.py
             │   ├── scraperlib.py
             │   ├── scraping_notebook.ipynb
