@@ -9,17 +9,63 @@ Project Organization
         ├── README.md
         ├── docker-compose.yml
         ├── docs
-        │   ├── docker-gcsfuse.md
-        │   ├── experiment-bert.md
-        │   ├── gc-function-instructions.md
-        │   ├── gcp-cli-instructions-macos.md
-        │   ├── gcp-docker-commands.md
-        │   ├── gcp-setup-instructions.md
-        │   ├── gcs-bucket-instructions.md
-        │   ├── optimization.md
-        │   └── vertex-ai-model-training.md
+        |    ├── api-service-documentation.md
+        |    ├── deploy-custom-container-BERT-vertex.md
+        |    ├── deployment.md
+        |    ├── docker-gcsfuse.md
+        |    ├── experiment-bert.md
+        |    ├── frontend.md
+        |    ├── frontend_documentation.md
+        |    ├── gc-function-instructions.md
+        |    ├── gcp-cli-instructions-macos.md
+        |    ├── gcp-docker-commands.md
+        |    ├── gcp-setup-instructions.md
+        |    ├── gcs-bucket-instructions.md
+        |    ├── notebooks_env_file_setup.md
+        |    ├── optimization.md
+        |    ├── vertex-ai-model-training.md
+        |    └── vscode-remote-ssh-extension-gcp-vm.md
         ├── img
-        │   ├── <list_of_many_images_used_in_markdown>
+        │   └── <list_of_many_images_used_in_markdown>
+        ├── ml_workflow
+        |    ├── data_collector
+        |    |      ├── Dockerfile
+        |    |      ├── Pipfile
+        |    |      ├── Pipfile.lock
+        |    |      ├── Untitled.ipynb
+        |    |      ├── cli.py
+        |    |      ├── data
+        |    |      ├── docker-entrypoint.sh
+        |    |      └── docker-shell.sh
+        |    ├── inference
+        |    |      ├── Dockerfile
+        |    |      ├── app.py
+        |    |      ├── docker-shell.sh
+        |    |      └── predictor.py
+        |    ├── model_training
+        |    |      ├── Dockerfile
+        |    |      ├── Pipfile
+        |    |      ├── Pipfile.lock
+        |    |      ├── cli.py
+        |    |      ├── docker-entrypoint.sh
+        |    |      ├── docker-shell.sh
+        |    |      ├── package
+        |    |      ├       ├── setup.py
+        |    |      ├       └── trainer
+        |    |      ├               ├── __init__.py
+        |    |      ├               └── task.py
+        |    |      ├── package-trainer.sh
+        |    |      └── ragdetective-app-trainer.tar.gz
+        |    └── workflow
+        |    |      ├── Dockerfile
+        |    |      ├── Pipfile
+        |    |      ├── Pipfile.lock
+        |    |      ├── cli.py
+        |    |      ├── docker-entrypoint.sh
+        |    |      ├── docker-shell.sh
+        |    |      ├── model.py
+        |    |      ├── model_training.yaml
+        |    |      └── sample-pipeline1.yaml
         ├── model_training
         │   ├── Dockerfile
         │   ├── Pipfile
@@ -64,6 +110,7 @@ Project Organization
         │   │   ├── Sentences_75Agree.txt
         │   │   └── Sentences_AllAgree.txt
         │   ├── indexing_with_llamaindex.ipynb
+        |   |       └── rag-detective-389f2d6f87a9.json
         │   ├── querying_with_llamaindex.ipynb
         │   ├── rag_with_llamaindex.ipynb
         │   ├── rag_with_weaviate.ipynb
@@ -75,7 +122,19 @@ Project Organization
         ├── reports
         │   ├── milestone2.md
         │   └── milestone3.md
+        │   └── milestone4.md
         └── src
+            ├── api_service
+            |   ├── Dockerfile
+            |   ├── Pipfile
+            |   ├── Pipfile.lock
+            |   ├── README.txt
+            |   ├── api
+            |   |   ├── helper.py
+            |   |   └── service.py
+            |   ├── docker-entrypoint.sh
+            |   ├── docker-shell.sh
+            |   └── secrets
             ├── bert_financial
             │   ├── Dockerfile
             │   ├── Pipfile
@@ -83,6 +142,30 @@ Project Organization
             │   ├── entrypoint.sh
             │   ├── finetune_bert.py
             │   └── gcsbucket
+            ├── deployment
+            │   ├── Dockerfile
+            │   ├── README.md
+            │   ├── deploy-create-instance.yml
+            │   ├── deploy-docker-images.yml
+            │   ├── deploy-provision-instance.yml
+            │   ├── deploy-setup-containers.yml
+            │   ├── deploy-setup-webserver.yml
+            │   ├── docker-entrypoint.sh
+            │   ├── docker-shell.sh
+            │   ├── inventory.yml
+            │   └── nginx-conf
+            ├── frontend
+            │   ├── Dockerfile
+            │   ├── Dockerfile.dev
+            │   ├── README.txt
+            │   ├── docker-shell.sh
+            │   ├── img
+            │   |   ├── negative.png
+            │   |   ├── neutral.png
+            |   │   └── positive.png
+            │   ├── index.html
+            │   ├── index.old.html
+            │   └── styles.css
             ├── llama_index
             │   ├── Dockerfile
             │   ├── Pipfile
