@@ -7,6 +7,7 @@ WORKDIR /usr/share/nginx/html
 # Copy the HTML files into the container
 COPY index.html /usr/share/nginx/html/
 COPY styles.css /usr/share/nginx/html/
+COPY img/ /usr/share/nginx/html/img/
 
 # Expose port 80 to the outside world
 EXPOSE 80

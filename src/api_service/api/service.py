@@ -28,7 +28,8 @@ import warnings
 warnings.simplefilter(action='ignore', category=Warning)
 
 # Set the OpenAI key as an Environment Variable (the different underscore notation is weaviate vs llamaindex)
-os.environ["OPENAI_API_KEY"] = os.environ.get('OPENAI_APIKEY')
+# os.environ["OPENAI_API_KEY"] = os.environ.get('OPENAI_APIKEY')
+os.environ["OPENAI_API_KEY"] = "sk-OPENAI_API_KEY"
 
 # Current Weaviate IP
 WEAVIATE_IP_ADDRESS = "34.42.138.162"
@@ -154,7 +155,8 @@ async def get_urls(query_id: str):
 async def vertexai_predict(request: Request):
     ENDPOINT_ID = "7054451210648027136"
     PROJECT_ID = "rag-detective"
-    SERVICE_ACCOUNT_FILE = '../secrets/ml-workflow.json'
+    SERVICE_ACCOUNT_FILE = './secrets/ml-workflow.json'
+    print("hello", os.getcwd())
 
     # Load data received from your HTML file's JavaScript fetch function
     data = await request.json()
