@@ -125,7 +125,7 @@ Project Organization
                 └── weaviate.schema.old.md
 
 --------
-# AC215 - Milestone4 - RAG Detective
+# AC215 - Milestone5 - RAG Detective
 
 **Team Members**
 Ian Kelk, Mandy Wong, Alyssa Lutservitz, Nitesh Kumar, Bailey Bailey
@@ -135,6 +135,38 @@ Healthy Chicken Saladeers
 
 **Project**
 To develop an application that uses Retrieval Augmented Generation (RAG) with an LLM to create a chatbot that can answer specific questions about a company through the complete knowledge of all the information available publicly on their website in a manner that’s more specific and insightful than using a search engine.
+
+## *NEW* FastAPI Service Summary
+
+This repository hosts a Dockerized FastAPI service designed for deployment on Google Cloud Platform's Vertex AI. It features a range of files facilitating Docker containerization and FastAPI application management.
+
+## Key Components
+
+### Docker Setup
+- `Dockerfile`: Creates a Docker image for the FastAPI app, based on Debian with Python 3.9.
+- `docker-shell.sh`: Script to build and run the Docker container, mapping local directories and setting environment variables.
+- `docker-entrypoint.sh`: Script that initiates the Uvicorn server to serve the FastAPI app.
+
+### FastAPI Application
+- `api/service.py`: The core application file defining API endpoints and their functionalities.
+- `api/helper.py`: Provides support functions for the FastAPI routes.
+
+### Documentation and Instructions
+- `README.txt`: Basic instructions for Docker image and container operations, and FastAPI interaction.
+
+## API Endpoints Overview
+- `GET /`: Returns a welcome message.
+- `GET /streaming`: Demonstrates streaming responses.
+- `POST /rag_query`: Handles queries with streaming response.
+- `GET /websites`: Lists website addresses.
+- `GET /timestamps/{website_address}`: Retrieves timestamps for a specific website.
+- `GET /get_urls/{query_id}`: Fetches URLs and financial flags for a query.
+- `POST /vertexai_predict`: Uses Vertex AI's Prediction API for sentiment analysis.
+
+The repository offers comprehensive guidance on setting up and running the Dockerized FastAPI service, alongside detailed documentation accessible through the FastAPI's interactive documentation feature.
+
+For more information and detailed instructions, see [api-service-documentation.md](./docs/api-service-documentation.md).
+
 
 ### Quick Review: Fine-tuning BERT with Financial data for sentiment analysis
 
