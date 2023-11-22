@@ -136,6 +136,14 @@ Healthy Chicken Saladeers
 **Project**
 To develop an application that uses Retrieval Augmented Generation (RAG) with an LLM to create a chatbot that can answer specific questions about a company through the complete knowledge of all the information available publicly on their website in a manner that’s more specific and insightful than using a search engine.
 
+## *NEW* Quick look: The new documentation files for this milestone
+#### See below for descriptions of the contents of each file, but this is to show what's new.
+- [api-service-documentation.md](./docs/api-service-documentation.md)
+- [frontend.md](./docs/frontend.md)
+- [deploy-custom-container-BERT-vertex.md.](./docs/deploy-custom-container-BERT-vertex.md)
+- [deployment.md](./docs/deployment.md)
+- [vscode-remote-ssh-extension-gcp-vm.md](./docs/vscode-remote-ssh-extension-gcp-vm.md)
+
 ## *NEW* FastAPI Service Summary
 
 This section hosts a Dockerized FastAPI service designed for deployment on Google Cloud Platform's Vertex AI. It features a range of files facilitating Docker containerization and FastAPI application management.
@@ -165,7 +173,7 @@ This section hosts a Dockerized FastAPI service designed for deployment on Googl
 
 The repository offers comprehensive guidance on setting up and running the Dockerized FastAPI service, alongside detailed documentation accessible through the FastAPI's interactive documentation feature.
 
-For more information and detailed instructions, see [api-service-documentation.md](./docs/api-service-documentation.md).
+For more information and detailed instructions, see [api-service-documentation.md.](./docs/api-service-documentation.md)
 
 ## *NEW* Frontend Service Summary
 
@@ -285,7 +293,7 @@ For more information and detailed instructions, see [deployment.md.](./docs/depl
 
 ## *NEW* Using VS Code Remote - SSH Extension to Connect to GCP VM
 
-We also provide documentation on this functionality [here.](vscode-remote-ssh-extension-gcp-vm.md)
+We also provide documentation on this functionality [here.](./docs/vscode-remote-ssh-extension-gcp-vm.md)
 
 ### Quick Review: Fine-tuning BERT with Financial data for sentiment analysis
 
