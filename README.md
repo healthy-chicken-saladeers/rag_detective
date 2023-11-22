@@ -200,6 +200,53 @@ This repository contains a Dockerized frontend application, suitable for deploym
 
 For a comprehensive guide on setting up and interacting with the frontend application, see [frontend.md](./docs/frontend.md).
 
+## *NEW* Financial Sentiment BERT Custom Model Container
+
+This repository provides the setup for deploying a BERT model, fine-tuned for financial sentiment, using FastAPI, Docker, and Google Vertex AI.
+
+## Key Components
+
+### Files and Scripts
+- `predictor.py`: Handles pre-processing, model prediction, and post-processing.
+- `app.py`: A FastAPI wrapper for serving the model.
+- `Dockerfile`: Defines Docker commands for setting up the API's image.
+- `shell_script.sh`: Builds and runs the Docker image.
+
+### Detailed Descriptions
+
+#### Predictor.py
+- `CustomPredictor` class: Manages predictions, loading the model, and providing API readiness status.
+- `CustomModelPredictor` class: Handles model loading, prediction, and pre/post-processing tasks.
+
+#### App.py
+- Implements FastAPI endpoints for health checks (`/health`) and predictions (`/predict`).
+
+#### Dockerfile
+- Configures the TensorFlow image base, copies code, installs dependencies, and starts the API on port 8080.
+
+#### Shell Script
+- Automates Docker image building and container launching, binding the container's port 8000 to the host's port 8000.
+
+## Usage Instructions
+- Download the pre-trained model from Google Cloud Storage.
+- Build and run the Docker container using `docker-shell.sh`.
+- Test the API using `curl` commands.
+
+## Deployment to Google Cloud Vertex AI
+
+### Step-by-Step Guide
+1. **Build and Push Docker Image:** Set environment variables, build the Docker image, and push it to the Google Container Registry.
+2. **Upload Model to Vertex AI:** Use `gcloud` commands to upload the model to Vertex AI, specifying custom health and prediction routes.
+3. **Create Endpoint:** Generate an endpoint for model serving.
+4. **Deploy Model to Endpoint:** Deploy the model using `gcloud` commands and test via the cloud console or `curl`.
+
+## Cloud Testing
+- Test the deployed model and endpoint on Google Cloud's console or using `curl` commands.
+
+This repository offers comprehensive guidance on setting up, testing, and deploying the BERT model for financial sentiment analysis using Docker and Google Vertex AI.
+
+For more information and detailed instructions, see [deploy-custom-container-BERT-vertex.md](./docs/deploy-custom-container-BERT-vertex.md).
+
 
 ### Quick Review: Fine-tuning BERT with Financial data for sentiment analysis
 
