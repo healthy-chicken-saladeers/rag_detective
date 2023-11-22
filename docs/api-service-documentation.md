@@ -1,6 +1,6 @@
 # FastAPI Service
 
-This repository contains a Dockerized FastAPI service which is intended to be deployed with Google Cloud Platform's Vertex AI.
+This repository contains a Dockerized FastAPI service which is intended to be deployed with Google Cloud Platform. It calls endpoints which access our Weaviate server as well as our Google Vertex AI deployed BERT model's API.
 
 ## Files
 

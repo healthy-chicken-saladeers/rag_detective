@@ -221,7 +221,7 @@ To develop an application that uses Retrieval Augmented Generation (RAG) with an
 
 ## *NEW* Application Design
 
-Before we start implementing the website, we put together a detailed design document outlining the application’s architecture. We built a Solution Architecture and Technical Architecture to ensure all our components work together.
+We've put together a detailed design document outlining the application’s architecture, comprised of a Solution Architecture and Technical Architecture graphic to ensure all our components work together.
 
 ![Healthy Chicken Saladeers-3](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/15f3bb3e-9f04-4847-a44e-6c3785bf0696)
 
