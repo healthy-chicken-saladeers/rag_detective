@@ -1,4 +1,4 @@
-# Dockerized FastAPI Service
+# FastAPI Service
 
 This repository contains a Dockerized FastAPI service which is intended to be deployed with Google Cloud Platform's Vertex AI.
 
