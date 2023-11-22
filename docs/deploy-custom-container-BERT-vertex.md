@@ -175,7 +175,7 @@ gcloud beta ai endpoints describe {ENDPOINT_ID} --region=us-central1
 
 You can then test the model and endpoint on the cloud console:
 
-![](../vertex-json-request.jpg)
+![](../img/vertex-json-request.jpg)
 
 Or using cURL:
 
