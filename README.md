@@ -15,7 +15,6 @@ Project Organization
         │   ├── docker-gcsfuse.md
         │   ├── experiment-bert.md
         │   ├── frontend.md
-        │   ├── frontend_documentation.md
         │   ├── gc-function-instructions.md
         │   ├── gcp-cli-instructions-macos.md
         │   ├── gcp-docker-commands.md
@@ -206,12 +205,12 @@ We've put together a detailed design document outlining the application’s arch
 ![](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/f7b6a44d-a7c6-41ce-9bc9-a8b64098336e)
 
 ## Quick look: The new documentation files for this milestone
-#### See below for descriptions of the contents of each file, but this is to show what's new.
-- [api-service-documentation.md](./docs/api-service-documentation.md)
-- [frontend.md](./docs/frontend.md)
-- [deploy-custom-container-BERT-vertex.md.](./docs/deploy-custom-container-BERT-vertex.md)
-- [deployment.md](./docs/deployment.md)
-- [vscode-remote-ssh-extension-gcp-vm.md](./docs/vscode-remote-ssh-extension-gcp-vm.md)
+#### The full summaries of these documents are discussed below
+- [API Service Documentation](./docs/api-service-documentation.md)
+- [Frontend Documentation](./docs/frontend.md)
+- [Deploying Custom Container with BERT onto Vertex AI](./docs/deploy-custom-container-BERT-vertex.md)
+- [Deployment with Ansible](./docs/deployment.md)
+- [VS Code Remote SSH Extension Guide](./docs/vscode-remote-ssh-extension-gcp-vm.md)
 
 # FastAPI Service Summary
 
