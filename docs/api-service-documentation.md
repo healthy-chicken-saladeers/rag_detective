@@ -118,31 +118,22 @@ async def get_urls(query_id: str):
 async def vertexai_predict(request: Request):
 ...
 ```
+## FastAPI Routes (Endpoints)
 
-- `get_index`: An endpoint that returns a welcome message. It can be accessed via the route path "/" and only responds to GET requests.
+- `"GET /"`: `get_index`: An endpoint that returns a welcome message. It can be accessed via the route path "/" and only responds to GET requests.
 
-- `streaming_endpoint`: This endpoint is a demonstration s for testing streaming responses in FastAPI. When accessed via a GET request at the "/streaming" path, it responds with an event stream. It uses an asynchronous function to generate events that consist of numbers from 0 to 9, each separated by a 0.1-second delay. As these events are generated, they are sent out as part of the StreamingResponse. This can be useful for testing how the application or client handles streaming responses, because initially we didn't know to use the `-N` flag with cURL to prevent buffering of responses.
+- `"GET /streaming"`: `streaming_endpoint`: This endpoint is a demonstration s for testing streaming responses in FastAPI. When accessed via a GET request at the "/streaming" path, it responds with an event stream. It uses an asynchronous function to generate events that consist of numbers from 0 to 9 in the format `"data: {i}"`, each separated by a 0.1-second delay. As these events are generated, they are sent out as part of the StreamingResponse. This can be useful for testing how the application or client handles streaming responses, because initially we didn't know to use the `-N` flag with cURL to prevent buffering of responses.
 
-- `rag_query`: This endpoint accepts POST requests and responds with a streaming response. It takes a JSON from the request's body and generates a query_id, then it uses a Weaviate client stored in the app state to query Weaviate. The function adds a background task and returns a streaming response, which is provided by a helper function.
+- `"POST /rag_query"`: `rag_query`: This endpoint accepts POST requests and responds with a streaming response. It takes a JSON from the request's body and generates a query_id, then it uses a Weaviate client stored in the app state to query Weaviate. The function adds a background task and returns a streaming response, which is provided by a helper function.
 
-- `read_websites`: A GET route, which uses a helper function to return all website addresses.
+- `"GET /websites"`: `read_websites`: A GET route, which uses a helper function to return all website addresses.
 
-- `read_timestamps`: This GET route reads timestamps of a specific website, which is provided as a path parameter.
+- `"GET /timestamps/{website_address}"`: `read_timestamps`: This GET route reads timestamps of a specific website, which is provided as a path parameter.
 
-- `get_urls`: A GET route that takes a query_id as a path parameter. It retrieves stored URLs and a financial flag for this query_id, and is called immediately after `rag_query`.
+- `"GET /get_urls/{query_id}"`: `get_urls`: A GET route that takes a `query_id` as a path parameter. It retrieves stored URLs and a financial flag for this query_id, and is called immediately after `rag_query`.
 
-- `vertexai_predict`: This POST route accepts a request with a single text field in its body. It uses Vertex AI's Prediction API, using data from Google Cloud, to get the sentiment and probabilities for the text. 
+- `"POST /vertexai_predict"`: `vertexai_predict`: This POST route accepts a request with a single text field in its body. It uses Vertex AI's Prediction API, using data from Google Cloud, to get the sentiment and probabilities for the text. 
 
 ### api/helper.py
 
 The `helper.py` module contains helper functions used in the other scripts for setting up and running the FastAPI application. Helper functions include those for interacting with Weaviate and Google Cloud's Vertex AI platform, managing background tasks, and processing streaming responses.
-
-## FastAPI Routes (Endpoints)
-
-- `"GET /"`: Returns a welcome message used as a test for liveness.
-- `"GET /streaming"`: Creates and returns an event streaming response. This function is primarily for testing. The stream generates the numbers from 0 to 9, with a delay of 0.1 seconds between each number, in the format `"data: {i}"`.
-- `"POST /rag_query"`: Accepts a JSON from the request's body with 'website', 'timestamp' and 'query' keys, generates a streaming response using  Weaviate client to query Weaviate.
-- `"GET /websites"`: Returns a list of all website addresses using a helper function.
-- `"GET /timestamps/{website_address}"`: Returns a list of timestamps of a specific website, provided as a path parameter.
-- `"GET /get_urls/{query_id}"`: Takes a query_id as a path parameter. Retrieves stored URLs and a financial flag for this query_id.
-- `"POST /vertexai_predict"`: Accepts a request with a single text field in its body, it uses Vertex AI's Prediction API, using data from Google Cloud, to get the sentiment and probabilities for the text.
