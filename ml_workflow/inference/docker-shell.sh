@@ -4,7 +4,7 @@
 set -e
 
 # Define some environment variables
-export IMAGE_NAME="financial-sentiment-model" # replace with your preferred image name
+export IMAGE_NAME="financial-sentiment-model"
 export BASE_DIR=$(pwd)
 export MODEL_DIR=$(pwd)/best_model 
 

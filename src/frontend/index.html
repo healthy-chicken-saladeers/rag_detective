@@ -203,7 +203,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ "text": responseData }) // Corrected
+                body: JSON.stringify({ "text": responseData }) 
             })
             .then(response => response.json())
             .then(sentimentData => {
