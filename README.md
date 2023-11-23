@@ -196,13 +196,13 @@ To develop an application that uses Retrieval Augmented Generation (RAG) with an
 
 We've put together a detailed design document outlining the application’s architecture, comprised of a Solution Architecture and Technical Architecture graphic to ensure all our components work together.
 
-![](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/15f3bb3e-9f04-4847-a44e-6c3785bf0696)
+![](img/solution_architecture_1.png)
 
-![](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/3243c801-cb92-4bc4-af8e-6152f4a1dea0)
+![](img/solution_architecture_2.png)
 
 ## Technical Architecture:
 
-![](https://github.com/healthy-chicken-saladeers/ac215_healthychickensaladeers/assets/2798833/f7b6a44d-a7c6-41ce-9bc9-a8b64098336e)
+![](img/technical_architecture.png)
 
 ## Quick look: The new documentation files for this milestone
 #### The full summaries of these documents are discussed below
