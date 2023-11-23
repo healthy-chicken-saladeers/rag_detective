@@ -1,4 +1,4 @@
-# RAG Detective App - Deployment & Scaling
+# RAG Detective App - Deployment
 
 ## Deployment using Ansible
 

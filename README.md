@@ -321,6 +321,8 @@ This section provides the setup for deploying a BERT model, fine-tuned for finan
 3. **Create Endpoint:** Generate an endpoint for model serving.
 4. **Deploy Model to Endpoint:** Deploy the model using `gcloud` commands and test via the cloud console or `curl`.
 
+![](img/instances.jpg)
+
 ## Cloud Testing
 - Test the deployed model and endpoint on Google Cloud's console or using `curl` commands.
 
@@ -328,9 +330,9 @@ This repository offers comprehensive guidance on setting up, testing, and deploy
 
 For more information and detailed instructions, see [deploy-custom-container-BERT-vertex.md.](./docs/deploy-custom-container-BERT-vertex.md)
 
-# Deployment & Scaling
+# Deployment
 
-This section outlines the deployment and scaling procedures for the RAG Detective App using Ansible and Google Cloud Platform (GCP) services.
+This section outlines the deployment procedures for the RAG Detective App using Ansible and Google Cloud Platform (GCP) services.
 
 ## Key Components
 
@@ -360,7 +362,7 @@ This section outlines the deployment and scaling procedures for the RAG Detectiv
 - Commands to SSH into the server, check container statuses, and access logs.
 - Verification of the web server's functionality by accessing the deployed app via its external IP address.
 
-This repository provides a comprehensive guide for deploying and scaling the RAG Detective App using Ansible and GCP, ensuring a streamlined and secure deployment process.
+This repository provides a comprehensive guide for deploying the RAG Detective App using Ansible and GCP, ensuring a streamlined and secure deployment process.
 
 For more information and detailed instructions, see [deployment.md.](./docs/deployment.md)
 
