@@ -163,7 +163,8 @@ def scrape_website(all_links, options):
     return df, df_log
 
 def save_file(df, filename ):
-    """This method save a csv file with the following rules:
+    """
+    This method save a csv file with the following rules:
         1. If running on local computer , files are saved in the root  data/ folder.
         2. If running on a container locally , files are saved in the application data/ folder.
         3. If running gcp container , files are saved on google cloud bucket "ac215_scraper_bucket"
@@ -186,8 +187,8 @@ def save_file(df, filename ):
         stored_message = f"Stored in {path}/{filename}"
         flag = True
 
-    #Running on container.  If running on gcp, the storage.Client() is able to authenticate
-    #the credentials, and data is stored in the bucket.
+    # Running on container.  If running on gcp, the storage.Client() is able to authenticate
+    # the credentials, and data is stored in the bucket.
     # If authentication not available (in case of local containers), store it in the app data/ folder
     else:
         try:
@@ -208,40 +209,3 @@ def save_file(df, filename ):
             stored_message = f"Stored in data/{filename}"
 
     return flag, stored_message
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def upload_df_to_gcs(df, bucket_name, blob_name):
-#     """
-#     Uploads a pd.DataFrame as a csv file to a GCS bucket
-#
-#     Args:
-#     df (pd.DataFrame): A pandas DataFrame to be uploaded
-#     bucket_name (str): Name of GCS bucket
-#     blob_name (str): Object path and filename within the bucket
-#
-#     Returns:
-#     None
-#
-#     """
-#
-#     # Convert the pd.DataFrame to csv format in memory
-#     csv_data = df.to_csv(index=False)
-#
-#     # Upload csv data to bucket
-#     storage_client = storage.Client()
-#     bucket = storage_client.bucket(bucket_name)
-#     blob = bucket.blob(blob_name)
-#     blob.upload_from_string(csv_data, content_type='text/csv')
-#
-#     return None
