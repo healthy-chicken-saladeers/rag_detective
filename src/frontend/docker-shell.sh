@@ -5,7 +5,8 @@ set -e
 
 # Define some environment variables
 # Automatic export to the environment of subsequently executed commands
-# source: the command 'help export' run in Terminalexport IMAGE_NAME="rag-detective-frontend-simple"
+# source: the command 'help export' run in Terminalexport IMAGE_NAME="rag-detective-frontend-simple"export IMAGE_NAME="rag-detective-frontend-simple"
+export IMAGE_NAME="rag-detective-frontend-simple"
 export BASE_DIR=$(pwd)
 
 # Ask the user which environment to use
@@ -29,6 +30,10 @@ case $ENV_CHOICE in
         exit 1
         ;;
 esac
+
+# Echo commands for debugging
+echo "Building image with: docker build -t $IMAGE_NAME -f $DOCKERFILE ."
+echo "Running container on port: $CONTAINER_PORT"
 
 # Build the image based on the chosen Dockerfile
 docker build -t $IMAGE_NAME -f $DOCKERFILE .
