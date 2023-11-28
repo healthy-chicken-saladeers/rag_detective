@@ -1,11 +1,11 @@
 # You need to have the OPENAI_APIKEY environment variable set for this.
 # As well, ml-workflow.ml has to be placed in the /secrets folder of the repo
-from fastapi import FastAPI, Request, BackgroundTasks 
+from fastapi import FastAPI, Request, BackgroundTasks, HTTPException, File
 from fastapi.responses import StreamingResponse, JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 import pandas as pd
 import os
-from fastapi import File
+from typing import Dict, List
 from api import helper
 from typing import List
 import asyncio 
@@ -21,7 +21,7 @@ storage_lock = Lock()
 financial = False
 
 # Test using this line of curl:
-# curl -N -H "Content-Type: application/json" -d "{\"website\": \"ai21.com\", \"query\": \"How was AI21 Studio a game changer\"}" http://localhost:9000/rag_query
+# curl -N -H "Content-Type: application/json" -d "{\"website\": \"ai21.com\", \"query\": \"How was AI21 Studio a game changer\", \"timestamp\": \"2023-10-06T18-11-24\"}" http://localhost:9000/rag_query
 
 # Suppress Pydantic warnings since it's based in llamaindex
 import warnings
@@ -67,25 +67,32 @@ async def streaming_endpoint():
 async def process_streaming_response(local_streaming_response):
     global financial
     try:
-        # If local_streaming_response.response_gen is an asynchronous generator, you should use an async for.
-        for i, text in enumerate(local_streaming_response.response_gen):
-            print(f"Yielding: [{text}]")
-            if i > 0:  # Skip the initial character and check for financial flag.
-                if i == 1:
-                    financial = text == "1" # Check for the financial flag
-                    continue
-                if text == "": # Check for null character
-                    continue
-                yield text.strip() if i == 2 else text # Handle the first word (strip leading space) 
+        for text in local_streaming_response.response_gen:
+            # Check for the financial flag at the end of the text
+            if "%%FF%%" in text:
+                financial = True
+                text = text.replace("%%FF%%", "")  # remove the "%%FF%%"
+            if text.strip():   # Check for null character or empty string
+                print(f"Yielding: [{text}]")
+                yield text  
+        if financial:
+            print(" Financial flag set!", flush=True)
     except asyncio.CancelledError as e:
         print('Streaming cancelled', flush=True)
-    if financial:
-        print(" Financial flag set!", flush=True)
+
+def check_required(data: Dict[str, str], keys: List[str]):
+    for key in keys:
+        if not data.get(key):
+            raise HTTPException(status_code=400, detail=f"Missing required field: '{key}'")
 
 @app.post("/rag_query")
 async def rag_query(request: Request, background_tasks: BackgroundTasks):
     global financial
     data = await request.json()
+
+    # Check if the required parameters are provided
+    check_required(data, ["website", "timestamp", "query"])
+
     website = data.get('website')
     timestamp = data.get('timestamp')
     query = data.get('query')
