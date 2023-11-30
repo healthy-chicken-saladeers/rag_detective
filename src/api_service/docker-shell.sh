@@ -14,9 +14,9 @@ echo "BASE_DIR is ${BASE_DIR}"
 echo "SECRETS_DIR is ${SECRETS_DIR}"
 
 # Build the image based on the Dockerfile
-#docker build -t $IMAGE_NAME -f Dockerfile .
+docker build -t $IMAGE_NAME -f Dockerfile .
 # M1/2 chip macs use this line
-docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
+#docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
 
 # Run the container
 docker run --rm --name "$IMAGE_NAME" -ti \

@@ -151,3 +151,96 @@ def extract_document_urls(streaming_response):
             if related_node_info.node_type == "4":  # Corresponds to ObjectType.DOCUMENT
                 urls.append(related_node_info.node_id)
     return urls
+
+
+#Scraper code
+import pandas as pd
+import numpy as np
+from bs4 import BeautifulSoup
+from datetime import datetime
+import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.options import ChromiumOptions
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import os
+from pathlib import Path
+from google.cloud import storage
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+}
+
+bucket_name = "ac215_scraper_bucket"
+
+def set_chrome_options() -> ChromiumOptions:
+    """Sets chrome options for Selenium.Chrome options for headless browser is enabled.
+    Args: None
+
+    returns:
+        Chrome options that can work headless i.e. without actually launching the browser.
+    """
+    chrome_options = ChromiumOptions()
+    chrome_options.add_argument("--headless=new")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_prefs = {}
+    chrome_options.experimental_options["prefs"] = chrome_prefs
+    chrome_prefs["profile.default_content_settings"] = {"images": 2}
+    return chrome_options
+
+def get_sitemap_attributes(url):
+
+    print("inside get_sitemap_attributes")
+    attribute_dict = {
+        'status':1,
+        'df': pd.Series(),
+        'nested_flag': 0,
+        'message': ""
+    }
+    error_message= ""
+    nested_sitemap_flag = False
+    try:
+        with requests.get(url, headers=headers) as response:
+            response.raise_for_status()  # Check if the request was successful
+            soup = BeautifulSoup(response.text, 'lxml-xml')
+            urls = [link.text.strip() for link in soup.find_all('loc') if link]
+
+        if not urls:
+            attribute_dict['status'] =0
+            attribute_dict['message'] = f'No urls found were found on {url}'
+            return attribute_dict  # Return status =0
+
+        extended_urls = []
+        for link in urls:
+            if link.endswith('xml'):
+                nested_sitemap_flag = True
+                try:
+                    with requests.get(link, headers=headers) as response:
+                        response.raise_for_status()  # Check if the request was successful
+                        nested_soup = BeautifulSoup(response.text, 'lxml')
+                        nested_urls = [url.text.strip() for url in nested_soup.find_all \
+                            ('loc') if url]
+                        extended_urls.extend(nested_urls)
+                except requests.RequestException as e:
+                    print(f"Error occurred while processing {link}: {e}")
+            else:
+                extended_urls.append(link)
+
+        if not extended_urls:
+            attribute_dict['status'] =0
+            attribute_dict['message'] = f"The sitemap url {url} refers to a nested link of sitemaps. However, the scraper either did not find any links, or some unexpected error occured. "
+            return attribute_dict
+
+        attribute_dict['df'] = pd.Series(extended_urls).drop_duplicates().str.strip()
+        if nested_sitemap_flag:
+            attribute_dict['message'] = f"The sitemap url {url} refers to a nested sitemap with {len(urls)} sitemap links."
+            attribute_dict['nested_flag'] = 1
+        return attribute_dict
+
+    except requests.RequestException as e:
+        print(f"Error occurred: {e}")
+        attribute_dict['status'] =0
+        attribute_dict['message'] = e
+        return attribute_dict  # Returns status =0

@@ -15,7 +15,6 @@ import uuid
 from google.cloud import aiplatform
 from google.auth import exceptions
 from google.oauth2 import service_account
-
 query_url_storage = {}
 storage_lock = Lock()
 financial = False
@@ -198,3 +197,56 @@ async def vertexai_predict(request: Request):
     }
 
     return response_structure
+
+#scraper functionalities
+
+#Test call
+# curl -X POST http://localhost:9000/sitemap_attributes/ -H "Content-Type: application/json" -d '{"text":"https://bland.ai/sitemap.xml"}'
+@app.post("/sitemap_attributes/")
+async def sitemap_attributes(request: Request):
+    """
+        Analyze sitemap attributes from the provided text in the request body.
+
+        This endpoint processes a sitemap, provided as JSON in the request body, and returns various attributes of the sitemap. The analysis is conducted by the 'helper.get_sitemap_attributes' function.
+
+        Args:
+            request (Request): The request object that includes the JSON body. The JSON body should contain a key 'text' with the sitemap as its value.
+
+        Returns:
+            dict: A dictionary containing the analysis results. The dictionary includes:
+                - 'status' (int): The status of the analysis (1 for success, 0 for failure).
+                - 'count' (int): The number of items processed in the sitemap, only included if 'status' is 1.
+                - 'nested_flag' (int): A flag indicating if nested structures are present, included in both success and failure cases.
+                - 'message' (str): A message providing details about the analysis or the error encountered.
+                - Optional 'sitemap_urls' (list): A list of URLs found in the sitemap. This is commented out by default and can be included based on requirements.
+
+        Raises:
+            HTTPException: If the request body does not contain valid JSON or the 'text' key is missing.
+
+        Note:
+            The function prints the sitemap for logging/debugging purposes.
+            The actual analysis logic is abstracted in 'helper.get_sitemap_attributes'.
+        """
+    data = await request.json()
+    sitemap = data.get('text')
+    response_dict = {}
+    print(sitemap)
+    attribute_dict = helper.get_sitemap_attributes(sitemap)
+
+    if attribute_dict['status'] ==1:
+        response_dict['status'] =1
+        response_dict['count'] = attribute_dict['df'].shape[0]
+        response_dict['nested_flag'] = attribute_dict['nested_flag']
+        response_dict['message'] = attribute_dict['message']
+        # Note : List of urls in the sitemap can also be returned.
+        # example usage:
+        # response_dict['sitemap_urls'] = list(attribute_dict['df'])
+
+    else:
+        response_dict['status'] = 0
+        response_dict['count'] = 0
+        response_dict['message'] = attribute_dict['message']
+        response_dict['nested_flag'] = 0
+
+    return response_dict
+

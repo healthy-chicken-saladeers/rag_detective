@@ -1,7 +1,7 @@
 # Use the official Debian-hosted Python image
 FROM python:3.9-slim-buster
 
-ARG DEBIAN_PACKAGES="build-essential git"
+ARG DEBIAN_PACKAGES="build-essential git curl wget unzip gzip xvfb gnupg"
 
 # Prevent apt from showing prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -32,6 +32,16 @@ RUN set -ex; \
     mkdir -p /persistent && \
     chown app:app /persistent && \
     chown app:app /app
+
+#Install google-chrome
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
+    apt-get update -y && \
+    apt-get install -y google-chrome-stable
+
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+RUN apt-get update && apt-get -y install google-chrome-stable
 
 # Expose port of API service
 EXPOSE 9000
