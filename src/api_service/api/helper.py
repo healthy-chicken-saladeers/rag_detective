@@ -194,7 +194,7 @@ def get_sitemap_attributes(url):
 
     print("inside get_sitemap_attributes")
     attribute_dict = {
-        'status':1,
+        'status':0,
         'df': pd.Series(),
         'nested_flag': 0,
         'message': ""
@@ -203,12 +203,11 @@ def get_sitemap_attributes(url):
     nested_sitemap_flag = False
     try:
         with requests.get(url, headers=headers) as response:
-            response.raise_for_status()  # Check if the request was successful
             soup = BeautifulSoup(response.text, 'lxml-xml')
             urls = [link.text.strip() for link in soup.find_all('loc') if link]
 
         if not urls:
-            attribute_dict['status'] =0
+            attribute_dict['status'] =1
             attribute_dict['message'] = f'No urls found were found on {url}'
             return attribute_dict  # Return status =0
 
@@ -229,7 +228,7 @@ def get_sitemap_attributes(url):
                 extended_urls.append(link)
 
         if not extended_urls:
-            attribute_dict['status'] =0
+            attribute_dict['status'] =1 # return status =1 (i.e. some failure happened)
             attribute_dict['message'] = f"The sitemap url {url} refers to a nested link of sitemaps. However, the scraper either did not find any links, or some unexpected error occured. "
             return attribute_dict
 
@@ -241,6 +240,6 @@ def get_sitemap_attributes(url):
 
     except requests.RequestException as e:
         print(f"Error occurred: {e}")
-        attribute_dict['status'] =0
+        attribute_dict['status'] =1
         attribute_dict['message'] = e
-        return attribute_dict  # Returns status =0
+        return attribute_dict  # Returns status =1 (i.e. some failure happened)

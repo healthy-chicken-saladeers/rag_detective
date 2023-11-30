@@ -1,6 +1,6 @@
 # You need to have the OPENAI_APIKEY environment variable set for this.
 # As well, ml-workflow.ml has to be placed in the /secrets folder of the repo
-from fastapi import FastAPI, Request, BackgroundTasks, HTTPException, File
+from fastapi import FastAPI, Request, BackgroundTasks, HTTPException, File, Query
 from fastapi.responses import StreamingResponse, JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 import pandas as pd
@@ -200,53 +200,44 @@ async def vertexai_predict(request: Request):
 
 #scraper functionalities
 
-#Test call
-# curl -X POST http://localhost:9000/sitemap_attributes/ -H "Content-Type: application/json" -d '{"text":"https://bland.ai/sitemap.xml"}'
-@app.post("/sitemap_attributes/")
-async def sitemap_attributes(request: Request):
-    """
-        Analyze sitemap attributes from the provided text in the request body.
+#Test call/usage
+# 1. curl "http://localhost:9000/sitemap?website=ai21.com"
+# 2. curl "http://localhost:9000/sitemap?website=https://ai21.com"
+# 3.  curl "http://localhost:9000/sitemap?website=https://ai21.com/sitemap.xml"
+# 4. curl "http://localhost:9000/sitemap?website=ai21.com/"
+#All the above 4 works. This helps if user just copy and paste some url with the
+#full link.
 
-        This endpoint processes a sitemap, provided as JSON in the request body, and returns various attributes of the sitemap. The analysis is conducted by the 'helper.get_sitemap_attributes' function.
+@app.get("/sitemap")
+def sitemap(website:str = Query(...)):
 
-        Args:
-            request (Request): The request object that includes the JSON body. The JSON body should contain a key 'text' with the sitemap as its value.
+    sitemap = website
+    if "https://" not in sitemap:
+        sitemap = f"https://{website}"
 
-        Returns:
-            dict: A dictionary containing the analysis results. The dictionary includes:
-                - 'status' (int): The status of the analysis (1 for success, 0 for failure).
-                - 'count' (int): The number of items processed in the sitemap, only included if 'status' is 1.
-                - 'nested_flag' (int): A flag indicating if nested structures are present, included in both success and failure cases.
-                - 'message' (str): A message providing details about the analysis or the error encountered.
-                - Optional 'sitemap_urls' (list): A list of URLs found in the sitemap. This is commented out by default and can be included based on requirements.
-
-        Raises:
-            HTTPException: If the request body does not contain valid JSON or the 'text' key is missing.
-
-        Note:
-            The function prints the sitemap for logging/debugging purposes.
-            The actual analysis logic is abstracted in 'helper.get_sitemap_attributes'.
-        """
-    data = await request.json()
-    sitemap = data.get('text')
-    response_dict = {}
+    if "sitemap.xml" not in sitemap:
+        if sitemap[-1] != '/':
+            sitemap = f"{sitemap}/sitemap.xml"
+        else:
+            sitemap = f"{sitemap}sitemap.xml"
     print(sitemap)
     attribute_dict = helper.get_sitemap_attributes(sitemap)
+    response_dict = {}
 
-    if attribute_dict['status'] ==1:
-        response_dict['status'] =1
+    #If successful in retrieving urls in sitemap , returns status =0 (success),
+    #count: number of pages for the company website, nested_flag : indicates the sitemap had
+    #nested sitemaps,(1 for True 0 for false), and message (includes message about the process)
+    if attribute_dict['status'] ==0:
+        response_dict['status'] =0
         response_dict['count'] = attribute_dict['df'].shape[0]
         response_dict['nested_flag'] = attribute_dict['nested_flag']
         response_dict['message'] = attribute_dict['message']
-        # Note : List of urls in the sitemap can also be returned.
-        # example usage:
-        # response_dict['sitemap_urls'] = list(attribute_dict['df'])
 
+    #Failure return status, nested_flag, and message that may include errors, or what may have gone wrong
     else:
-        response_dict['status'] = 0
-        response_dict['count'] = 0
+        response_dict['status'] = 1
         response_dict['message'] = attribute_dict['message']
-        response_dict['nested_flag'] = 0
+        response_dict['nested_flag'] = attribute_dict['nested_flag']
 
     return response_dict
 
