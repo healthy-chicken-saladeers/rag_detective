@@ -6,8 +6,19 @@ from llama_index import VectorStoreIndex, StorageContext
 from llama_index.storage.storage_context import StorageContext
 from llama_index.vector_stores.types import ExactMatchFilter, MetadataFilters
 from llama_index.prompts import PromptTemplate
-
 import time
+import pandas as pd
+from bs4 import BeautifulSoup
+import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.options import ChromiumOptions
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import os
+from pathlib import Path
+from google.cloud import storage
+
 
 def query_weaviate(client, website, timestamp, query):
     # construct vector store
@@ -154,20 +165,6 @@ def extract_document_urls(streaming_response):
 
 
 #Scraper code
-import pandas as pd
-import numpy as np
-from bs4 import BeautifulSoup
-from datetime import datetime
-import requests
-from selenium import webdriver
-from selenium.webdriver.chrome.options import ChromiumOptions
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import os
-from pathlib import Path
-from google.cloud import storage
-
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
 }
@@ -189,6 +186,8 @@ def set_chrome_options() -> ChromiumOptions:
     chrome_options.experimental_options["prefs"] = chrome_prefs
     chrome_prefs["profile.default_content_settings"] = {"images": 2}
     return chrome_options
+
+options = set_chrome_options()
 
 def get_sitemap_attributes(url):
 
@@ -243,3 +242,71 @@ def get_sitemap_attributes(url):
         attribute_dict['status'] =1
         attribute_dict['message'] = e
         return attribute_dict  # Returns status =1 (i.e. some failure happened)
+
+
+def scrape_link(link):
+    print(link)
+    text_dict = {}
+    wait_condition = (By.TAG_NAME, ['html', 'div', 'body'])
+
+    try:
+        with requests.get(link, headers=headers) as response:
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'lxml')
+
+                [tag.decompose() for tag in soup.find_all(['header', 'nav', 'footer'])]
+                text_only_requests = soup.get_text(separator=' ', strip=True)
+
+
+            if response.status_code != 200 or len(text_only_requests.split()) <50:
+                print("scraping with selenium")
+                try:
+                    print("calling browser = webdriver.Chrome(options)")
+                    browser = webdriver.Chrome(options)
+                    print("calling browser.implicitly_wait(30)")
+                    browser.implicitly_wait(30)
+                    print("calling  browser.get(link)")
+                    browser.get(link)
+
+                    soup_selenium = BeautifulSoup(browser.page_source, 'lxml')
+
+                    [tag.decompose() for tag in soup_selenium.find_all(['header', 'nav', 'footer'])]
+                    text_only_selenium = soup_selenium.get_text(separator=' ', strip=True).lower()
+                    text_dict[link] = text_only_selenium
+                    print(f"{link}: {text_only_selenium}")
+
+                except Exception as e:
+                    print(f"Error occurred while processing {link} in selenium: {e.with_traceback}")
+
+                finally:
+                    browser.close()
+
+            else:
+                text_dict[link] = text_only_requests.lower()
+
+    except requests.RequestException as e:
+        print(f"Error occurred while processing {link}: {e}")
+
+    return text_dict
+
+
+
+def save_to_gcloud(df, filename):
+    flag = False
+    try:
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        if bucket:
+            csv_data = df.to_csv(index=False)
+            blob = bucket.blob(f'data/{filename}')
+            blob.upload_from_string(csv_data, content_type='text/csv')
+            flag = True
+    except Exception as e:
+        print(f"Could not write to gcp bucket. {e}")
+
+    return flag
+
+
+
+
+

@@ -8,13 +8,15 @@ export IMAGE_NAME="rag-detective-api-service"
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../../secrets/
 export PERSISTENT_DIR=$(pwd)/../../persistent-folder/
+export GCP_PROJECT="rag-detective"
 export GCS_BUCKET_NAME="ac215_scraper_bucket"
+export GCS_SERVICE_ACCOUNT="ml-workflow@rag-detective.iam.gserviceaccount.com"
 
 echo "BASE_DIR is ${BASE_DIR}"
 echo "SECRETS_DIR is ${SECRETS_DIR}"
 
 # Build the image based on the Dockerfile
-docker build -t $IMAGE_NAME -f Dockerfile .
+#docker build -t $IMAGE_NAME -f Dockerfile .
 # M1/2 chip macs use this line
 #docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
 
@@ -25,6 +27,9 @@ docker run --rm --name "$IMAGE_NAME" -ti \
 -v "$PERSISTENT_DIR":/persistent \
 -p 9000:9000 \
 -e DEV=1 \
+-e GCP_PROJECT=$GCP_PROJECT \
 -e GCS_BUCKET_NAME=$GCS_BUCKET_NAME \
 -e OPENAI_APIKEY=$OPENAI_APIKEY \
+-e GCS_SERVICE_ACCOUNT=$GCS_SERVICE_ACCOUNT \
+-e GOOGLE_APPLICATION_CREDENTIALS=/secrets/ml-workflow.json \
 $IMAGE_NAME

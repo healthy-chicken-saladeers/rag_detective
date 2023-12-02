@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request, BackgroundTasks, HTTPException, File, Quer
 from fastapi.responses import StreamingResponse, JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 import pandas as pd
+from datetime import datetime
 import os
 from typing import Dict, List
 from api import helper
@@ -241,3 +242,54 @@ def sitemap(website:str = Query(...)):
 
     return response_dict
 
+
+#Still Work in progress. Performs basic function such as scraping, streaming, and writing to gcloud storage
+
+#curl -X POST http://localhost:9000/scrape_sitemap -H "Content-Type: application/json" -d '{"text": "ai21.com"}'
+@app.post("/scrape_sitemap")
+async def scrape_sitemap(request: Request):
+    data = await request.json()
+    sitemap = data.get('text')
+
+    if "https://" not in sitemap:
+        sitemap = f"https://{sitemap}"
+
+    if "sitemap.xml" not in sitemap:
+        if sitemap[-1] != '/':
+            sitemap = f"{sitemap}/sitemap.xml"
+        else:
+            sitemap = f"{sitemap}sitemap.xml"
+    print(sitemap)
+    attribute_dict = helper.get_sitemap_attributes(sitemap)
+    link_split = sitemap.split('/')
+    print(link_split)
+    if link_split:
+        website_name = link_split[2]
+
+    async def scraping_process():
+        if attribute_dict['df'].shape[0] ==0:
+            yield f"Found 0 pages to scrape in {sitemap}\n"
+
+        else:
+            yield f"Starting scraping ....\n"
+            text_dict = {}
+            i=0
+            for item in list(attribute_dict['df']):
+                i =i+1
+                yield f"  {i} of {attribute_dict['df'].shape[0]} \n scraping :  {item}\n"
+
+                text_dict[item] = helper.scrape_link(item)[item]
+
+            timestamp = datetime.now().strftime('%Y-%m-%dT%H-%M-%S')
+            df = pd.DataFrame(list(text_dict.items()), columns=['key', 'text'])
+            output_file = f"{website_name}_{timestamp}.csv"
+            flag = helper.save_to_gcloud(df, output_file)
+
+            if flag:
+                yield f"Finished scraping {sitemap}"
+
+            else:
+                yield f"The scraping process did not complete as expected for {sitemap}"
+
+
+    return StreamingResponse(scraping_process(), media_type="text/event-stream")

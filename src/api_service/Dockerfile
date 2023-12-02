@@ -1,6 +1,6 @@
 # Use the official Debian-hosted Python image
 FROM python:3.9-slim-buster
-
+#ARG CHROME_VERSION="119.0.6045.105-1"
 ARG DEBIAN_PACKAGES="build-essential git curl wget unzip gzip xvfb gnupg"
 
 # Prevent apt from showing prompts
@@ -33,15 +33,44 @@ RUN set -ex; \
     chown app:app /persistent && \
     chown app:app /app
 
-#Install google-chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
-    apt-get update -y && \
-    apt-get install -y google-chrome-stable
 
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
-RUN apt-get update && apt-get -y install google-chrome-stable
+# Install any needed dependencies for Chrome
+RUN apt-get update && apt-get install -y \
+    xvfb gnupg wget curl unzip \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    fonts-liberation \
+    libappindicator3-1 \
+    libgbm1 \
+    xdg-utils \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download and Install Google Chrome
+RUN wget --verbose -P /tmp/ https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/119.0.6045.105/linux64/chrome-linux64.zip
+
+# Check the integrity and list contents of the ZIP file
+RUN unzip -t /tmp/chrome-linux64.zip
+RUN unzip -l /tmp/chrome-linux64.zip
+
+# Unzip the file to /opt/chrome and list contents
+RUN unzip /tmp/chrome-linux64.zip -d /opt/chrome
+RUN ls -la /opt/chrome/chrome-linux64/
+
+# This makes chrome executable, and sets a symoblic link of chrome to google-chrome
+RUN chmod +x /opt/chrome/chrome-linux64/chrome
+RUN ln -s /opt/chrome/chrome-linux64/chrome /usr/bin/google-chrome
+
+# Add the Cloud SDK distribution URI as a package source
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+
+# Import the Google Cloud public key
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+
+# Update and install the Cloud SDK
+RUN apt-get update && apt-get install -y google-cloud-sdk
+
 
 # Expose port of API service
 EXPOSE 9000
