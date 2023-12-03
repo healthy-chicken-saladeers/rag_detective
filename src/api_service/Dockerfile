@@ -1,5 +1,6 @@
 # Use the official Debian-hosted Python image
 FROM python:3.9-slim-buster
+ENV CLOUDSDK_PYTHON=/usr/local/bin/python3.9
 #ARG CHROME_VERSION="119.0.6045.105-1"
 ARG DEBIAN_PACKAGES="build-essential git curl wget unzip gzip xvfb gnupg"
 

@@ -27,6 +27,8 @@ case $PLATFORM_CHOICE in
     1)
         # M1/2 chip macs use this line
         docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
+        # Debugging version below
+        # docker build --no-cache --progress=plain -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
         ;;
     2)
         docker build -t $IMAGE_NAME -f Dockerfile .
