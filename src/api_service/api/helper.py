@@ -120,7 +120,7 @@ def get_website_addresses(client):
     graphql_query = '''
     {
         Get {
-            Pages {
+            TextChunk {
                 websiteAddress
             }
         }
@@ -135,7 +135,7 @@ def get_website_addresses(client):
         result = client.query.raw(graphql_query)
 
         # Extract website addresses from the 'Pages' class results
-        pages = result.get('data', {}).get('Get', {}).get('Pages', [])
+        pages = result.get('data', {}).get('Get', {}).get('TextChunk', [])
         for page in pages:
             if 'websiteAddress' in page and page['websiteAddress']:
                 # Add to set to ensure uniqueness
@@ -153,7 +153,7 @@ def get_all_timestamps_for_website(client, website_address: str):
     graphql_query = f'''
     {{
         Get {{
-            Pages(
+            TextChunk(
                 where: {{
                     operator: Equal
                     path: ["websiteAddress"]
@@ -174,7 +174,7 @@ def get_all_timestamps_for_website(client, website_address: str):
         result = client.query.raw(graphql_query)
 
         # Extract timestamps from the 'Pages' class results
-        pages = result.get('data', {}).get('Get', {}).get('Pages', [])
+        pages = result.get('data', {}).get('Get', {}).get('TextChunk', [])
         for page in pages:
             if 'timestamp' in page and page['timestamp']:
                 # Add to set to ensure uniqueness
