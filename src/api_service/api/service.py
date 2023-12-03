@@ -103,21 +103,23 @@ async def rag_query(request: Request, background_tasks: BackgroundTasks):
 
     # Query Weaviate
     streaming_response = helper.query_weaviate(app.state.weaviate_client, website, timestamp, query)
-
+    for chunk in streaming_response:
+        if 'choices' in chunk and chunk['choices']:
+            print(chunk['choices'][0]['text'])
     # Add the URL processing function as a background task
-    background_tasks.add_task(process_url_extraction, query_id, streaming_response, financial)
+    # background_tasks.add_task(process_url_extraction, query_id, streaming_response, financial)
 
     # Generate the streaming response and return it
-    headers = {
-        'Cache-Control': 'no-cache',
-        'Access-Control-Expose-Headers': 'X-Query-ID',  # Ensure the custom header is exposed
-        'X-Query-ID': query_id  # set the header to track the query_id for the reference retrieval
-    }
-    return StreamingResponse(
-        process_streaming_response(streaming_response),
-        media_type="text/plain",
-        headers=headers
-    )
+    # headers = {
+    #     'Cache-Control': 'no-cache',
+    #     'Access-Control-Expose-Headers': 'X-Query-ID',  # Ensure the custom header is exposed
+    #     'X-Query-ID': query_id  # set the header to track the query_id for the reference retrieval
+    # }
+    # return StreamingResponse(
+    #     process_streaming_response(streaming_response),
+    #     media_type="text/plain",
+    #     headers=headers
+    # )
 
 async def process_url_extraction(query_id: str, streaming_response, financial: bool):
     extracted_urls = helper.extract_document_urls(streaming_response)

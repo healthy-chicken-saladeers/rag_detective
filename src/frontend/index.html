@@ -25,16 +25,29 @@
     <div id="slideInPanel" class="side-panel">
         <div class="side-panel-content">
             <div class="column">
-                <input type="text" id="website-to-scrape" placeholder="http://example.com">
-                <button id="scrapeButton">Scrape site</button>
+                <!-- Input field -->
+                <div class="mdc-text-field mdc-text-field--outlined">
+                    <input type="text" id="website-to-scrape" class="mdc-text-field__input" placeholder=" ">
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="website-to-scrape" class="mdc-floating-label">Website to Scrape</label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                </div>
+                <!-- Button -->
+                <button id="scrapeButton" class="mdc-button mdc-button--raised">
+                    <span class="mdc-button__label">Scrape site</span>
+                </button>
             </div>
             <div class="column">
+                <!-- Textarea for results -->
                 <textarea id="scrapeResults" placeholder="Results will appear here..." rows="10"></textarea>
             </div>
         </div>
     </div>
-
-
+    
     <div class="content">
 
         <!-- Input Section -->
@@ -84,6 +97,9 @@
             const slideInPanel = document.getElementById('slideInPanel');
             slideInPanel.classList.toggle('active');
         });
+
+        const websiteToScrapeTextField = new mdc.textField.MDCTextField(document.querySelector('.mdc-text-field'));
+
     });
 
     function fetchWebsites() {

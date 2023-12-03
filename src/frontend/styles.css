@@ -183,18 +183,37 @@ body {
     background: #FFF;
     z-index: 1000;
     transition: right 0.3s; /* Animate sliding in/out */
-    display: flex;
+    display: flex; /* Use flexbox for centering */
     justify-content: center;
     align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-left: 1px solid #ccc; 
 }
 
 .side-panel-content {
     display: flex;
+    height: 100%; /* Full height of the side panel */
+    width: 100%;
+    padding: 20px;
 }
 
 .column {
-    flex-basis: 50%;
+    display: flex; /* Enables flexbox */
+    flex-direction: column; /* Stack children vertically */
+    justify-content: center; /* Center children vertically */
+    align-items: center; /* Center children horizontally */
     padding: 10px;
+    box-sizing: border-box;
+}
+
+/* First column with the form elements */
+.side-panel-content .column:first-child {
+    width: 25%; /* Set width to 25% */
+}
+
+/* Second column with the results textarea */
+.side-panel-content .column:last-child {
+    width: 75%; /* Set width to 75% */
 }
 
 /* When active class is added, slide in */
@@ -202,6 +221,49 @@ body {
     right: 0; /* Slide into view */
 }
 
+/* Combined styling for the input and button within the first column */
+.side-panel-content .column:first-child input[type="text"],
+.side-panel-content .column:first-child button {
+    width: 100%; /* Full width of the parent container */
+    height: 56px; /* Match the typical Material Design input height */
+    margin-bottom: 16px; /* Margin for spacing */
+    border-radius: 5px; /* Rounded corners for aesthetic */
+}
+
+
+.side-panel-content .column input[type="text"] {
+    height: 56px; /* Typical Material Design input height */
+    padding: 16px;
+    border: 1px solid #ccc; /* Light border */
+    font-size: 16px; /* Standard font size for input */
+}
+
+.side-panel-content .column button {
+    height: 36px; /* Typical Material Design button height */
+    background-color: #6200ee; /* Material Design primary color */
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+/* Apply Material Design box-shadows and heavier border on active/focus for input */
+.side-panel-content .column input[type="text"]:focus {
+    outline: none;
+    border: 1px solid #6200ee; /* Material Design primary color for focus */
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                0 3px 1px -2px rgba(0, 0, 0, 0.2),
+                0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* Update for the text area */
+#scrapeResults {
+    width: calc(100% - 20px); /* Full width minus padding */
+    height: calc(100% - 100px);; /* Adjust height as necessary */
+    padding: 16px;
+    border: 1px solid #ccc;
+    margin-bottom: 16px; /* Provide some margin to the bottom */
+    resize: vertical; /* Allow vertical resizing */
+}
 
 
 
