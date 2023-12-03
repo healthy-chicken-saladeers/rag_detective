@@ -1,4 +1,5 @@
 import weaviate
+import openai
 from datetime import datetime, timezone
 from llama_index import Document
 from llama_index.vector_stores import WeaviateVectorStore
@@ -21,28 +22,59 @@ from pathlib import Path
 from google.cloud import storage
 
 
+# SETTINGS
 
+OPENAI_APIKEY = os.getenv("OPENAI_APIKEY")
+
+# Size (in # of words) of the chunks
+text_chunk_size = 500
+# Number of text chunks of size text_chunk_size to retrieve
+num_chunks = 2
+# Maximum number of tokens we want in our response
+maximum_tokens = 1000
+
+def create_date(date_string):
+    """
+    Convert a date string to RFC 3339 formatted string with timezone.
+
+    Parameters:
+    - date_string (str): Input date string in the format "%Y-%m-%dT%H-%M-%S".
+
+    Returns:
+    - str: RFC 3339 formatted date-time string.
+    """
+    dt_object = datetime.strptime(date_string, "%Y-%m-%dT%H-%M-%S")
+    # convert datetime object to RFC 3339 string (with timezone)
+    rfc3339_string = dt_object.replace(tzinfo=timezone.utc).isoformat()
+    return rfc3339_string
 
 def query_weaviate(client, website, timestamp, query):
-    # construct vector store
-    vector_store = WeaviateVectorStore(weaviate_client=client, index_name="Pages", text_key="text")
+    # Construct a filter to narrow down the search results based on specific conditions:
+    where_filter = {
+        "operator" : "And",
+        "operands" : [
+            {
+                "path": ["websiteAddress"],
+                "operator": "Equal",
+                "valueString": f"{website}"
+            },
+            {
+                "path": ["timestamp"],
+                "operator": "Equal",
+                "valueDate": f"{create_date(timestamp)}"
+            }
+        ]
+    }
 
-    # setting up the indexing strategy 
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
-
-    # setup an index for the Vector Store
-    index = VectorStoreIndex.from_vector_store(vector_store, storage_context=storage_context)
-
-    # Create exact match filters for websiteAddress
-    # value = website
-    website_address_filter = ExactMatchFilter(key="websiteAddress", value=website)
-    timestamp_filter = ExactMatchFilter(key="timestamp", value=timestamp)
-
-    # Create a metadata filters instance with the above filters
-    metadata_filters = MetadataFilters(filters=[website_address_filter, timestamp_filter])
+    # Execute the query on the Weaviate client:
+    results = client.query.get('TextChunk', ['text','pageURL']) \
+        .with_limit(num_chunks) \
+        .with_near_text({'concepts': [query]}) \
+        .with_where(where_filter) \
+        .do()
 
     # Custom prompt to exclude out of context answers
-    template = ("We have provided context information below. If the answer to a query is not contained in this context, "
+    QUESTION_TEMPLATE = ("We have provided context information below. If the answer to a query is not contained in this context, "
                 "please explain that the context does not include the information. If the information IS included in the context, "
                 "please answer the question using the context provided below. If the response are generating is specifically "
                 "financial in nature (SPECIFICALLY mentioning things like profit, loss, money, investment, or other financial terms)"
@@ -60,28 +92,26 @@ def query_weaviate(client, website, timestamp, query):
                 "\n---------------------\n"
                 "{context_str}"
                 "\n---------------------\n"
-                "Given this information, please answer the question: {query_str}\n"
+                "Given this information, please answer the question: {question}\n"
     )
 
-    qa_template = PromptTemplate(template)
+    # Extract the Relevant Context Information
+    context_texts = [chunk['text'] for chunk in results['data']['Get']['TextChunk']]
+    context_str = "\n".join(context_texts)
 
-    # Create a query engine with the filters
-    query_engine = index.as_query_engine(text_qa_template=qa_template,
-                                         streaming=True,
-                                         filters=metadata_filters)
+    # Construct the Full Query for GPT-3.5
+    query_string = QUESTION_TEMPLATE.format(context_str=context_str, question=query)
 
+    # Set up the OpenAI API key
+    openai.api_key = OPENAI_APIKEY
 
-    # Start timer
-    start_time = time.time()
-    # Execute the query
-    streaming_response = query_engine.query(query)
-    # End timer
-    end_time = time.time()
-
-    # Calculate the duration
-    duration = end_time - start_time
-
-    print(f"Query execution time: {duration} seconds")
+    # Query GPT-3.5
+    streaming_response = openai.Completion.create(
+      engine="gpt-3.5-turbo-instruct",
+      prompt=query_string,
+      max_tokens=maximum_tokens,
+      stream=True
+    )
 
     return streaming_response
 
