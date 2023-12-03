@@ -75,6 +75,9 @@ RUN apt-get update && apt-get install -y google-cloud-sdk
 # Expose port of API service
 EXPOSE 9000
 
+# Create a directory for downloads and give ownership to the app user
+RUN mkdir -p /home/downloads && chown app:app /home/downloads
+
 # Switch to the new user
 USER app
 WORKDIR /app

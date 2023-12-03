@@ -6,6 +6,7 @@ from llama_index import VectorStoreIndex, StorageContext
 from llama_index.storage.storage_context import StorageContext
 from llama_index.vector_stores.types import ExactMatchFilter, MetadataFilters
 from llama_index.prompts import PromptTemplate
+from llama_index.node_parser import SimpleNodeParser
 import time
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -18,6 +19,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import os
 from pathlib import Path
 from google.cloud import storage
+
+
 
 
 def query_weaviate(client, website, timestamp, query):
@@ -259,13 +262,13 @@ def scrape_link(link):
 
 
             if response.status_code != 200 or len(text_only_requests.split()) <50:
-                print("scraping with selenium")
+                #print("scraping with selenium")
                 try:
-                    print("calling browser = webdriver.Chrome(options)")
+                    #print("calling browser = webdriver.Chrome(options)")
                     browser = webdriver.Chrome(options)
-                    print("calling browser.implicitly_wait(30)")
+                    #print("calling browser.implicitly_wait(30)")
                     browser.implicitly_wait(30)
-                    print("calling  browser.get(link)")
+                    #print("calling  browser.get(link)")
                     browser.get(link)
 
                     soup_selenium = BeautifulSoup(browser.page_source, 'lxml')
@@ -306,7 +309,83 @@ def save_to_gcloud(df, filename):
 
     return flag
 
+def download_blob_from_gcloud(filename):
+    sourcefilename = f"data/{filename}"
+    destinationfilename = f"/home/downloads/{filename}"
 
+    success = False
+    try:
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(sourcefilename)
+        blob.download_to_filename(destinationfilename)
+        success = True
+        print(f"Downlod from gcloud succeeded")
+    except Exception as e:
+        print("Error while downloading blob from gcloud",e)
+
+    return success
+
+
+#Write to weaviate part
+
+def store_to_weaviate(filename):
+    success = False
+    print("Starting at OPENAI key part")
+    # Retrieve the OpenAI API key from the environment variables
+    OPENAI_APIKEY = os.getenv("OPENAI_APIKEY")
+    print(OPENAI_APIKEY)
+
+    # Set the OpenAI key as an Environment Variable (for when it's run on GCS)
+    os.environ["OPENAI_APIKEY"] = OPENAI_APIKEY
+    print("Ending at OPENAI key part")
+    # Current Weaviate IP
+    WEAVIATE_IP_ADDRESS = "34.42.138.162"
+
+    print("starting at weaviate part")
+    try:
+        client = weaviate.Client(url="http://" + WEAVIATE_IP_ADDRESS + ":8080")
+        websiteAddress, timestamp = filename.rsplit('.', 1)[0].split('_')
+        print(websiteAddress, timestamp)
+        file_loc = f"/home/downloads/{filename}"
+        df = pd.read_csv(file_loc)
+
+        documents = []
+
+        for _, row in df.iterrows():
+            document = Document (
+                text = row['text'],
+                metadata={
+                    'websiteAddress': websiteAddress,
+                    'timestamp': timestamp
+                }
+            )
+            document.doc_id = row['key']
+            documents.append(document)
+
+        # Create the parser and nodes
+        parser = SimpleNodeParser.from_defaults(chunk_size=1024, chunk_overlap=20)
+        nodes = parser.get_nodes_from_documents(documents)
+
+        # construct vector store
+        vector_store = WeaviateVectorStore(weaviate_client=client, index_name="Pages", text_key="text")
+        # setting up the storage for the embeddings
+        storage_context = StorageContext.from_defaults(vector_store=vector_store)
+        # set up the index
+        index = VectorStoreIndex(nodes, storage_context=storage_context)
+
+        print(index)
+        success = True
+    except Exception as e:
+        print("Error with storing to vector store method",e)
+
+    return success
+
+
+
+
+def cleanup_files(directorypath):
+    pass
 
 
 

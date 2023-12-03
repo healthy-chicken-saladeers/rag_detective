@@ -245,7 +245,7 @@ def sitemap(website:str = Query(...)):
 
 #Still Work in progress. Performs basic function such as scraping, streaming, and writing to gcloud storage
 
-#curl -X POST http://localhost:9000/scrape_sitemap -H "Content-Type: application/json" -d '{"text": "ai21.com"}'
+#curl -X POST http://localhost:9000/scrape_sitemap -H "Content-Type: application/json" -d '{"text": "bland.ai"}'
 @app.post("/scrape_sitemap")
 async def scrape_sitemap(request: Request):
     data = await request.json()
@@ -271,25 +271,42 @@ async def scrape_sitemap(request: Request):
             yield f"Found 0 pages to scrape in {sitemap}\n"
 
         else:
-            yield f"Starting scraping ....\n"
+            yield f"Starting scraping. Total pages to be scraped : {attribute_dict['df'].shape[0]}\n"
             text_dict = {}
             i=0
-            for item in list(attribute_dict['df']):
-                i =i+1
-                yield f"  {i} of {attribute_dict['df'].shape[0]} \n scraping :  {item}\n"
+            #for item in list(attribute_dict['df']):
+            #    i =i+1
+            #    yield f"  {i} of {attribute_dict['df'].shape[0]} \n scraping :  {item}\n"
 
-                text_dict[item] = helper.scrape_link(item)[item]
+                #text_dict[item] = helper.scrape_link(item)[item]
 
-            timestamp = datetime.now().strftime('%Y-%m-%dT%H-%M-%S')
-            df = pd.DataFrame(list(text_dict.items()), columns=['key', 'text'])
-            output_file = f"{website_name}_{timestamp}.csv"
-            flag = helper.save_to_gcloud(df, output_file)
+            #timestamp = datetime.now().strftime('%Y-%m-%dT%H-%M-%S')
+            #df = pd.DataFrame(list(text_dict.items()), columns=['key', 'text'])
+            #output_file = f"{website_name}_{timestamp}.csv"
+            #flag = helper.save_to_gcloud(df, output_file)
+            #print(output_file)
+            flag = True
+            output_file = "bland.ai_2023-12-03T00-40-59.csv"
 
             if flag:
-                yield f"Finished scraping {sitemap}"
+                success = helper.download_blob_from_gcloud(output_file)
+                #success = helper.download_blob_from_gcloud(f"data/{output_file}", f"/home/downloads/{output_file}")
+                if success:
+                    yield f"Finished downloading from gcloud  {output_file}."
+
+                    success = helper.store_to_weaviate(output_file)
+
+                    if success:
+                        print("succeeded with weaviate part")
+                    else:
+                        print("error occured at weaviate part")
+
+                    #yield f"Finished scraping {sitemap} \n"
+                else:
+                    print("some glcoud error")
 
             else:
-                yield f"The scraping process did not complete as expected for {sitemap}"
+                yield f"The scraping process did not complete as expected for {sitemap}\n"
 
 
     return StreamingResponse(scraping_process(), media_type="text/event-stream")

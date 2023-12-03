@@ -14,9 +14,10 @@ export GCS_SERVICE_ACCOUNT="ml-workflow@rag-detective.iam.gserviceaccount.com"
 
 echo "BASE_DIR is ${BASE_DIR}"
 echo "SECRETS_DIR is ${SECRETS_DIR}"
+echo "OPENAI_APIKEY" is $OPENAI_APIKEY
 
 # Build the image based on the Dockerfile
-#docker build -t $IMAGE_NAME -f Dockerfile .
+docker build -t $IMAGE_NAME -f Dockerfile .
 # M1/2 chip macs use this line
 #docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
 
