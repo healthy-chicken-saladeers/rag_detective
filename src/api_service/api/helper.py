@@ -348,10 +348,11 @@ def store_to_weaviate(filename):
         websiteAddress, timestamp = filename.rsplit('.', 1)[0].split('_')
         print(websiteAddress, timestamp)
         file_loc = f"/home/downloads/{filename}"
+        print("working on df = pd.read_csv(file_loc)")
         df = pd.read_csv(file_loc)
 
         documents = []
-
+        print("working on for _, row in df.iterrows():")
         for _, row in df.iterrows():
             document = Document (
                 text = row['text'],
@@ -364,14 +365,20 @@ def store_to_weaviate(filename):
             documents.append(document)
 
         # Create the parser and nodes
+        print("working on parser = SimpleNodeParser.from_defaults(chunk_size=1024, chunk_overlap=20)")
         parser = SimpleNodeParser.from_defaults(chunk_size=1024, chunk_overlap=20)
+
+        print("working on nodes = parser.get_nodes_from_documents(documents)")
         nodes = parser.get_nodes_from_documents(documents)
 
         # construct vector store
+        print("working on vector_store = WeaviateVectorStore(weaviate_client=client,index_name=.. , text_key=text)")
         vector_store = WeaviateVectorStore(weaviate_client=client, index_name="Pages", text_key="text")
         # setting up the storage for the embeddings
+        print("working on storage_context = StorageContext.from_defaults(vector_store=vector_store)")
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
         # set up the index
+        print("working on index = VectorStoreIndex(nodes, storage_context=storage_context)")
         index = VectorStoreIndex(nodes, storage_context=storage_context)
 
         print(index)
@@ -384,8 +391,18 @@ def store_to_weaviate(filename):
 
 
 
-def cleanup_files(directorypath):
-    pass
+def cleanup_files(filewithpath):
+    """
+
+    :param filewithpath: filename to delete with path
+    :return: does not return
+    """
+    if os.path.exists(filewithpath):
+        os.remove(filewithpath)
+        print(f"removed file {filewithpath}")
+
+    else:
+        print(f"{filewithpath} does not exist.")
 
 
 
