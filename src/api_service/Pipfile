@@ -1,9 +1,7 @@
 [[source]]
-name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-
-[dev-packages]
+name = "pypi"
 
 [packages]
 uvicorn = "*"
@@ -18,8 +16,10 @@ tensorflow-hub = "*"
 python-multipart = "*"
 google-cloud-aiplatform = "*"
 weaviate-client = "*"
-openai = "==0.28"
 llama-index = "*"
+openai = "==0.28"
+
+[dev-packages]
 
 [requires]
 python_version = "3.9"
