@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>🔍 Rag Detective</title>
+    <title>Rag Detective</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
@@ -12,12 +12,28 @@
     <header class="mdc-top-app-bar">
         <div class="mdc-top-app-bar__row">
             <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-                <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
-                    aria-label="Open navigation menu">menu</button>
+                
+                <!-- New button for sliding in the panel -->
+                <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Slide in panel">tune</button>
+                
                 <span class="mdc-top-app-bar__title">Rag Detective</span>
+            
             </section>
         </div>
     </header>
+
+    <div id="slideInPanel" class="side-panel">
+        <div class="side-panel-content">
+            <div class="column">
+                <input type="text" id="website-to-scrape" placeholder="http://example.com">
+                <button id="scrapeButton">Scrape site</button>
+            </div>
+            <div class="column">
+                <textarea id="scrapeResults" placeholder="Results will appear here..." rows="10"></textarea>
+            </div>
+        </div>
+    </div>
+
 
     <div class="content">
 
@@ -57,9 +73,17 @@
 
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
+
+    document.addEventListener('DOMContentLoaded', function() { 
         // Populate the websites dropdown on initial load
         fetchWebsites();
+
+        // Add click event listener to the tune icon
+        const tuneButton = document.querySelector('.mdc-top-app-bar__action-item[aria-label="Slide in panel"]');
+        tuneButton.addEventListener('click', function() {
+            const slideInPanel = document.getElementById('slideInPanel');
+            slideInPanel.classList.toggle('active');
+        });
     });
 
     function fetchWebsites() {
