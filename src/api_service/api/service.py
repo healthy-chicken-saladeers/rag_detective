@@ -66,19 +66,52 @@ async def streaming_endpoint():
 
 async def process_streaming_response(local_streaming_response):
     global financial
+
+    # Check if local_streaming_response is None
+    if local_streaming_response is None:
+        print("local_streaming_response is None")
+        return
+
+    # Print the type of local_streaming_response
+    print(f"Type of local_streaming_response: {type(local_streaming_response)}")
+
     try:
-        for text in local_streaming_response.response_gen:
-            # Check for the financial flag at the end of the text
-            if "%%FF%%" in text:
-                financial = True
-                text = text.replace("%%FF%%", "")  # remove the "%%FF%%"
-            if text.strip():   # Check for null character or empty string
-                print(f"Yielding: [{text}]")
-                yield text  
+        # Try iterating over local_streaming_response
+        for chunk in local_streaming_response:
+            # Check if 'choices' is in the chunk and it has elements
+            if 'choices' in chunk and chunk['choices']:
+                text = chunk['choices'][0]['text']
+                print("Received text:", text)
+
+                # Check for the financial flag at the end of the text
+                if "%%FF%%" in text:
+                    financial = True
+                    text = text.replace("%%FF%%", "")  # Remove the "%%FF%%"
+                if text.strip():   # Check for null character or empty string
+                    print(f"Yielding: [{text}]")
+                    yield text  
         if financial:
-            print(" Financial flag set!", flush=True)
-    except asyncio.CancelledError as e:
-        print('Streaming cancelled', flush=True)
+            print(" Financial flag set!", flush=True)    
+    except Exception as e:
+        print(f"Error while iterating: {e}")
+
+# async def process_streaming_response(local_streaming_response):
+#     global financial
+#     try:
+#         # for text in local_streaming_response.response_gen:
+#         for text in local_streaming_response:
+#             print("test!!", text)
+#             # Check for the financial flag at the end of the text
+#             if "%%FF%%" in text:
+#                 financial = True
+#                 text = text.replace("%%FF%%", "")  # remove the "%%FF%%"
+#             if text.strip():   # Check for null character or empty string
+#                 print(f"Yielding: [{text}]")
+#                 yield text  
+#         if financial:
+#             print(" Financial flag set!", flush=True)
+#     except asyncio.CancelledError as e:
+#         print('Streaming cancelled', flush=True)
 
 def check_required(data: Dict[str, str], keys: List[str]):
     for key in keys:
@@ -103,23 +136,24 @@ async def rag_query(request: Request, background_tasks: BackgroundTasks):
 
     # Query Weaviate
     streaming_response = helper.query_weaviate(app.state.weaviate_client, website, timestamp, query)
-    for chunk in streaming_response:
-        if 'choices' in chunk and chunk['choices']:
-            print(chunk['choices'][0]['text'])
+    # for chunk in streaming_response:
+    #     if 'choices' in chunk and chunk['choices']:
+    #         print(chunk['choices'][0]['text'])
+
     # Add the URL processing function as a background task
     # background_tasks.add_task(process_url_extraction, query_id, streaming_response, financial)
 
     # Generate the streaming response and return it
-    # headers = {
-    #     'Cache-Control': 'no-cache',
-    #     'Access-Control-Expose-Headers': 'X-Query-ID',  # Ensure the custom header is exposed
-    #     'X-Query-ID': query_id  # set the header to track the query_id for the reference retrieval
-    # }
-    # return StreamingResponse(
-    #     process_streaming_response(streaming_response),
-    #     media_type="text/plain",
-    #     headers=headers
-    # )
+    headers = {
+        'Cache-Control': 'no-cache',
+        'Access-Control-Expose-Headers': 'X-Query-ID',  # Ensure the custom header is exposed
+        'X-Query-ID': query_id  # set the header to track the query_id for the reference retrieval
+    }
+    return StreamingResponse(
+        process_streaming_response(streaming_response),
+        media_type="text/plain",
+        headers=headers
+    )
 
 async def process_url_extraction(query_id: str, streaming_response, financial: bool):
     extracted_urls = helper.extract_document_urls(streaming_response)

@@ -25,8 +25,6 @@ import openai
 # SETTINGS
 
 OPENAI_APIKEY = os.getenv("OPENAI_APIKEY")
-openai_client = OpenAI(api_key=OPENAI_APIKEY)
-
 
 # Size (in # of words) of the chunks
 text_chunk_size = 500
@@ -105,15 +103,17 @@ def query_weaviate(client, website, timestamp, query):
     query_string = QUESTION_TEMPLATE.format(context_str=context_str, question=query)
 
     # Set up the OpenAI API key
-    
+    openai.api_key = OPENAI_APIKEY    
 
     # Query GPT-3.5
-    streaming_response = openai_client.completions.create(model="gpt-3.5-turbo-instruct",
-                                                   prompt=query_string,
-                                                   max_tokens=maximum_tokens,
-                                                   stream=True)
+    response_generator = openai.Completion.create(
+      engine="gpt-3.5-turbo-instruct",
+      prompt=query_string,
+      max_tokens=maximum_tokens,
+      stream=True
+    )
 
-    return streaming_response
+    return response_generator
 
 def get_website_addresses(client):
     # Construct the GraphQL query to fetch all websiteAddress values from the Pages class
