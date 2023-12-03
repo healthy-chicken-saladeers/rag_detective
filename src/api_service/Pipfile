@@ -18,7 +18,7 @@ tensorflow-hub = "*"
 python-multipart = "*"
 google-cloud-aiplatform = "*"
 weaviate-client = "*"
-openai = "*"
+openai = "==0.28"
 llama-index = "*"
 
 [requires]
