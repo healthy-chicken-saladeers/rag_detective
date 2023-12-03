@@ -16,10 +16,26 @@ echo "BASE_DIR is ${BASE_DIR}"
 echo "SECRETS_DIR is ${SECRETS_DIR}"
 echo "OPENAI_APIKEY" is $OPENAI_APIKEY
 
-# Build the image based on the Dockerfile
-docker build -t $IMAGE_NAME -f Dockerfile .
-# M1/2 chip macs use this line
-#docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
+# Ask the user which platform to use
+echo "Select the platform:"
+echo "1) Mac"
+echo "2) Linux"
+read -p "Enter your choice (1 or 2): " PLATFORM_CHOICE
+
+# Build the image based on the platform
+case $PLATFORM_CHOICE in
+    1)
+        # M1/2 chip macs use this line
+        docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
+        ;;
+    2)
+        docker build -t $IMAGE_NAME -f Dockerfile .
+        ;;
+    *)
+        echo "Invalid choice. Exiting."
+        exit 1
+        ;;
+esac
 
 # Run the container
 docker run --rm --name "$IMAGE_NAME" -ti \
