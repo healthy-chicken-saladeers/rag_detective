@@ -99,6 +99,9 @@ def query_weaviate(client, website, timestamp, query):
     context_texts = [chunk['text'] for chunk in results['data']['Get']['TextChunk']]
     context_str = "\n".join(context_texts)
 
+    # Extract the Relevant URLs
+    urls = [chunk['pageURL'] for chunk in results['data']['Get']['TextChunk']]
+
     # Construct the Full Query for GPT-3.5
     query_string = QUESTION_TEMPLATE.format(context_str=context_str, question=query)
 
