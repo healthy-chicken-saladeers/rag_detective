@@ -201,6 +201,7 @@
                 if (done) {
                     console.log('Stream complete');
                     scrapeResultsElement.value += getCurrentTimestamp() + 'Scraping complete.\n';
+                    fetchWebsites();
                     return;
                 }
                 const decodedValue = new TextDecoder().decode(value, { stream: true });
