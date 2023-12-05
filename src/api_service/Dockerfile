@@ -70,8 +70,28 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.c
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
 
 # Update and install the Cloud SDK
-RUN apt-get update && apt-get install -y google-cloud-sdk
+# RUN apt-get update && apt-get install -y google-cloud-sdk
 
+###################
+# New Section 
+###################
+
+# Add the Cloud SDK distribution URI as a package source
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+
+# Import the Google Cloud public key
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+
+# Update the sources listing
+RUN apt-get update
+
+# Now instead of using apt-get install, we'll download and run Google's install.sh script
+RUN curl https://sdk.cloud.google.com | bash
+
+# Add the Google Cloud SDK to the path (or source the path file provided)
+ENV PATH $PATH:/home/app/google-cloud-sdk/bin
+
+###################
 
 # Expose port of API service
 EXPOSE 9000

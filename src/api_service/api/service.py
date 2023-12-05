@@ -276,7 +276,7 @@ async def scrape_sitemap(request: Request):
             i=0
             for item in list(attribute_dict['df']):
                 i =i+1
-                yield f"  {i} of {attribute_dict['df'].shape[0]}: {item}\n"
+                yield f"{i} of {attribute_dict['df'].shape[0]}: {item}\n"
                 text_dict[item] = helper.scrape_link(item)[item]
 
             timestamp = datetime.now().strftime('%Y-%m-%dT%H-%M-%S')
@@ -305,4 +305,4 @@ async def scrape_sitemap(request: Request):
 
 
 
-    return StreamingResponse(scraping_process(), media_type="text/event-stream")
+    return StreamingResponse(scraping_process(), media_type="text/plain")

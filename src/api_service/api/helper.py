@@ -408,6 +408,3 @@ def cleanup_files(filewithpath):
             print(f"Error occured while deleting {filewithpath}", e)
     else:
         print(f"{filewithpath} does not exist.")
-
-
-
