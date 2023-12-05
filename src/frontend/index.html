@@ -114,16 +114,6 @@
 
         const websiteToScrapeTextField = new mdc.textField.MDCTextField(document.querySelector('.mdc-text-field'));
 
-        document.getElementById('confirmButton').onclick = function() {
-            hideConfirmationModal(); // Use the function to hide the modal
-            document.getElementById('scrapeResults').value +=  getCurrentTimestamp() + 'Scraping starting...\n';
-            streamResponse();
-        };
-
-        document.getElementById('cancelButton').onclick = function() {
-            hideConfirmationModal(); // Use the function to hide the modal
-        };
-
         // Attach ripple effect to all buttons with class 'mdc-button'
         document.querySelectorAll('.mdc-button').forEach(button => {
             mdc.ripple.MDCRipple.attachTo(button);
@@ -138,39 +128,22 @@
 
     });
 
-    document.getElementById('scrapeButton').addEventListener('click', function() {
-        const url = document.getElementById('website-to-scrape').value;
-        if (!validateURL(url)) {
-            document.getElementById('scrapeResults').value += getCurrentTimestamp() + 'Invalid URL\n';
-            return;
-        }
-
-        fetch(`http://${API_URL}:9000/sitemap?website=${url}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 1) {
-                    document.getElementById('scrapeResults').value += data.message + '\n';
-                } else {
-                    const pagesMessage = data.count + ' pages found ' + (data.nested_flag ? 'in nested sitemaps' : 'in a single sitemap');
-                    document.getElementById('scrapeResults').value +=  getCurrentTimestamp() + url + ' has ' + pagesMessage + '\n';
-                    showConfirmationModal(pagesMessage);
-                }
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-    });
-
     function getCurrentTimestamp() {
         const now = new Date();
         return now.toLocaleString() + ': ';
     }
 
-
-    function showConfirmationModal(message) {
-        console.log(getCurrentTimestamp())
+    function showConfirmationModal(message, url) {
         document.getElementById('modalMessage').textContent = message + '. Would you like to scrape these pages?';
         var modal = document.getElementById('confirmationModal');
         modal.classList.add('show');
+
+        // Attach event listeners to confirmation buttons
+        document.getElementById('confirmButton').onclick = function() {
+            hideConfirmationModal();
+            startScrapingStream(url);
+        };
+        document.getElementById('cancelButton').onclick = hideConfirmationModal;
     }
 
     function hideConfirmationModal() {
@@ -178,42 +151,71 @@
         modal.classList.remove('show');
     }
 
-
-
-    function streamResponse() {
-        const scrapeResultsElement = document.getElementById('scrapeResults');
-        console.log(`Connecting to stream at: http://${API_URL}:9000/streaming`);
-
-        // Using fetch to connect to the streaming endpoint
-        fetch(`http://${API_URL}:9000/streaming`)
-            .then(response => {
-                const reader = response.body.getReader();
-
-                // Function to process each chunk of data
-                function processChunk({ done, value }) {
-                    if (done) {
-                        console.log('Stream complete');
-                        return;
-                    }
-                    const decodedValue = new TextDecoder().decode(value, { stream: true });
-                    scrapeResultsElement.value += '\n' + decodedValue;
-                    return reader.read().then(processChunk); // Read the next chunk
-                }
-
-                // Start reading the stream
-                return reader.read().then(processChunk);
-            })
-            .catch(error => {
-                console.error('Stream error:', error);
-            });
-    }
-
-
     function validateURL(url) {
         const regexPattern = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+)(\/[a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
         return regexPattern.test(url);
     }
 
+
+    document.getElementById('scrapeButton').addEventListener('click', function() {
+        const url = document.getElementById('website-to-scrape').value;
+        if (!validateURL(url)) {
+            document.getElementById('scrapeResults').value += getCurrentTimestamp() + 'Invalid URL\n';
+            return;
+        }
+
+        // Fetch the sitemap data and show confirmation modal if pages are found
+        fetch(`http://${API_URL}:9000/sitemap?website=${url}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 1) {
+                    document.getElementById('scrapeResults').value += data.message + '\n';
+                } else {
+                    const pagesMessage = data.count + ' pages found ' + (data.nested_flag ? 'in nested sitemaps' : 'in a single sitemap');
+                    document.getElementById('scrapeResults').value += getCurrentTimestamp() + url + ' has ' + pagesMessage + '\n';
+                    showConfirmationModal(pagesMessage, url); // Pass the URL to the modal for confirmation
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+    });
+
+    // Renamed from streamResponse to startScrapingStream for better clarity
+    function startScrapingStream(url) {
+        const scrapeResultsElement = document.getElementById('scrapeResults');
+        scrapeResultsElement.value += getCurrentTimestamp() + 'Scraping starting...\n';
+
+        // Send the POST request to initiate scraping
+        fetch(`http://${API_URL}:9000/scrape_sitemap`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: url })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const reader = response.body.getReader();
+
+            function processChunk({ done, value }) {
+                if (done) {
+                    console.log('Stream complete');
+                    scrapeResultsElement.value += getCurrentTimestamp() + 'Scraping complete.\n';
+                    return;
+                }
+                const decodedValue = new TextDecoder().decode(value, { stream: true });
+                scrapeResultsElement.value += decodedValue;
+                return reader.read().then(processChunk); // Read the next chunk
+            }
+
+            // Start reading the stream
+            return reader.read().then(processChunk);
+        })
+        .catch(error => {
+            console.error('Stream error:', error);
+            scrapeResultsElement.value += getCurrentTimestamp() + `Stream error: ${error.message}\n`;
+        });
+    }
 
     function fetchWebsites() {
         fetch(`http://${API_URL}:9000/websites`)
