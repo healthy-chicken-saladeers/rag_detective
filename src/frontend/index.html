@@ -137,7 +137,7 @@
                     document.getElementById('scrapeResults').value += data.message + '\n';
                 } else {
                     const pagesMessage = data.count + ' pages found ' + (data.nested_flag ? 'in nested sitemaps' : 'in a single sitemap');
-                    document.getElementById('scrapeResults').value +=  pagesMessage + '\n';
+                    document.getElementById('scrapeResults').value +=  'Website: ' + url + ' with ' + pagesMessage + '\n';
                     showConfirmationModal(pagesMessage);
                 }
             }).catch(error => {
@@ -145,40 +145,10 @@
             });
     });
 
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     document.getElementById('confirmButton').onclick = function() {
-    //         console.log("YES")
-    //         document.getElementById('confirmationModal').style.display = 'none';
-    //         streamResponse();
-    //     };
-
-    //     document.getElementById('cancelButton').onclick = function() {
-    //         document.getElementById('confirmationModal').style.display = 'none';
-    //     };
-    // });
-
     function showConfirmationModal(message) {
         document.getElementById('modalMessage').textContent = message + '. Would you like to scrape these pages?';
         document.getElementById('confirmationModal').style.display = 'block';
     }
-
-    // function streamResponse() {
-    //     const scrapeResultsElement = document.getElementById('scrapeResults');
-    //     console.log(`Connecting to stream at: http://${API_URL}:9000/streaming`);
-
-    //     const eventSource = new EventSource(`http://${API_URL}:9000/streaming`);
-        
-    //     eventSource.onmessage = function(event) {
-    //         console.log('Stream event received:', event.data);
-    //         scrapeResultsElement.value += '\n' + event.data;
-    //     };
-
-    //     eventSource.onerror = function(error) {
-    //         console.error('Stream error:', error);
-    //         console.log('EventSource readyState:', eventSource.readyState);
-    //         eventSource.close();
-    //     };
-    // }
 
     function streamResponse() {
         const scrapeResultsElement = document.getElementById('scrapeResults');

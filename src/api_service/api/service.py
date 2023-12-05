@@ -59,7 +59,7 @@ async def get_index():
 @app.get("/streaming")
 async def streaming_endpoint():
     async def event_generator():
-        for i in range(123):
+        for i in range(len(dummy.DUMMY_DATA)):
             yield f"{dummy.DUMMY_DATA[i]} "
             await asyncio.sleep(0.1)
     return StreamingResponse(event_generator(), media_type="text/plain")

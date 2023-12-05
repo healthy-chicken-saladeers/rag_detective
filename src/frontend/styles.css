@@ -208,12 +208,12 @@ body {
 
 /* First column with the form elements */
 .side-panel-content .column:first-child {
-    width: 20%; /* Set width to 25% */
+    width: 25%; 
 }
 
 /* Second column with the results textarea */
 .side-panel-content .column:last-child {
-    width: 80%; /* Set width to 75% */
+    width: 75%; 
 }
 
 /* When active class is added, slide in */
@@ -230,7 +230,7 @@ body {
 }
 
 .side-panel-content .column button {
-    margin-top: 10px;
+    margin-top: 20px;
     height: 36px; /* Typical Material Design button height */
     background-color: #6200ee; /* Material Design primary color */
     color: #fff;
@@ -280,5 +280,15 @@ body {
     text-align: right;
 }
 
+input#website-to-scrape.mdc-text-field__input {
+    font-size: 16px; 
+    height: auto; 
+    width: 100%;
+}
+
+div.mdc-text-field.mdc-text-field--outlined.mdc-text-field--label-floating {
+    width: 100%; /* Set the width to 100% */
+    max-width: none; /* Override any max-width set elsewhere */
+}
 
 
