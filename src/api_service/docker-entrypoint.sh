@@ -8,8 +8,6 @@ gcloud config set project $GCP_PROJECT
 # Authenticate gcloud using service account, required for usig buckets
 gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
 
-
-
 # this will run the api/service.py file with the instantiated app FastAPI
 uvicorn_server() {
     uvicorn api.service:app --host 0.0.0.0 --port 9000 --log-level debug --reload --reload-dir api/ "$@"

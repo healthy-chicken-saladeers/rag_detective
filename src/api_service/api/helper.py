@@ -272,42 +272,48 @@ def scrape_link(link):
         with requests.get(link, headers=headers, stream=True) as response:
             content_type = response.headers.get('Content-Type', '')
             if 'application/pdf' in content_type:
-                # Handle PDF content
-                with fitz.open(stream=response.content, filetype="pdf") as doc:
-                    text_from_pdf = ''
-                    for page in doc:
-                        text_from_pdf += page.get_text()
-                    text_dict[link] = text_from_pdf
-            elif response.status_code == 200:
-                soup = BeautifulSoup(response.text, 'lxml')
-
-                [tag.decompose() for tag in soup.find_all(['header', 'nav', 'footer'])]
-                text_only_requests = soup.get_text(separator=' ', strip=True)
-            elif len(text_only_requests.split()) <50:
-                #print("scraping with selenium")
                 try:
-                    # print("calling browser = webdriver.Chrome(options)")
-                    browser = webdriver.Chrome(options)
-                    # print("calling browser.implicitly_wait(30)")
-                    browser.implicitly_wait(30)
-                    # print("calling  browser.get(link)")
-                    browser.get(link)
-
-                    soup_selenium = BeautifulSoup(browser.page_source, 'lxml')
-
-                    [tag.decompose() for tag in soup_selenium.find_all(['header', 'nav', 'footer'])]
-                    text_only_selenium = soup_selenium.get_text(separator=' ', strip=True).lower()
-                    text_dict[link] = text_only_selenium
-                    # print(f"{link}: {text_only_selenium}")
-
+                    # Handle PDF content
+                    with fitz.open(stream=response.content, filetype="pdf") as doc:
+                        text_from_pdf = ''.join([page.get_text() for page in doc])
+                        text_dict[link] = text_from_pdf
                 except Exception as e:
-                    print(f"Error occurred while processing {link} in selenium: {e.with_traceback}")
-
-                finally:
-                    if browser: browser.close()
-
+                    print(f"Error occurred while processing PDF at {link}: {e}")
+                    text_dict[link] = ""
             else:
-                text_dict[link] = text_only_requests.lower()
+                if response.status_code == 200:
+                    try:
+                        soup = BeautifulSoup(response.text, 'lxml')
+                        [tag.decompose() for tag in soup.find_all(['header', 'nav', 'footer'])]
+                        text_only_requests = soup.get_text(separator=' ', strip=True)
+                        text_dict[link] = text_only_requests
+                    except Exception as e:
+                        print(f"Error occurred while processing HTML at {link}: {e}")
+                        text_dict[link] = ""
+                if response.status_code != 200 or len(text_only_requests.split()) <50:
+                    # print("scraping with selenium")
+                    try:
+                        # print("calling browser = webdriver.Chrome(options)")
+                        browser = webdriver.Chrome(options)
+                        # print("calling browser.implicitly_wait(30)")
+                        browser.implicitly_wait(30)
+                        # print("calling  browser.get(link)")
+                        browser.get(link)
+
+                        soup_selenium = BeautifulSoup(browser.page_source, 'lxml')
+
+                        [tag.decompose() for tag in soup_selenium.find_all(['header', 'nav', 'footer'])]
+                        text_only_selenium = soup_selenium.get_text(separator=' ', strip=True)
+                        text_dict[link] = text_only_selenium
+                        # print(f"{link}: {text_only_selenium}")
+
+                    except Exception as e:
+                        print(f"Error occurred while processing {link} in selenium: {e.with_traceback}")
+                        text_dict[link] = ""
+                    finally:
+                        if browser: browser.close()
+                else:
+                    text_dict[link] = text_only_requests
 
     except requests.RequestException as e:
         print(f"Error occurred while processing {link}: {e}")
