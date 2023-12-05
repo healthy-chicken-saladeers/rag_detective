@@ -20,6 +20,7 @@ google-cloud-aiplatform = "*"
 weaviate-client = "*"
 openai = "*"
 llama-index = "*"
+fitz = "*"
 
 [requires]
 python_version = "3.9"
