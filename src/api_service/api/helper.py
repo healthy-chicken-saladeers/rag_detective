@@ -20,6 +20,8 @@ import os
 from pathlib import Path
 from google.cloud import storage
 import re
+import fitz  # PyMuPDF
+
 
 def query_weaviate(client, website, timestamp, query):
     # construct vector store
@@ -264,24 +266,31 @@ def scrape_link(link):
     print(link)
     text_dict = {}
     wait_condition = (By.TAG_NAME, ['html', 'div', 'body'])
+    browser = None  # Initialize browser to avoid crash
 
     try:
-        with requests.get(link, headers=headers) as response:
-            if response.status_code == 200:
+        with requests.get(link, headers=headers, stream=True) as response:
+            content_type = response.headers.get('Content-Type', '')
+            if 'application/pdf' in content_type:
+                # Handle PDF content
+                with fitz.open(stream=response.content, filetype="pdf") as doc:
+                    text_from_pdf = ''
+                    for page in doc:
+                        text_from_pdf += page.get_text()
+                    text_dict[link] = text_from_pdf
+            elif response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'lxml')
 
                 [tag.decompose() for tag in soup.find_all(['header', 'nav', 'footer'])]
                 text_only_requests = soup.get_text(separator=' ', strip=True)
-
-
-            if response.status_code != 200 or len(text_only_requests.split()) <50:
+            elif len(text_only_requests.split()) <50:
                 #print("scraping with selenium")
                 try:
-                    #print("calling browser = webdriver.Chrome(options)")
+                    # print("calling browser = webdriver.Chrome(options)")
                     browser = webdriver.Chrome(options)
-                    #print("calling browser.implicitly_wait(30)")
+                    # print("calling browser.implicitly_wait(30)")
                     browser.implicitly_wait(30)
-                    #print("calling  browser.get(link)")
+                    # print("calling  browser.get(link)")
                     browser.get(link)
 
                     soup_selenium = BeautifulSoup(browser.page_source, 'lxml')
@@ -289,13 +298,13 @@ def scrape_link(link):
                     [tag.decompose() for tag in soup_selenium.find_all(['header', 'nav', 'footer'])]
                     text_only_selenium = soup_selenium.get_text(separator=' ', strip=True).lower()
                     text_dict[link] = text_only_selenium
-                    #print(f"{link}: {text_only_selenium}")
+                    # print(f"{link}: {text_only_selenium}")
 
                 except Exception as e:
                     print(f"Error occurred while processing {link} in selenium: {e.with_traceback}")
 
                 finally:
-                    browser.close()
+                    if browser: browser.close()
 
             else:
                 text_dict[link] = text_only_requests.lower()
@@ -304,8 +313,6 @@ def scrape_link(link):
         print(f"Error occurred while processing {link}: {e}")
 
     return text_dict
-
-
 
 def save_to_gcloud(df, filename):
     flag = False
