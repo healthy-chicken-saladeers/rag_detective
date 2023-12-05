@@ -345,10 +345,9 @@ def download_blob_from_gcloud(filename):
 
 
 #Write to weaviate part
-
 def store_to_weaviate(filename):
     success = False
-    print("Starting at OPENAI key part")
+
     # Retrieve the OpenAI API key from the environment variables
     OPENAI_APIKEY = os.getenv("OPENAI_APIKEY")
     print(OPENAI_APIKEY)
@@ -365,10 +364,11 @@ def store_to_weaviate(filename):
         websiteAddress, timestamp = filename.rsplit('.', 1)[0].split('_')
         print(websiteAddress, timestamp)
         file_loc = f"/home/downloads/{filename}"
+        print("working on df = pd.read_csv(file_loc)")
         df = pd.read_csv(file_loc)
 
         documents = []
-
+        print("working on for _, row in df.iterrows():")
         for _, row in df.iterrows():
             document = Document (
                 text = row['text'],
@@ -380,19 +380,27 @@ def store_to_weaviate(filename):
             document.doc_id = row['key']
             documents.append(document)
 
-        # Create the parser and nodes
-        parser = SimpleNodeParser.from_defaults(chunk_size=1024, chunk_overlap=20)
-        nodes = parser.get_nodes_from_documents(documents)
+        #update index with llamaindex
+        print("working on vector_store = WeaviateVectorStore(\
+            weaviate_client=client")
 
-        # construct vector store
-        vector_store = WeaviateVectorStore(weaviate_client=client, index_name="Pages", text_key="text")
-        # setting up the storage for the embeddings
-        storage_context = StorageContext.from_defaults(vector_store=vector_store)
-        # set up the index
-        index = VectorStoreIndex(nodes, storage_context=storage_context)
+        vector_store = WeaviateVectorStore(
+            weaviate_client=client,
+            index_name="Pages",
+            text_key="text"
+        )
 
-        print(index)
+        print("working on index = VectorStoreIndex.from_vector_store")
+        index = VectorStoreIndex.from_vector_store(
+            vector_store=vector_store,
+            service_context=None
+        )
+
+        print("working on index = VectorStoreIndex.from_vector_store ")
+        for document in documents:
+            index.insert(document)
         success = True
+
     except Exception as e:
         print("Error with storing to vector store method",e)
 
