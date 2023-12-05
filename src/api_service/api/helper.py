@@ -21,10 +21,6 @@ from pathlib import Path
 from google.cloud import storage
 import re
 
-
-
-
-
 def query_weaviate(client, website, timestamp, query):
     # construct vector store
     vector_store = WeaviateVectorStore(weaviate_client=client, index_name="Pages", text_key="text")

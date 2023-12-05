@@ -72,7 +72,7 @@ async def process_streaming_response(local_streaming_response):
             if "QQ" in text:
                 financial = True
                 text = text.replace("QQ", "")  # remove the "%%"
-            if text.strip():   # Check for null character or empty string
+            if text:   # Check for null character or empty string
                 print(f"Yielding: [{text}]")
                 yield text  
         if financial:
