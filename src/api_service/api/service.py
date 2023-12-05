@@ -7,7 +7,7 @@ import pandas as pd
 from datetime import datetime
 import os
 from typing import Dict, List
-from api import helper
+from api import helper, dummy
 from typing import List
 import asyncio 
 from asyncio import Lock
@@ -59,10 +59,10 @@ async def get_index():
 @app.get("/streaming")
 async def streaming_endpoint():
     async def event_generator():
-        for i in range(10):
-            yield f"data: {i} "
+        for i in range(123):
+            yield f"{dummy.DUMMY_DATA[i]} "
             await asyncio.sleep(0.1)
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
+    return StreamingResponse(event_generator(), media_type="text/plain")
 
 async def process_streaming_response(local_streaming_response):
     global financial

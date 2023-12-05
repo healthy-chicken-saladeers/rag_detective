@@ -83,9 +83,20 @@
         </div>
 
     </div>
-
+    <!-- Modal Structure -->
+    <div id="confirmationModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+        </div>
+        <div class="modal-footer">
+            <button id="confirmButton" class="mdc-button mdc-button--raised">Yes</button>
+            <button id="cancelButton" class="mdc-button">Cancel</button>
+        </div>
+    </div>
 
     <script>
+
+    const API_URL = "localhost"
 
     document.addEventListener('DOMContentLoaded', function() { 
         // Populate the websites dropdown on initial load
@@ -100,10 +111,112 @@
 
         const websiteToScrapeTextField = new mdc.textField.MDCTextField(document.querySelector('.mdc-text-field'));
 
+        document.getElementById('confirmButton').onclick = function() {
+            console.log("YES")
+            document.getElementById('confirmationModal').style.display = 'none';
+            streamResponse();
+        };
+
+        document.getElementById('cancelButton').onclick = function() {
+            document.getElementById('confirmationModal').style.display = 'none';
+        };
+
     });
 
+    document.getElementById('scrapeButton').addEventListener('click', function() {
+        const url = document.getElementById('website-to-scrape').value;
+        if (!validateURL(url)) {
+            document.getElementById('scrapeResults').value += 'Invalid URL\n';
+            return;
+        }
+
+        fetch(`http://${API_URL}:9000/sitemap?website=${url}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 1) {
+                    document.getElementById('scrapeResults').value += data.message + '\n';
+                } else {
+                    const pagesMessage = data.count + ' pages found ' + (data.nested_flag ? 'in nested sitemaps' : 'in a single sitemap');
+                    document.getElementById('scrapeResults').value +=  pagesMessage + '\n';
+                    showConfirmationModal(pagesMessage);
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+    });
+
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     document.getElementById('confirmButton').onclick = function() {
+    //         console.log("YES")
+    //         document.getElementById('confirmationModal').style.display = 'none';
+    //         streamResponse();
+    //     };
+
+    //     document.getElementById('cancelButton').onclick = function() {
+    //         document.getElementById('confirmationModal').style.display = 'none';
+    //     };
+    // });
+
+    function showConfirmationModal(message) {
+        document.getElementById('modalMessage').textContent = message + '. Would you like to scrape these pages?';
+        document.getElementById('confirmationModal').style.display = 'block';
+    }
+
+    // function streamResponse() {
+    //     const scrapeResultsElement = document.getElementById('scrapeResults');
+    //     console.log(`Connecting to stream at: http://${API_URL}:9000/streaming`);
+
+    //     const eventSource = new EventSource(`http://${API_URL}:9000/streaming`);
+        
+    //     eventSource.onmessage = function(event) {
+    //         console.log('Stream event received:', event.data);
+    //         scrapeResultsElement.value += '\n' + event.data;
+    //     };
+
+    //     eventSource.onerror = function(error) {
+    //         console.error('Stream error:', error);
+    //         console.log('EventSource readyState:', eventSource.readyState);
+    //         eventSource.close();
+    //     };
+    // }
+
+    function streamResponse() {
+        const scrapeResultsElement = document.getElementById('scrapeResults');
+        console.log(`Connecting to stream at: http://${API_URL}:9000/streaming`);
+
+        // Using fetch to connect to the streaming endpoint
+        fetch(`http://${API_URL}:9000/streaming`)
+            .then(response => {
+                const reader = response.body.getReader();
+
+                // Function to process each chunk of data
+                function processChunk({ done, value }) {
+                    if (done) {
+                        console.log('Stream complete');
+                        return;
+                    }
+                    const decodedValue = new TextDecoder().decode(value, { stream: true });
+                    scrapeResultsElement.value += '\n' + decodedValue;
+                    return reader.read().then(processChunk); // Read the next chunk
+                }
+
+                // Start reading the stream
+                return reader.read().then(processChunk);
+            })
+            .catch(error => {
+                console.error('Stream error:', error);
+            });
+    }
+
+
+    function validateURL(url) {
+        const regexPattern = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+)(\/[a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
+        return regexPattern.test(url);
+    }
+
+
     function fetchWebsites() {
-        fetch('http://34.148.60.62:9000/websites')
+        fetch(`http://${API_URL}:9000/websites`)
             .then(response => response.json())
             .then(websites => {
                 const websiteDropdown = document.getElementById('websiteDropdown');
@@ -129,7 +242,7 @@
             return;
         }
 
-        fetch(`http://34.148.60.62:9000/timestamps/${website}`)
+        fetch(`http://${API_URL}:9000/timestamps/${website}`)
             .then(response => response.json())
             .then(timestamps => {
                 const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
@@ -182,7 +295,7 @@
         };
 
         // Using fetch with a POST request
-        fetch('http://34.148.60.62:9000/rag_query', {
+        fetch(`http://${API_URL}:9000/rag_query`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -238,7 +351,7 @@
             urlsContainer.appendChild(financialNotice);
 
             // Calling Vertex API for sentiment analysis as the response is financial in nature
-            fetch(`http://34.148.60.62:9000/vertexai_predict`, {
+            fetch(`http://${API_URL}:9000/vertexai_predict`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -314,7 +427,7 @@
     function fetchURLs(queryId, responseData) {
         if (queryId) {
             // Make the GET request to the get_urls endpoint
-            fetch(`http://34.148.60.62:9000/get_urls/${queryId}`)
+            fetch(`http://${API_URL}:9000/get_urls/${queryId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.urls) {

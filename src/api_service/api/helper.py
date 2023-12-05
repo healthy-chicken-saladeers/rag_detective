@@ -19,6 +19,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import os
 from pathlib import Path
 from google.cloud import storage
+import re
+
 
 
 
@@ -192,6 +194,23 @@ def set_chrome_options() -> ChromiumOptions:
 
 options = set_chrome_options()
 
+def extract_error_message_from_exception(exception):
+    """
+    Extracts the detailed error message found between ">:" and "([Errno" from an exception object.
+
+    Args:
+    - exception (Exception): The exception object containing the error message.
+
+    Returns:
+    - str: The extracted detailed error message, or the full exception message if not found.
+    """
+    # Converting the exception object to a string
+    message = str(exception)
+
+    # Regular expression to find the detailed error message segment
+    match = re.search(r">: (.*?) \(\[Errno", message)
+    return match.group(1) if match else message
+
 def get_sitemap_attributes(url):
 
     print("inside get_sitemap_attributes")
@@ -243,7 +262,7 @@ def get_sitemap_attributes(url):
     except requests.RequestException as e:
         print(f"Error occurred: {e}")
         attribute_dict['status'] =1
-        attribute_dict['message'] = e
+        attribute_dict['message'] = extract_error_message_from_exception(e)
         return attribute_dict  # Returns status =1 (i.e. some failure happened)
 
 

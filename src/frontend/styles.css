@@ -208,12 +208,12 @@ body {
 
 /* First column with the form elements */
 .side-panel-content .column:first-child {
-    width: 25%; /* Set width to 25% */
+    width: 20%; /* Set width to 25% */
 }
 
 /* Second column with the results textarea */
 .side-panel-content .column:last-child {
-    width: 75%; /* Set width to 75% */
+    width: 80%; /* Set width to 75% */
 }
 
 /* When active class is added, slide in */
@@ -221,29 +221,22 @@ body {
     right: 0; /* Slide into view */
 }
 
-/* Combined styling for the input and button within the first column */
-.side-panel-content .column:first-child input[type="text"],
-.side-panel-content .column:first-child button {
-    width: 100%; /* Full width of the parent container */
-    height: 56px; /* Match the typical Material Design input height */
-    margin-bottom: 16px; /* Margin for spacing */
-    border-radius: 5px; /* Rounded corners for aesthetic */
-}
-
-
 .side-panel-content .column input[type="text"] {
     height: 56px; /* Typical Material Design input height */
     padding: 16px;
     border: 1px solid #ccc; /* Light border */
     font-size: 16px; /* Standard font size for input */
+    width: 100%;
 }
 
 .side-panel-content .column button {
+    margin-top: 10px;
     height: 36px; /* Typical Material Design button height */
     background-color: #6200ee; /* Material Design primary color */
     color: #fff;
     border: none;
     cursor: pointer;
+    width: 100%;
 }
 
 /* Apply Material Design box-shadows and heavier border on active/focus for input */
@@ -263,6 +256,28 @@ body {
     border: 1px solid #ccc;
     margin-bottom: 16px; /* Provide some margin to the bottom */
     resize: vertical; /* Allow vertical resizing */
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 1001; /* Ensure it's above other elements */
+    display: none; /* Hidden by default */
+}
+
+.modal-content {
+    margin-bottom: 20px;
+}
+
+.modal-footer {
+    text-align: right;
 }
 
 
