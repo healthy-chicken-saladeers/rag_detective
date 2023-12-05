@@ -63,7 +63,7 @@
             </select>
 
             <label for="promptInput">Enter prompt:</label>
-            <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
+            <textarea id="promptInput" placeholder="  Type prompt here..."></textarea>
             <div id="buttonContainer">
                 <button id="searchButton" onclick="generate_response()">Search</button>
             </div>
@@ -84,7 +84,7 @@
 
     </div>
     <!-- Modal Structure -->
-    <div id="confirmationModal" class="modal" style="display:none;">
+    <div id="confirmationModal" class="modal">
         <div class="modal-content">
             <p id="modalMessage"></p>
         </div>
@@ -112,14 +112,18 @@
         const websiteToScrapeTextField = new mdc.textField.MDCTextField(document.querySelector('.mdc-text-field'));
 
         document.getElementById('confirmButton').onclick = function() {
-            console.log("YES")
-            document.getElementById('confirmationModal').style.display = 'none';
+            hideConfirmationModal(); // Use the function to hide the modal
             streamResponse();
         };
 
         document.getElementById('cancelButton').onclick = function() {
-            document.getElementById('confirmationModal').style.display = 'none';
+            hideConfirmationModal(); // Use the function to hide the modal
         };
+
+        // Attach ripple effect to all buttons with class 'mdc-button'
+        document.querySelectorAll('.mdc-button').forEach(button => {
+            mdc.ripple.MDCRipple.attachTo(button);
+        });
 
     });
 
@@ -146,9 +150,18 @@
     });
 
     function showConfirmationModal(message) {
+        console.log("showing modal");
         document.getElementById('modalMessage').textContent = message + '. Would you like to scrape these pages?';
-        document.getElementById('confirmationModal').style.display = 'block';
+        var modal = document.getElementById('confirmationModal');
+        modal.classList.add('show');
     }
+
+    function hideConfirmationModal() {
+        var modal = document.getElementById('confirmationModal');
+        modal.classList.remove('show');
+    }
+
+
 
     function streamResponse() {
         const scrapeResultsElement = document.getElementById('scrapeResults');
