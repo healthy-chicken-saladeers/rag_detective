@@ -154,6 +154,7 @@ body {
     padding: 10px;
     margin: 0; 
     box-sizing: border-box;
+    font-size: 17px;
 }
 
 #loadingOverlay {
@@ -364,6 +365,10 @@ div.mdc-text-field.mdc-text-field--outlined.mdc-text-field--label-floating {
 
 .side-panel-close-button {
     color: #666; /* Or whatever color you prefer */
+}
+
+.mdc-icon-button {
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 
