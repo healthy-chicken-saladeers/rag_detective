@@ -42,7 +42,7 @@ body {
 .mdc-top-app-bar {
     align-items: left;
     position: relative;
-    background-color: #A41034;
+    background-color: #0015EE;
 }
 
 .mdc-top-app-bar__row {
@@ -114,7 +114,7 @@ body {
 }
 
 #searchButton {
-    background-color: #A41034;
+    background-color: #6200ee;
     color: #fff;
     border: none;
     padding: 12px 24px;
@@ -131,8 +131,6 @@ body {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }*/
-
-
 
 #inputSection {
     width: 45%; 
@@ -355,6 +353,17 @@ input#website-to-scrape.mdc-text-field__input {
 div.mdc-text-field.mdc-text-field--outlined.mdc-text-field--label-floating {
     width: 100%; /* Set the width to 100% */
     max-width: none; /* Override any max-width set elsewhere */
+}
+
+.side-panel-close-button-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 10px;
+}
+
+.side-panel-close-button {
+    color: #666; /* Or whatever color you prefer */
 }
 
 

@@ -23,6 +23,9 @@
     </header>
 
     <div id="slideInPanel" class="side-panel">
+        <div class="side-panel-close-button-container">
+            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button side-panel-close-button" aria-label="Close panel">close</button>
+        </div>
         <div class="side-panel-content">
             <div class="column">
                 <!-- Input field -->
@@ -125,6 +128,13 @@
             mdc.ripple.MDCRipple.attachTo(button);
         });
 
+        // Add click event listener to the newly added close button
+        const closeButton = document.querySelector('.side-panel-close-button');
+        closeButton.addEventListener('click', function() {
+            const slideInPanel = document.getElementById('slideInPanel');
+            slideInPanel.classList.remove('active');
+        });
+
     });
 
     document.getElementById('scrapeButton').addEventListener('click', function() {
@@ -150,7 +160,6 @@
     });
 
     function showConfirmationModal(message) {
-        console.log("showing modal");
         document.getElementById('modalMessage').textContent = message + '. Would you like to scrape these pages?';
         var modal = document.getElementById('confirmationModal');
         modal.classList.add('show');

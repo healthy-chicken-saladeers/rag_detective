@@ -69,9 +69,9 @@ async def process_streaming_response(local_streaming_response):
     try:
         for text in local_streaming_response.response_gen:
             # Check for the financial flag at the end of the text
-            if "%%FF%%" in text:
+            if "QQ" in text:
                 financial = True
-                text = text.replace("%%FF%%", "")  # remove the "%%FF%%"
+                text = text.replace("QQ", "")  # remove the "%%"
             if text.strip():   # Check for null character or empty string
                 print(f"Yielding: [{text}]")
                 yield text  
@@ -161,7 +161,6 @@ async def vertexai_predict(request: Request):
     ENDPOINT_ID = "7054451210648027136"
     PROJECT_ID = "rag-detective"
     SERVICE_ACCOUNT_FILE = './secrets/ml-workflow.json'
-    print("hello", os.getcwd())
 
     # Load data received from your HTML file's JavaScript fetch function
     data = await request.json()
@@ -171,7 +170,6 @@ async def vertexai_predict(request: Request):
     instances = [text]  # this is now a list with a single string
 
     # Location of your service account key json file
-    
 
     # Authenticate and create the AI Platform (Unified) client
     try:
