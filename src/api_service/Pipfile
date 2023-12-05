@@ -1,9 +1,7 @@
 [[source]]
-name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-
-[dev-packages]
+name = "pypi"
 
 [packages]
 uvicorn = "*"
@@ -21,6 +19,8 @@ weaviate-client = "*"
 openai = "*"
 llama-index = "*"
 fitz = "*"
+
+[dev-packages]
 
 [requires]
 python_version = "3.9"
