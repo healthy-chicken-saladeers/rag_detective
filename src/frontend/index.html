@@ -66,7 +66,7 @@
             </select>
 
             <label for="promptInput">Enter prompt:</label>
-            <textarea id="promptInput" placeholder="  Type prompt here..."></textarea>
+            <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
             <div id="buttonContainer">
                 <button id="searchButton" onclick="generate_response()">Search</button>
             </div>
@@ -116,6 +116,7 @@
 
         document.getElementById('confirmButton').onclick = function() {
             hideConfirmationModal(); // Use the function to hide the modal
+            document.getElementById('scrapeResults').value +=  getCurrentTimestamp() + 'Scraping starting...\n';
             streamResponse();
         };
 
@@ -140,7 +141,7 @@
     document.getElementById('scrapeButton').addEventListener('click', function() {
         const url = document.getElementById('website-to-scrape').value;
         if (!validateURL(url)) {
-            document.getElementById('scrapeResults').value += 'Invalid URL\n';
+            document.getElementById('scrapeResults').value += getCurrentTimestamp() + 'Invalid URL\n';
             return;
         }
 
@@ -151,7 +152,7 @@
                     document.getElementById('scrapeResults').value += data.message + '\n';
                 } else {
                     const pagesMessage = data.count + ' pages found ' + (data.nested_flag ? 'in nested sitemaps' : 'in a single sitemap');
-                    document.getElementById('scrapeResults').value +=  'Website: ' + url + ' with ' + pagesMessage + '\n';
+                    document.getElementById('scrapeResults').value +=  getCurrentTimestamp() + url + ' has ' + pagesMessage + '\n';
                     showConfirmationModal(pagesMessage);
                 }
             }).catch(error => {
@@ -159,7 +160,14 @@
             });
     });
 
+    function getCurrentTimestamp() {
+        const now = new Date();
+        return now.toLocaleString() + ': ';
+    }
+
+
     function showConfirmationModal(message) {
+        console.log(getCurrentTimestamp())
         document.getElementById('modalMessage').textContent = message + '. Would you like to scrape these pages?';
         var modal = document.getElementById('confirmationModal');
         modal.classList.add('show');
