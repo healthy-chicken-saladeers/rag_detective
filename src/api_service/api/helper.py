@@ -364,11 +364,9 @@ def store_to_weaviate(filename):
         websiteAddress, timestamp = filename.rsplit('.', 1)[0].split('_')
         print(websiteAddress, timestamp)
         file_loc = f"/home/downloads/{filename}"
-        print("working on df = pd.read_csv(file_loc)")
         df = pd.read_csv(file_loc)
 
         documents = []
-        print("working on for _, row in df.iterrows():")
         for _, row in df.iterrows():
             document = Document (
                 text = row['text'],
@@ -381,36 +379,35 @@ def store_to_weaviate(filename):
             documents.append(document)
 
         #update index with llamaindex
-        print("working on vector_store = WeaviateVectorStore(\
-            weaviate_client=client")
-
         vector_store = WeaviateVectorStore(
             weaviate_client=client,
             index_name="Pages",
             text_key="text"
         )
-
-        print("working on index = VectorStoreIndex.from_vector_store")
         index = VectorStoreIndex.from_vector_store(
             vector_store=vector_store,
             service_context=None
         )
-
-        print("working on index = VectorStoreIndex.from_vector_store ")
         for document in documents:
             index.insert(document)
         success = True
+
+        cleanup_files(file_loc)
 
     except Exception as e:
         print("Error with storing to vector store method",e)
 
     return success
 
-
-
-
-def cleanup_files(directorypath):
-    pass
+def cleanup_files(filewithpath):
+    if os.path.exists(filewithpath):
+        try:
+            os.remove(filewithpath)
+            print(f"removed file {filewithpath}")
+        except Exception as e:
+            print(f"Error occured while deleting {filewithpath}", e)
+    else:
+        print(f"{filewithpath} does not exist.")
 
 
 

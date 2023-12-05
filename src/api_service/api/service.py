@@ -276,15 +276,13 @@ async def scrape_sitemap(request: Request):
             i=0
             for item in list(attribute_dict['df']):
                 i =i+1
-                yield f"  {i} of {attribute_dict['df'].shape[0]} \n scraping :  {item}\n"
+                yield f"  {i} of {attribute_dict['df'].shape[0]}: {item}\n"
                 text_dict[item] = helper.scrape_link(item)[item]
 
             timestamp = datetime.now().strftime('%Y-%m-%dT%H-%M-%S')
             df = pd.DataFrame(list(text_dict.items()), columns=['key', 'text'])
             output_file = f"{website_name}_{timestamp}.csv"
             flag = helper.save_to_gcloud(df, output_file)
-            print(output_file)
-
             if flag:
                 yield f"Finished uploading to gcloud bucket\n"
                 success = helper.download_blob_from_gcloud(output_file)
