@@ -293,7 +293,7 @@ def scrape_link(link):
                     [tag.decompose() for tag in soup_selenium.find_all(['header', 'nav', 'footer'])]
                     text_only_selenium = soup_selenium.get_text(separator=' ', strip=True).lower()
                     text_dict[link] = text_only_selenium
-                    print(f"{link}: {text_only_selenium}")
+                    #print(f"{link}: {text_only_selenium}")
 
                 except Exception as e:
                     print(f"Error occurred while processing {link} in selenium: {e.with_traceback}")
