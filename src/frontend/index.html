@@ -221,6 +221,9 @@
         const scrapeResultsElement = document.getElementById('scrapeResults');
         const loadingIndicator = document.getElementById('loadingIndicator');
 
+        // Capture start time
+        const startTime = Date.now();
+
         scrapeResultsElement.value += getCurrentTimestamp() + 'Scraping starting...\n';
 
         // Show loading indicator
@@ -241,7 +244,11 @@
             function processChunk({ done, value }) {
                 if (done) {
                     console.log('Stream complete');
-                    scrapeResultsElement.value += getCurrentTimestamp() + 'Scraping complete.\n';
+                    const endTime = Date.now();
+                    const duration = (endTime - startTime); // Duration in milliseconds
+                    const minutes = Math.floor(duration / 60000);
+                    const seconds = ((duration % 60000) / 1000).toFixed(0);
+                    scrapeResultsElement.value += getCurrentTimestamp() + `Scraping complete. Total time: ${minutes} minutes and ${seconds} seconds.\n`;
                     fetchWebsites();
                     // Hide loading indicator
                     loadingIndicator.style.display = 'none';
