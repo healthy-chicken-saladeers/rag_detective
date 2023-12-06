@@ -163,7 +163,7 @@ body {
     top: 0; 
     left: 0; 
     right: 0; 
-    height: 200px; 
+    height: 250px; 
     background: rgba(255, 255, 255, 0.8);
     justify-content: center;
     align-items: center;
@@ -435,4 +435,34 @@ div.mdc-text-field.mdc-text-field--outlined.mdc-text-field--label-floating {
   }
 }
 
+.loader {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  position: relative;
+}
+.loader::after,
+.loader::before {
+  content: '';  
+  box-sizing: border-box;
+  width: 48px;
+  height: 48px;
+  border: 2px solid #808080;
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: rotation 2s ease-in-out infinite alternate;
+}
+.loader::after {
+  border-color: #FF3D00;
+  animation-direction: alternate-reverse;
+}
 
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 
