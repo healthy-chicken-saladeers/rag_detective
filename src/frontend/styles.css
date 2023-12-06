@@ -155,6 +155,7 @@ body {
     margin: 0; 
     box-sizing: border-box;
     font-size: 17px;
+    resize: none;
 }
 
 #loadingOverlay {
