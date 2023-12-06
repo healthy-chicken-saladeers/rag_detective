@@ -335,6 +335,30 @@ body {
     transition-delay: 0s; /* Apply transition delay reset for showing the modal */
 }
 
+.modal2 {
+    position: fixed;
+    top: 50%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+    z-index: 1001; /* Ensure it's above other elements */
+    box-shadow: 0px 10px 20px rgba(0,0,0,0.2);
+    opacity: 0; /* Start with modal invisible */
+    visibility: hidden; /* Start with modal not visible */
+    transform: translate(-50%, -50%) scale(0.9); /* Start with modal slightly scaled down */
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s; /* Add visibility to the transition */
+}
+
+.modal2.show {
+    opacity: 1; /* Fully visible */
+    visibility: visible; /* Make modal visible */
+    transform: translate(-50%, -50%) scale(1); /* Scale to normal size */
+    transition-delay: 0s; /* Apply transition delay reset for showing the modal */
+}
+
 .modal-content {
     margin-bottom: 20px;
 }

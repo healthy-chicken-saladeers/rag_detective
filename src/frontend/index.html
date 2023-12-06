@@ -98,6 +98,16 @@
         </div>
     </div>
 
+    <!-- Modal Structure -->
+    <div id="errorModal" class="modal2">
+        <div class="modal-content">
+            <p id="errorMessage"></p>
+        </div>
+        <div class="modal-footer">
+            <button id="okButton" class="mdc-button">Ok</button>
+        </div>
+    </div>
+
     <script>
 
     const API_URL = "localhost"
@@ -145,6 +155,22 @@
     function validateURL(url) {
         const regexPattern = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+)(\/[a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
         return regexPattern.test(url);
+    }
+
+    function showErrorModal(message) {
+        document.getElementById('errorMessage').textContent = message;
+        var modal = document.getElementById('errorModal');
+        modal.classList.add('show');
+
+        // Attach event listeners to confirmation buttons
+        document.getElementById('okButton').onclick = function() {
+            hideErrorModal();
+        };
+    }
+
+    function hideErrorModal() {
+        var modal = document.getElementById('errorModal');
+        modal.classList.remove('show');
     }
 
     function showConfirmationModal(message, url) {
@@ -278,9 +304,16 @@
         // Retrieve values from the dropdown and the prompt input
         const websiteDropdown = document.getElementById('websiteDropdown');
         const website = websiteDropdown.options[websiteDropdown.selectedIndex].value;
+        const query = document.getElementById('promptInput').value;
+
 
         if (!website || website === 'Please select') {
-            alert('Please select a website before searching.');
+            showErrorModal('Please select a website before searching.')
+            return;
+        }
+
+        if (!query) {
+            showErrorModal('Please enter a prompt to ask the model.')
             return;
         }
 
@@ -296,8 +329,6 @@
         // Added: Retrieve the timestamp from the scrapeSessionDropdown
         const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
         const timestamp = scrapeSessionDropdown.options[scrapeSessionDropdown.selectedIndex].value;
-
-        const query = document.getElementById('promptInput').value;
         
         const postData = {
             website: website,
