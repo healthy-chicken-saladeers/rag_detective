@@ -144,13 +144,13 @@ body {
     flex-direction: column;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 15px;
+    margin-top: 25px;
 }
 
 
 #output {
     width: 100%;
-    height: 200px; 
+    height: 250px; 
     padding: 10px;
     margin: 0; 
     box-sizing: border-box;
@@ -224,6 +224,10 @@ body {
     animation-name: popIn;
     animation-duration: 0.5s;
     animation-timing-function: ease;
+}
+
+img.popIn {
+    margin-top: 15px;
 }
 
 .side-panel {
