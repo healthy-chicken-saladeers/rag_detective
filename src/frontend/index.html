@@ -68,9 +68,10 @@
             <label for="promptInput">Enter prompt:</label>
             <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
             <div id="buttonContainer">
-                <button id="searchButton" onclick="generate_response()">Search</button>
+                <button id="searchButton" class="mdc-button mdc-button--raised" onclick="generate_response()">
+                    <span class="mdc-button__label">Prompt the model</span>
+                </button>
             </div>
-
         </div>
         
         <!-- Output Section with Overlay -->
@@ -133,6 +134,19 @@
         return now.toLocaleString() + ': ';
     }
 
+    function getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function padNumber(number) {
+        return number.toString().padStart(2, '0');
+    }
+
+    function validateURL(url) {
+        const regexPattern = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+)(\/[a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
+        return regexPattern.test(url);
+    }
+
     function showConfirmationModal(message, url) {
         document.getElementById('modalMessage').textContent = message + '. Would you like to scrape these pages?';
         var modal = document.getElementById('confirmationModal');
@@ -150,12 +164,6 @@
         var modal = document.getElementById('confirmationModal');
         modal.classList.remove('show');
     }
-
-    function validateURL(url) {
-        const regexPattern = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+)(\/[a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
-        return regexPattern.test(url);
-    }
-
 
     document.getElementById('scrapeButton').addEventListener('click', function() {
         const url = document.getElementById('website-to-scrape').value;
@@ -369,21 +377,24 @@
                 const canvas = document.createElement('canvas');
 
                 let sentiment = "Neutral";
+
+                const randomImageNumber = padNumber(getRandomNumber(1, 10));
+
                 switch (sentimentData.sentiment) {
                     case 0:
                         sentiment = "Negative";
                         sentimentText.style.color = 'red';
-                        sentimentImg.src = "img/negative.png";  
+                        sentimentImg.src = `img/negative${randomImageNumber}.png`;  
                         break;
                     case 1:
                         sentiment = "Neutral";
                         sentimentText.style.color = 'green';
-                        sentimentImg.src = "img/neutral.png";  
+                        sentimentImg.src = `img/neutral${randomImageNumber}.png`;  
                         break;
                     case 2:
                         sentiment = "Positive";
                         sentimentText.style.color = 'blue';
-                        sentimentImg.src = "img/positive.png";  
+                        sentimentImg.src = `img/positive${randomImageNumber}.png`;  
                         break;
                 }
 
