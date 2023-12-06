@@ -28,6 +28,8 @@
         </div>
         <div class="side-panel-content">
             <div class="column">
+                <!-- <div id="loadingIndicator" class="loader" style="display: none;"></div> -->
+                <div id="loadingIndicator" class="lds-facebook" class="loader" style="display: none;"><div></div><div></div><div></div></div>
                 <!-- Input field -->
                 <div class="mdc-text-field mdc-text-field--outlined">
                     <input type="text" id="website-to-scrape" class="mdc-text-field__input" placeholder=" ">
@@ -217,7 +219,12 @@
     // Renamed from streamResponse to startScrapingStream for better clarity
     function startScrapingStream(url) {
         const scrapeResultsElement = document.getElementById('scrapeResults');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+
         scrapeResultsElement.value += getCurrentTimestamp() + 'Scraping starting...\n';
+
+        // Show loading indicator
+        loadingIndicator.style.display = 'inline-block';
 
         // Send the POST request to initiate scraping
         fetch(`http://${API_URL}:9000/scrape_sitemap`, {
@@ -236,6 +243,8 @@
                     console.log('Stream complete');
                     scrapeResultsElement.value += getCurrentTimestamp() + 'Scraping complete.\n';
                     fetchWebsites();
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
                     return;
                 }
                 const decodedValue = new TextDecoder().decode(value, { stream: true });
@@ -249,6 +258,8 @@
         .catch(error => {
             console.error('Stream error:', error);
             scrapeResultsElement.value += getCurrentTimestamp() + `Stream error: ${error.message}\n`;
+            // Hide loading indicator on error
+            loadingIndicator.style.display = 'none';
         });
     }
 

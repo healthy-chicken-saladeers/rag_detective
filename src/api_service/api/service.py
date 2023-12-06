@@ -241,8 +241,7 @@ def sitemap(website:str = Query(...)):
     return response_dict
 
 
-#Still Work in progress. Performs basic function such as scraping, streaming, and writing to gcloud storage
-
+# Performs scraping, streaming, writing to gcloud storage, and storing in vector store
 #curl -X POST http://localhost:9000/scrape_sitemap -H "Content-Type: application/json" -d '{"text": "bland.ai"}'
 #curl -X POST http://localhost:9000/scrape_sitemap -H "Content-Type: application/json" -d '{"text": "chooch.com"}'
 #curl -X POST http://localhost:9000/scrape_sitemap -H "Content-Type: application/json" -d '{"text": "https://arvinas.com/"}'
@@ -271,7 +270,6 @@ async def scrape_sitemap(request: Request):
             yield f"Found 0 pages to scrape in {sitemap}\n"
 
         else:
-            yield f"Starting scraping. Total pages to be scraped : {attribute_dict['df'].shape[0]}\n"
             text_dict = {}
             i=0
             for item in list(attribute_dict['df']):
@@ -284,10 +282,10 @@ async def scrape_sitemap(request: Request):
             output_file = f"{website_name}_{timestamp}.csv"
             flag = helper.save_to_gcloud(df, output_file)
             if flag:
-                yield f"Finished uploading to gcloud bucket\n"
+                yield f"Finished saving to GCP Bucket\n"
                 success = helper.download_blob_from_gcloud(output_file)
                 if success:
-                    yield f"Finished downloading from gcloud.\n"
+                    yield f"Inserting into vector store.\n"
 
                     success = helper.store_to_weaviate(output_file)
 
@@ -302,7 +300,5 @@ async def scrape_sitemap(request: Request):
 
             else:
                 yield f"The scraping process did not complete as expected for {sitemap}\n"
-
-
 
     return StreamingResponse(scraping_process(), media_type="text/plain")

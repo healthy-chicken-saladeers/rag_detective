@@ -353,7 +353,7 @@ def download_blob_from_gcloud(filename):
     return success
 
 
-#Write to weaviate part
+# Write to weaviate part
 def store_to_weaviate(filename):
     success = False
 
@@ -367,7 +367,7 @@ def store_to_weaviate(filename):
     # Current Weaviate IP
     WEAVIATE_IP_ADDRESS = "34.42.138.162"
 
-    print("starting at weaviate part")
+    print("Starting to insert into Weaviate")
     try:
         client = weaviate.Client(url="http://" + WEAVIATE_IP_ADDRESS + ":8080")
         websiteAddress, timestamp = filename.rsplit('.', 1)[0].split('_')
@@ -412,7 +412,7 @@ def cleanup_files(filewithpath):
     if os.path.exists(filewithpath):
         try:
             os.remove(filewithpath)
-            print(f"removed file {filewithpath}")
+            print(f"Removed file {filewithpath}")
         except Exception as e:
             print(f"Error occured while deleting {filewithpath}", e)
     else:
