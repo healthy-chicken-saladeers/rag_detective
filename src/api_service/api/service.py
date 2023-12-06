@@ -285,20 +285,15 @@ async def scrape_sitemap(request: Request):
                 yield f"Finished saving to GCP Bucket\n"
                 success = helper.download_blob_from_gcloud(output_file)
                 if success:
-                    yield f"Inserting into vector store.\n"
+                    yield f"Chunking and preparing documents to insert into vector store.\n"
 
-                    success = helper.store_to_weaviate(output_file)
-
-                    if success:
-                       yield f"Finished updating index on vector store.\n"
-                       yield f"All steps completed successfully.\n"
-                    else:
-                        print("Error occured while updating index on vecotr store.\n")
+                    # Store to Weaviate and yield progress updates
+                    for update in helper.store_to_weaviate(output_file):
+                        yield update
 
                 else:
                     print("Error occured while downloading file to gcloud bucket.\n")
-
             else:
                 yield f"The scraping process did not complete as expected for {sitemap}\n"
-
+        yield f"All steps completed successfully.\n" 
     return StreamingResponse(scraping_process(), media_type="text/plain")

@@ -387,7 +387,10 @@ def store_to_weaviate(filename):
             document.doc_id = row['key']
             documents.append(document)
 
-        #update index with llamaindex
+        index_count = 0
+        total_documents = len(documents)
+
+        # Update index with llamaindex
         vector_store = WeaviateVectorStore(
             weaviate_client=client,
             index_name="Pages",
@@ -399,14 +402,16 @@ def store_to_weaviate(filename):
         )
         for document in documents:
             index.insert(document)
-        success = True
+            index_count += 1
+            # Yield progress update
+            yield f"Inserted {index_count} of {total_documents} documents into vector store.\n"
 
         cleanup_files(file_loc)
 
     except Exception as e:
         print("Error with storing to vector store method",e)
 
-    return success
+    yield "All documents inserted successfully.\n"
 
 def cleanup_files(filewithpath):
     if os.path.exists(filewithpath):
