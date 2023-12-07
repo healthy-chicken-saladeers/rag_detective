@@ -245,6 +245,7 @@ def get_sitemap_attributes(url):
                         nested_urls = [url.text.strip() for url in nested_soup.find_all('loc') if url]
 
                         for nested_link in nested_urls:
+                            # yield f"Checking sitemap {nested_link}.\n"
                             if is_image_url(nested_link, image_extensions):
                                 print(f"Skipping image URL in nested sitemap: {nested_link}")
                                 continue
@@ -256,13 +257,15 @@ def get_sitemap_attributes(url):
 
         if not extended_urls:
             attribute_dict['status'] =1 # return status =1 (i.e. some failure happened)
-            attribute_dict['message'] = f"The sitemap url {url} refers to a nested link of sitemaps. However, the scraper either did not find any links, or some unexpected error occured. "
+            attribute_dict['message'] = f"The sitemap URL {url} refers to a nested link of sitemaps. However, the scraper either did not find any links, or some unexpected error occured. "
             return attribute_dict
 
         attribute_dict['df'] = pd.Series(extended_urls).drop_duplicates().str.strip()
         if nested_sitemap_flag:
-            attribute_dict['message'] = f"The sitemap url {url} refers to a nested sitemap with {len(urls)} sitemap links."
+            attribute_dict['message'] = f"The sitemap URL {url} refers to a nested sitemap with {len(urls)} sitemap links."
             attribute_dict['nested_flag'] = 1
+        else:
+            attribute_dict['message'] = f"The sitemap URL {url} refers to a single sitemap."
         return attribute_dict
 
     except requests.RequestException as e:

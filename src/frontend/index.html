@@ -176,7 +176,7 @@
     }
 
     function showConfirmationModal(message, url) {
-        document.getElementById('modalMessage').textContent = message + '. Would you like to scrape these pages?';
+        document.getElementById('modalMessage').textContent = message + ' Would you like to scrape these pages?';
         var modal = document.getElementById('confirmationModal');
         modal.classList.add('show');
 
@@ -195,23 +195,41 @@
 
     document.getElementById('scrapeButton').addEventListener('click', function() {
         const url = document.getElementById('website-to-scrape').value;
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const scrapeResults = document.getElementById('scrapeResults');
+
         if (!validateURL(url)) {
-            document.getElementById('scrapeResults').value += getCurrentTimestamp() + 'Invalid URL\n';
+            scrapeResults.value += getCurrentTimestamp() + 'Invalid URL\n';
             return;
         }
+
+        // Show loading indicator while counting pages to scrape
+        loadingIndicator.style.display = 'inline-block';
+
+        scrapeResults.value += getCurrentTimestamp() + 'Checking number of pages in sitemap\n';
 
         // Fetch the sitemap data and show confirmation modal if pages are found
         fetch(`http://${API_URL}:9000/sitemap?website=${url}`)
             .then(response => response.json())
             .then(data => {
                 if (data.status === 1) {
-                    document.getElementById('scrapeResults').value += data.message + '\n';
+                    loadingIndicator.style.display = 'none';
+                    scrapeResults.value += data.message + '\n';
+
                 } else {
-                    const pagesMessage = data.count + ' pages found ' + (data.nested_flag ? 'in nested sitemaps' : 'in a single sitemap');
-                    document.getElementById('scrapeResults').value += getCurrentTimestamp() + url + ' has ' + pagesMessage + '\n';
+                    loadingIndicator.style.display = 'none';
+                    const pagesMessage = url + ' has ' + data.count + ' pages available to scrape.'
+                    scrapeResults.value += getCurrentTimestamp() + data.message + '\n';
+                    scrapeResults.value += getCurrentTimestamp() + pagesMessage + '\n';
+
+
+                    // const pagesMessage = getCurrentTimestamp() + data.message + '\n'
+                    // scrapeResults.value += pagesMessage;
+                    // scrapeResults.value += getCurrentTimestamp() + url + ' has ' + data.count + ' pages to scrape.' + '\n';
                     showConfirmationModal(pagesMessage, url); // Pass the URL to the modal for confirmation
                 }
             }).catch(error => {
+                loadingIndicator.style.display = 'none';
                 console.error('Error:', error);
             });
     });
