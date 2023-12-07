@@ -209,7 +209,9 @@ def extract_error_message_from_exception(exception):
 
 def get_sitemap_attributes(url):
 
-    print("inside get_sitemap_attributes")
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg']
+
+    print("Inside get_sitemap_attributes")
     attribute_dict = {
         'status':0,
         'df': pd.Series(),
@@ -230,15 +232,23 @@ def get_sitemap_attributes(url):
 
         extended_urls = []
         for link in urls:
+            print(link)
+            if is_image_url(link, image_extensions): # Ensure we're not scraping an image
+                print(f"Skipping image URL: {link}")
+                continue
             if link.endswith('xml'):
                 nested_sitemap_flag = True
                 try:
                     with requests.get(link, headers=headers) as response:
                         response.raise_for_status()  # Check if the request was successful
-                        nested_soup = BeautifulSoup(response.text, 'lxml')
-                        nested_urls = [url.text.strip() for url in nested_soup.find_all \
-                            ('loc') if url]
-                        extended_urls.extend(nested_urls)
+                        nested_soup = BeautifulSoup(response.text, 'lxml-xml')
+                        nested_urls = [url.text.strip() for url in nested_soup.find_all('loc') if url]
+
+                        for nested_link in nested_urls:
+                            if is_image_url(nested_link, image_extensions):
+                                print(f"Skipping image URL in nested sitemap: {nested_link}")
+                                continue
+                            extended_urls.append(nested_link)
                 except requests.RequestException as e:
                     print(f"Error occurred while processing {link}: {e}")
             else:
@@ -261,6 +271,8 @@ def get_sitemap_attributes(url):
         attribute_dict['message'] = extract_error_message_from_exception(e)
         return attribute_dict  # Returns status =1 (i.e. some failure happened)
 
+def is_image_url(url, image_extensions):
+    return any(url.lower().endswith(ext) for ext in image_extensions)
 
 def scrape_link(link):
     print(link)
