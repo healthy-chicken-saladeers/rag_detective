@@ -26,12 +26,15 @@ read -p "Enter your choice (1 or 2): " PLATFORM_CHOICE
 case $PLATFORM_CHOICE in
     1)
         # M1/2 chip macs use this line
-        docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
+        DOCKERFILE="Dockerfile.mac"
+        docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f $DOCKERFILE .
+
         # Debugging version below
         # docker build --no-cache --progress=plain -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
         ;;
     2)
-        docker build -t $IMAGE_NAME -f Dockerfile .
+        DOCKERFILE="Dockerfile"
+        docker build -t $IMAGE_NAME -f $DOCKERFILE .
         ;;
     *)
         echo "Invalid choice. Exiting."
