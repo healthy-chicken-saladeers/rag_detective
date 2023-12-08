@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rag Detective</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <header class="mdc-top-app-bar">
+        <div class="mdc-top-app-bar__row">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                
+                <!-- New button for sliding in the panel -->
+                <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Slide in panel">tune</button>
+                
+                <span class="mdc-top-app-bar__title">Rag Detective</span>
+            
+            </section>
+        </div>
+    </header>
+
+    <div id="slideInPanel" class="side-panel">
+        <div class="side-panel-close-button-container">
+            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button side-panel-close-button" aria-label="Close panel">close</button>
+        </div>
+        <div class="side-panel-content">
+            <div class="column">
+                <!-- <div id="loadingIndicator" class="loader" style="display: none;"></div> -->
+                <div id="loadingIndicator" class="lds-facebook" class="loader" style="display: none;"><div></div><div></div><div></div></div>
+                <!-- Input field -->
+                <div class="mdc-text-field mdc-text-field--outlined">
+                    <input type="text" id="website-to-scrape" class="mdc-text-field__input" placeholder=" ">
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="website-to-scrape" class="mdc-floating-label">Website to Scrape</label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                </div>
+                <!-- Button -->
+                <button id="scrapeButton" class="mdc-button mdc-button--raised">
+                    <span class="mdc-button__label">Scrape site</span>
+                </button>
+            </div>
+            <div class="column">
+                <!-- Textarea for results -->
+                <textarea id="scrapeResults" placeholder="Results will appear here..." rows="10"></textarea>
+            </div>
+        </div>
+    </div>
+    
+    <div class="content">
+
+        <!-- Input Section -->
+        <div id="inputSection">
+            <label for="websiteDropdown">Select website:</label>
+            <select id="websiteDropdown" onchange="updateScrapeSession()">
+                <option value="" selected>Please select</option>
+            </select>
+
+            <label for="scrapeSessionDropdown">Scrape session:</label>
+            <select id="scrapeSessionDropdown">
+                <!-- Options will be populated based on website selection -->
+            </select>
+
+            <label for="promptInput">Enter prompt:</label>
+            <textarea id="promptInput" placeholder="Type prompt here..."></textarea>
+            <div id="buttonContainer">
+                <button id="searchButton" class="mdc-button mdc-button--raised" onclick="generate_response()">
+                    <span class="mdc-button__label">Prompt the model</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Output Section with Overlay -->
+        <div id="outputSection" style="position: relative;">
+            <textarea id="output" readonly></textarea>
+            <!-- Loading Overlay -->
+            <div id="loadingOverlay" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.8); justify-content: center; align-items: center;">
+                <div class="loader"></div>
+            </div>
+            <div id="urlsContainer">
+                <!-- URLs will be listed here -->
+            </div>
+        </div>
+
+    </div>
+    <!-- Modal Structure -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+        </div>
+        <div class="modal-footer">
+            <button id="confirmButton" class="mdc-button mdc-button--raised">Yes</button>
+            <button id="cancelButton" class="mdc-button">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="errorModal" class="modal2">
+        <div class="modal-content">
+            <p id="errorMessage"></p>
+        </div>
+        <div class="modal-footer">
+            <button id="okButton" class="mdc-button">Ok</button>
+        </div>
+    </div>
+
+    <script>
+
+    const API_URL = "localhost"
+
+    document.addEventListener('DOMContentLoaded', function() { 
+        // Populate the websites dropdown on initial load
+        fetchWebsites();
+
+        // Add click event listener to the tune icon
+        const tuneButton = document.querySelector('.mdc-top-app-bar__action-item[aria-label="Slide in panel"]');
+        tuneButton.addEventListener('click', function() {
+            const slideInPanel = document.getElementById('slideInPanel');
+            slideInPanel.classList.toggle('active');
+        });
+
+        const websiteToScrapeTextField = new mdc.textField.MDCTextField(document.querySelector('.mdc-text-field'));
+
+        // Attach ripple effect to all buttons with class 'mdc-button'
+        document.querySelectorAll('.mdc-button').forEach(button => {
+            mdc.ripple.MDCRipple.attachTo(button);
+        });
+
+        // Add click event listener to the newly added close button
+        const closeButton = document.querySelector('.side-panel-close-button');
+        closeButton.addEventListener('click', function() {
+            const slideInPanel = document.getElementById('slideInPanel');
+            slideInPanel.classList.remove('active');
+        });
+
+    });
+
+    function getCurrentTimestamp() {
+        const now = new Date();
+        return now.toLocaleString() + ': ';
+    }
+
+    function getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function padNumber(number) {
+        return number.toString().padStart(2, '0');
+    }
+
+    function validateURL(url) {
+        const regexPattern = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+)(\/[a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
+        return regexPattern.test(url);
+    }
+
+    function showErrorModal(message) {
+        document.getElementById('errorMessage').textContent = message;
+        var modal = document.getElementById('errorModal');
+        modal.classList.add('show');
+
+        // Attach event listeners to confirmation buttons
+        document.getElementById('okButton').onclick = function() {
+            hideErrorModal();
+        };
+    }
+
+    function hideErrorModal() {
+        var modal = document.getElementById('errorModal');
+        modal.classList.remove('show');
+    }
+
+    function showConfirmationModal(message, url) {
+        document.getElementById('modalMessage').textContent = message + ' Would you like to scrape these pages?';
+        var modal = document.getElementById('confirmationModal');
+        modal.classList.add('show');
+
+        // Attach event listeners to confirmation buttons
+        document.getElementById('confirmButton').onclick = function() {
+            hideConfirmationModal();
+            startScrapingStream(url);
+        };
+        document.getElementById('cancelButton').onclick = hideConfirmationModal;
+    }
+
+    function hideConfirmationModal() {
+        var modal = document.getElementById('confirmationModal');
+        modal.classList.remove('show');
+    }
+
+    document.getElementById('scrapeButton').addEventListener('click', function() {
+        const url = document.getElementById('website-to-scrape').value;
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const scrapeResults = document.getElementById('scrapeResults');
+
+        if (!validateURL(url)) {
+            scrapeResults.value += getCurrentTimestamp() + 'Invalid URL\n';
+            return;
+        }
+
+        // Show loading indicator while counting pages to scrape
+        loadingIndicator.style.display = 'inline-block';
+
+        scrapeResults.value += getCurrentTimestamp() + 'Checking number of pages in sitemap\n';
+
+        // Fetch the sitemap data and show confirmation modal if pages are found
+        fetch(`http://${API_URL}:9000/sitemap?website=${url}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 1) {
+                    loadingIndicator.style.display = 'none';
+                    scrapeResults.value += data.message + '\n';
+
+                } else {
+                    loadingIndicator.style.display = 'none';
+                    const pagesMessage = url + ' has ' + data.count + ' pages available to scrape.'
+                    scrapeResults.value += getCurrentTimestamp() + data.message + '\n';
+                    scrapeResults.value += getCurrentTimestamp() + pagesMessage + '\n';
+
+
+                    // const pagesMessage = getCurrentTimestamp() + data.message + '\n'
+                    // scrapeResults.value += pagesMessage;
+                    // scrapeResults.value += getCurrentTimestamp() + url + ' has ' + data.count + ' pages to scrape.' + '\n';
+                    showConfirmationModal(pagesMessage, url); // Pass the URL to the modal for confirmation
+                }
+            }).catch(error => {
+                loadingIndicator.style.display = 'none';
+                console.error('Error:', error);
+            });
+    });
+
+    // Renamed from streamResponse to startScrapingStream for better clarity
+    function startScrapingStream(url) {
+        const scrapeResultsElement = document.getElementById('scrapeResults');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+
+        // Capture start time
+        const startTime = Date.now();
+
+        scrapeResultsElement.value += getCurrentTimestamp() + 'Scraping starting...\n';
+
+        // Show loading indicator
+        loadingIndicator.style.display = 'inline-block';
+
+        // Send the POST request to initiate scraping
+        fetch(`http://${API_URL}:9000/scrape_sitemap`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: url })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const reader = response.body.getReader();
+
+            function processChunk({ done, value }) {
+                if (done) {
+                    console.log('Stream complete');
+                    const endTime = Date.now();
+                    const duration = (endTime - startTime); // Duration in milliseconds
+                    const minutes = Math.floor(duration / 60000);
+                    const seconds = ((duration % 60000) / 1000).toFixed(0);
+                    scrapeResultsElement.value += getCurrentTimestamp() + `Scraping complete. Total time: ${minutes} minutes and ${seconds} seconds.\n`;
+                    fetchWebsites();
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                    return;
+                }
+                const decodedValue = new TextDecoder().decode(value, { stream: true });
+                scrapeResultsElement.value += decodedValue;
+                return reader.read().then(processChunk); // Read the next chunk
+            }
+
+            // Start reading the stream
+            return reader.read().then(processChunk);
+        })
+        .catch(error => {
+            console.error('Stream error:', error);
+            scrapeResultsElement.value += getCurrentTimestamp() + `Stream error: ${error.message}\n`;
+            // Hide loading indicator on error
+            loadingIndicator.style.display = 'none';
+        });
+    }
+
+    function fetchWebsites() {
+        fetch(`http://${API_URL}:9000/websites`)
+            .then(response => response.json())
+            .then(websites => {
+                const websiteDropdown = document.getElementById('websiteDropdown');
+                websites.forEach(website => {
+                    const option = document.createElement('option');
+                    option.value = website;
+                    option.textContent = website;
+                    websiteDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching websites:', error));
+    }
+
+    function updateScrapeSession() {
+        const websiteDropdown = document.getElementById('websiteDropdown');
+        const website = websiteDropdown.value;
+        const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
+
+        // Clear out the scrape session dropdown
+        scrapeSessionDropdown.innerHTML = '';
+
+        if (!website || website === 'Please select') {
+            return;
+        }
+
+        fetch(`http://${API_URL}:9000/timestamps/${website}`)
+            .then(response => response.json())
+            .then(timestamps => {
+                const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
+                scrapeSessionDropdown.innerHTML = ''; // Clear existing options
+                timestamps.forEach(timestamp => {
+                    const option = document.createElement('option');
+                    option.value = timestamp;
+                    option.textContent = timestamp;
+                    scrapeSessionDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching timestamps:', error));
+    }
+
+    // Update this to use the website, timestamp, and query fields
+    function generate_response() {
+        // Get the overlay, spinner, and output elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const outputElement = document.getElementById('output');
+        const urlsContainer = document.getElementById('urlsContainer');
+
+        // Retrieve values from the dropdown and the prompt input
+        const websiteDropdown = document.getElementById('websiteDropdown');
+        const website = websiteDropdown.options[websiteDropdown.selectedIndex].value;
+        const query = document.getElementById('promptInput').value;
+
+
+        if (!website || website === 'Please select') {
+            showErrorModal('Please select a website before searching.')
+            return;
+        }
+
+        if (!query) {
+            showErrorModal('Please enter a prompt to ask the model.')
+            return;
+        }
+
+        // Clear previous output and show the overlay with spinner
+        outputElement.value = '';
+        urlsContainer.innerHTML = '';
+        loadingOverlay.style.display = 'flex'; // Show overlay
+
+        // Clear previous sentiment image
+        const prevSentimentImg = document.querySelector("#searchButton + img"); 
+        if (prevSentimentImg) prevSentimentImg.remove();
+
+        // Added: Retrieve the timestamp from the scrapeSessionDropdown
+        const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
+        const timestamp = scrapeSessionDropdown.options[scrapeSessionDropdown.selectedIndex].value;
+        
+        const postData = {
+            website: website,
+            timestamp: timestamp,
+            query: query
+        };
+
+        // Using fetch with a POST request
+        fetch(`http://${API_URL}:9000/rag_query`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(postData)
+        }).then(response => {
+            const queryId = response.headers.get('X-Query-ID');
+            const reader = response.body.getReader(); 
+            let responseData = '';
+
+            function processText({ done, value }) {
+                loadingOverlay.style.display = 'none';
+                if (done) {
+                    // Call the function to fetch URLs with the received query_id first to determine the financial flag
+                    fetchURLs(queryId, responseData);
+                    return;
+                }
+                const decodedValue = new TextDecoder().decode(value, { stream: true });
+                responseData += decodedValue;
+                outputElement.value += decodedValue;
+                reader.read().then(processText); // Keep reading the next chunk of data
+            }
+
+            reader.read().then(processText);
+        }).catch(err => {
+            outputElement.value = `Fetch error: ${err.message}`;
+            loadingOverlay.style.display = 'none'; // Hide overlay on error
+        });
+    }
+
+    function displayURLs(data, responseData) {
+        // Assuming there's a container for URLs
+        const urlsContainer = document.getElementById("urlsContainer");
+        urlsContainer.innerHTML = "The following page(s) were used to generate this answer:"; // Clear previous URLs
+
+        // Update the HTML with the new URLs
+        const ulElement = document.createElement("ul");
+        data.urls.forEach(function (url) {
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = url; 
+            a.textContent = url;
+            a.target = "_blank"; 
+            li.appendChild(a); 
+            ulElement.appendChild(li);
+        });
+        urlsContainer.appendChild(ulElement);
+
+        // Check the financial_flag and add the line if needed
+        if (data.financial_flag) {
+            const financialNotice = document.createElement("p");
+            financialNotice.textContent = "This response might be financial in nature! Let's ask BERT if it's good, bad, or neutral news.";
+            urlsContainer.appendChild(financialNotice);
+
+            // Calling Vertex API for sentiment analysis as the response is financial in nature
+            fetch(`http://${API_URL}:9000/vertexai_predict`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ "text": responseData }) 
+            })
+            .then(response => response.json())
+            .then(sentimentData => {
+                // Display the sentiment data
+                const sentimentText = document.createElement("p");
+                const sentimentImg = document.createElement('img'); 
+                const canvas = document.createElement('canvas');
+
+                let sentiment = "Neutral";
+
+                const randomImageNumber = padNumber(getRandomNumber(1, 10));
+
+                switch (sentimentData.sentiment) {
+                    case 0:
+                        sentiment = "Negative";
+                        sentimentText.style.color = 'red';
+                        sentimentImg.src = `img/negative${randomImageNumber}.png`;  
+                        break;
+                    case 1:
+                        sentiment = "Neutral";
+                        sentimentText.style.color = 'green';
+                        sentimentImg.src = `img/neutral${randomImageNumber}.png`;  
+                        break;
+                    case 2:
+                        sentiment = "Positive";
+                        sentimentText.style.color = 'blue';
+                        sentimentImg.src = `img/positive${randomImageNumber}.png`;  
+                        break;
+                }
+
+                sentimentText.textContent = `BERT says: ${sentiment}!`;
+                urlsContainer.appendChild(sentimentText);
+
+                // Add the 'popIn' animation class to the image
+                sentimentImg.classList.add('popIn');
+
+                // Insert the image at the end of 'buttonContainer'
+                document.getElementById("buttonContainer").insertAdjacentElement('beforeend', sentimentImg);  
+
+                // Append canvas to the container 
+                urlsContainer.appendChild(canvas);
+
+                // Generate the chart
+                new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Negative', 'Neutral', 'Positive'],
+                        datasets: [{
+                            label: 'Sentiment probabilities',
+                            data: [sentimentData.probabilities[0], sentimentData.probabilities[1], sentimentData.probabilities[2]],
+                            backgroundColor: [
+                                'red',
+                                'green',
+                                'blue'
+                            ]
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+        }
+    }
+
+
+    function fetchURLs(queryId, responseData) {
+        if (queryId) {
+            // Make the GET request to the get_urls endpoint
+            fetch(`http://${API_URL}:9000/get_urls/${queryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.urls) {
+                        // Pass the entire data and response text to the displayURLs function
+                        displayURLs(data, responseData);
+                    } else {
+                        throw new Error('URLs not found.');
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching URLs:", error);
+                    const urlsContainer = document.getElementById("urlsContainer");
+                    urlsContainer.textContent = "Error fetching URLs.";
+                });
+        } else {
+            console.error("Query ID not found.");
+        }
+    }
+
+    </script>
+
+</body>
+</html>

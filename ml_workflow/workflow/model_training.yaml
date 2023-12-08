@@ -1,0 +1,116 @@
+# PIPELINE DEFINITION
+# Name: model-training-pipeline
+components:
+  comp-model-training:
+    executorLabel: exec-model-training
+    inputDefinitions:
+      parameters:
+        batch_size:
+          defaultValue: 8.0
+          isOptional: true
+          parameterType: NUMBER_INTEGER
+        bucket_name:
+          defaultValue: ''
+          isOptional: true
+          parameterType: STRING
+        epochs:
+          defaultValue: 2.0
+          isOptional: true
+          parameterType: NUMBER_INTEGER
+        location:
+          defaultValue: ''
+          isOptional: true
+          parameterType: STRING
+        project:
+          defaultValue: ''
+          isOptional: true
+          parameterType: STRING
+        staging_bucket:
+          defaultValue: ''
+          isOptional: true
+          parameterType: STRING
+        wandb_key:
+          defaultValue: ''
+          isOptional: true
+          parameterType: STRING
+deploymentSpec:
+  executors:
+    exec-model-training:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - model_training
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'kfp==2.3.0'\
+          \ '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"'  &&\
+          \  python3 -m pip install --quiet --no-warn-script-location 'google-cloud-aiplatform'\
+          \ && \"$0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef model_training(\n    project: str = \"\",\n    location: str\
+          \ = \"\",\n    staging_bucket: str = \"\",\n    bucket_name: str = \"\"\
+          ,\n    epochs: int = 2,\n    batch_size: int = 8,\n    wandb_key: str =\"\
+          \"\n\n):\n    print(\"Model Training Job\")\n\n    import google.cloud.aiplatform\
+          \ as aip\n\n    # Initialize Vertex AI SDK for Python\n    aip.init(project=project,\
+          \ location=location, staging_bucket=staging_bucket)\n\n    container_uri\
+          \ = \"us-docker.pkg.dev/vertex-ai/training/tf-gpu.2-12.py310:latest\"\n\
+          \    python_package_gcs_uri = f\"{staging_bucket}/ragdetective-app-trainer.tar.gz\"\
+          \n\n    job = aip.CustomPythonPackageTrainingJob(\n        display_name=\"\
+          ragdetective-app-training\",\n        python_package_gcs_uri=python_package_gcs_uri,\n\
+          \        python_module_name=\"trainer.task\",\n        container_uri=container_uri,\n\
+          \        project=project,\n    )\n\n    CMDARGS = [\n        f\"--epochs={epochs}\"\
+          ,\n        f\"--batch_size={batch_size}\",\n        f\"--wandb_key={wandb_key}\"\
+          \n\n    ]\n\n    MODEL_DIR = staging_bucket\n    TRAIN_COMPUTE = \"n1-standard-4\"\
+          \n    TRAIN_GPU = \"NVIDIA_TESLA_T4\"\n    TRAIN_NGPU = 1\n\n    print(python_package_gcs_uri)\n\
+          \n    # Run the training job on Vertex AI\n    # sync=True, # If you want\
+          \ to wait for the job to finish\n    job.run(\n        model_display_name=None,\n\
+          \        args=CMDARGS,\n        replica_count=1,\n        machine_type=TRAIN_COMPUTE,\n\
+          \        accelerator_type=TRAIN_GPU,\n        accelerator_count=TRAIN_NGPU,\n\
+          \        base_output_dir=MODEL_DIR,\n        sync=True,\n    )\n\n"
+        image: python:3.10
+pipelineInfo:
+  name: model-training-pipeline
+root:
+  dag:
+    tasks:
+      model-training:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-model-training
+        inputs:
+          parameters:
+            bucket_name:
+              runtimeValue:
+                constant: rag-detective-ml-workflow
+            location:
+              runtimeValue:
+                constant: us-central1
+            project:
+              runtimeValue:
+                constant: rag-detective
+            staging_bucket:
+              runtimeValue:
+                constant: gs://rag-detective-ml-workflow
+            wandb_key:
+              runtimeValue:
+                constant: da168e752b444445a1e412531d691fdf5564ad2e
+        taskInfo:
+          name: model-training
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.3.0

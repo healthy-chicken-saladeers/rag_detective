@@ -1,0 +1,49 @@
+{
+    "classes": [
+        {
+            "class": "TextChunk",
+            "description": "A segmented portion of text from a scraped webpage with full details.",
+            "invertedIndexConfig": {
+                "indexTimestamps": true
+            },
+            "vectorizer": "text2vec-openai",
+            "moduleConfig": {
+                "generative-openai": {
+                    "model": "gpt-3.5-turbo"
+                }
+            },
+            "properties": [
+                {
+                    "name": "key",
+                    "dataType": ["string"],
+                    "description": "The identifier for the text chunk.",
+                    "indexInverted": true
+                },
+                {
+                    "name": "text",
+                    "dataType": ["string"],
+                    "description": "The content of the text chunk.",
+                    "indexInverted": true
+                },
+                {
+                    "name": "pageURL",
+                    "dataType": ["string"],
+                    "description": "The specific URL of the scraped webpage this chunk belongs to.",
+                    "indexInverted": true
+                },
+                {
+                    "name": "websiteAddress",
+                    "dataType": ["string"],
+                    "description": "The address of the website this chunk comes from.",
+                    "indexInverted": true
+                },
+                {
+                    "name": "timestamp",
+                    "dataType": ["date"],
+                    "description": "The date and time when the chunk was scraped.",
+                    "indexInverted": true
+                }
+            ]
+        }
+    ]
+}

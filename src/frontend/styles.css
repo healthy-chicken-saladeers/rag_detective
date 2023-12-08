@@ -1,0 +1,469 @@
+/* styles.css */
+
+body, button, input, select, textarea {
+    font-family: 'Roboto', sans-serif;
+}
+
+:root {
+    --primary-color: #6200ee; /* Example primary color */
+    --text-color: #212121; /* Primary text color */
+    --secondary-text-color: #757575; /* Secondary text color */
+}
+
+input, select, textarea {
+    border: 1px solid var(--primary-color);
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: darken(var(--primary-color), 30%);
+}
+
+
+
+body {
+    margin: 0;
+    background-color: #efefef;
+/*    font-family: "Roboto", "Helvetica", "Arial", sans-serif;*/
+}
+
+.mdc-top-app-bar {
+    align-items: left;
+    position: relative;
+    background-color: #0015EE;
+}
+
+.mdc-top-app-bar__row {
+    max-width: 700px;
+}
+
+.mdc-top-app-bar__title {
+    font-weight: 900; 
+    font-size: 30px;
+}
+
+.content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1400px; 
+    align-items: flex-start;
+    margin-top: 10px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*.content {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin: 20px;
+    align-items: start;
+}*/
+
+
+
+#textForm {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#websiteInput,
+#websiteDropdown,      
+#scrapeSessionDropdown,
+#promptInput {
+    width: 100%;            
+    max-width: 700;    
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    padding-right: 0px;
+    padding-left: 10px;
+    font-size: 16px;
+    resize: none;
+/*    font-family: "Roboto", "Helvetica", "Arial", sans-serif;*/
+}
+
+#promptInput {
+    height: 200px;
+}
+
+#searchButton {
+    background-color: #6200ee;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+/*#inputSection, #outputSection {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}*/
+
+#inputSection {
+    width: 45%; 
+}
+
+#outputSection {
+    position: relative;
+    width: 45%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 25px;
+}
+
+
+#output {
+    width: 100%;
+    height: 250px; 
+    padding: 10px;
+    margin: 0; 
+    box-sizing: border-box;
+    font-size: 17px;
+    resize: none;
+}
+
+#loadingOverlay {
+    display: none;
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    height: 250px; 
+    background: rgba(255, 255, 255, 0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: #09f;
+    animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#urlsContainer {
+    text-align: left; 
+    margin-top: 10px; 
+}
+
+@keyframes fadeIn {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+.fadeIn {
+  animation-name: fadeIn;
+  animation-duration: 2s;
+}
+
+#buttonContainer {
+   display: flex;
+   justify-content: space-between;
+   align-items: flex-start;
+}
+
+#buttonContainer img {
+   height: 300px;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); } /* Element starts from nothing */
+    75% { transform: scale(1.2); } /* Element grows past its normal size */
+    100% { transform: scale(1); } /* Element shrinks back to its normal size */
+}
+
+.popIn {
+    animation-name: popIn;
+    animation-duration: 0.5s;
+    animation-timing-function: ease;
+}
+
+img.popIn {
+    margin-top: 15px;
+}
+
+.side-panel {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Start off-screen */
+    width: 80%; /* Width of the panel */
+    height: 100%;
+    background: #FFF;
+    z-index: 1000;
+    transition: right 0.3s; /* Animate sliding in/out */
+    display: flex; /* Use flexbox for centering */
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-left: 1px solid #ccc; 
+}
+
+.side-panel-content {
+    display: flex;
+    height: 100%; /* Full height of the side panel */
+    width: 100%;
+    padding: 20px;
+}
+
+.column {
+    display: flex; /* Enables flexbox */
+    flex-direction: column; /* Stack children vertically */
+    justify-content: center; /* Center children vertically */
+    align-items: center; /* Center children horizontally */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* First column with the form elements */
+.side-panel-content .column:first-child {
+    width: 25%; 
+}
+
+/* Second column with the results textarea */
+.side-panel-content .column:last-child {
+    width: 75%; 
+}
+
+/* When active class is added, slide in */
+.side-panel.active {
+    right: 0; /* Slide into view */
+}
+
+.side-panel-content .column input[type="text"] {
+    height: 56px; /* Typical Material Design input height */
+    padding: 16px;
+    border: 1px solid #ccc; /* Light border */
+    font-size: 16px; /* Standard font size for input */
+    width: 100%;
+}
+
+.side-panel-content .column button {
+    margin-top: 20px;
+    height: 36px; /* Typical Material Design button height */
+    background-color: #6200ee; /* Material Design primary color */
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* Apply Material Design box-shadows and heavier border on active/focus for input */
+.side-panel-content .column input[type="text"]:focus {
+    outline: none;
+    border: 1px solid #6200ee; /* Material Design primary color for focus */
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                0 3px 1px -2px rgba(0, 0, 0, 0.2),
+                0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* Update for the text area */
+#scrapeResults {
+    width: calc(100% - 20px); /* Full width minus padding */
+    height: calc(100% - 100px);; /* Adjust height as necessary */
+    padding: 16px;
+    border: 1px solid #ccc;
+    margin-bottom: 16px; /* Provide some margin to the bottom */
+    resize: vertical; /* Allow vertical resizing */
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+    z-index: 1001; /* Ensure it's above other elements */
+    box-shadow: 0px 10px 20px rgba(0,0,0,0.2);
+    opacity: 0; /* Start with modal invisible */
+    visibility: hidden; /* Start with modal not visible */
+    transform: translate(-50%, -50%) scale(0.9); /* Start with modal slightly scaled down */
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s; /* Add visibility to the transition */
+}
+
+.modal.show {
+    opacity: 1; /* Fully visible */
+    visibility: visible; /* Make modal visible */
+    transform: translate(-50%, -50%) scale(1); /* Scale to normal size */
+    transition-delay: 0s; /* Apply transition delay reset for showing the modal */
+}
+
+.modal2 {
+    position: fixed;
+    top: 50%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+    z-index: 1001; /* Ensure it's above other elements */
+    box-shadow: 0px 10px 20px rgba(0,0,0,0.2);
+    opacity: 0; /* Start with modal invisible */
+    visibility: hidden; /* Start with modal not visible */
+    transform: translate(-50%, -50%) scale(0.9); /* Start with modal slightly scaled down */
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s; /* Add visibility to the transition */
+}
+
+.modal2.show {
+    opacity: 1; /* Fully visible */
+    visibility: visible; /* Make modal visible */
+    transform: translate(-50%, -50%) scale(1); /* Scale to normal size */
+    transition-delay: 0s; /* Apply transition delay reset for showing the modal */
+}
+
+.modal-content {
+    margin-bottom: 20px;
+}
+
+.modal-footer {
+    text-align: right;
+}
+
+input#website-to-scrape.mdc-text-field__input {
+    font-size: 16px; 
+    height: auto; 
+    width: 100%;
+    box-shadow: 0px 0px 0px rgba(0,0,0,0);
+
+}
+
+div.mdc-text-field.mdc-text-field--outlined.mdc-text-field--label-floating {
+    width: 100%; /* Set the width to 100% */
+    max-width: none; /* Override any max-width set elsewhere */
+}
+
+.side-panel-close-button-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 10px;
+}
+
+.side-panel-close-button {
+    color: #666; /* Or whatever color you prefer */
+}
+
+.mdc-icon-button {
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.lds-facebook {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-facebook div {
+  display: inline-block;
+  position: absolute;
+  left: 8px;
+  width: 16px;
+  background: #808080;
+  animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+.lds-facebook div:nth-child(1) {
+  left: 8px;
+  animation-delay: -0.24s;
+}
+.lds-facebook div:nth-child(2) {
+  left: 32px;
+  animation-delay: -0.12s;
+}
+.lds-facebook div:nth-child(3) {
+  left: 56px;
+  animation-delay: 0;
+}
+@keyframes lds-facebook {
+  0% {
+    top: 8px;
+    height: 64px;
+  }
+  50%, 100% {
+    top: 24px;
+    height: 32px;
+  }
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  position: relative;
+}
+.loader::after,
+.loader::before {
+  content: '';  
+  box-sizing: border-box;
+  width: 48px;
+  height: 48px;
+  border: 2px solid #808080;
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: rotation 2s ease-in-out infinite alternate;
+}
+.loader::after {
+  border-color: #FF3D00;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 

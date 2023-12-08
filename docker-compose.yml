@@ -1,0 +1,59 @@
+version: '3.4'
+services:
+  weaviate:
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - '8080'
+      - --scheme
+      - http
+    image: semitechnologies/weaviate:1.21.3
+    ports:
+      - 8080:8080
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+    restart: on-failure:0
+    environment:
+      OPENAI_APIKEY: $OPENAI_APIKEY
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'text2vec-openai'
+      ENABLE_MODULES: 'text2vec-openai,generative-openai'
+      CLUSTER_HOSTNAME: 'node1'
+  
+  scraper:
+    build:
+      context: ./src/scraper 
+    container_name: scraper
+    user: appuser
+    command: ["python", "scraper.py"]
+    volumes:
+      - ./src/scraper/scraper_data:/app/data
+
+  llama_index:
+    build:
+      context: ./src/llama_index
+    container_name: llama_index
+    user: appuser
+    command: ["tail", "-f", "/dev/null"]
+    volumes:
+      - ./src/llama_index:/app
+    environment:
+      OPENAI_API_KEY: $OPENAI_APIKEY #It uses the same key as weaviate if needed
+    privileged: true
+
+  finetune_bert:
+    build:
+      context: ./src/bert_financial
+    container_name: finetune_bert
+    user: appuser
+    command: ["tail", "-f", "/dev/null"]
+    volumes:
+      - ./src/bert_financial:/app
+    privileged: true
+
+volumes:
+  weaviate_data:
+  scraper_data:

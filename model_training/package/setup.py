@@ -1,0 +1,13 @@
+from setuptools import find_packages
+from setuptools import setup
+
+
+REQUIRED_PACKAGES = ["wandb==0.15.11", "transformers==4.34.1", "chardet==5.2.0"]
+
+setup(
+    name="ragdetective-app-trainer",
+    version="0.0.1",
+    install_requires=REQUIRED_PACKAGES,
+    packages=find_packages(),
+    description="Rag Detective App Trainer Application ",
+)

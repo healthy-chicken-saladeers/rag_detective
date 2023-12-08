@@ -1,0 +1,5 @@
+functions-framework==3.*
+llama-cpp-python==0.2.11
+llama_index==0.8.46
+weaviate-client==3.24.2
+transformers==4.34.1
