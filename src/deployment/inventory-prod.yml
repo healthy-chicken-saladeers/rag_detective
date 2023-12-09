@@ -1,0 +1,9 @@
+all:
+    vars:
+      gcp_service_account_file: "/secrets/deployment.json"
+      gcp_service_account_email: "deployment@rag-detective.iam.gserviceaccount.com"
+      gcp_auth_kind: "serviceaccount"
+      gcp_scopes: "https://www.googleapis.com/auth/compute"
+      gcp_project: "rag-detective"
+      gcp_region: "us-central1"
+      gcp_zone: "us-central1-a"

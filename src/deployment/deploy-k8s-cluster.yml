@@ -151,7 +151,7 @@
             spec:
               containers:
               - image: "gcr.io/{{ gcp_project }}/rag-detective-app-frontend:{{ tag.stdout}}"
-                imagePullPolicy: Always
+                imagePullPolicy: IfNotPresent
                 name: frontend
                 ports:
                 - containerPort: 80
@@ -186,7 +186,7 @@
                     secretName: gcp-service-key
               containers:
               - image: gcr.io/{{ gcp_project }}/rag-detective-app-api-service:{{ tag.stdout}}
-                imagePullPolicy: Always
+                imagePullPolicy: IfNotPresent
                 name: api
                 ports:
                 - containerPort: 9000
