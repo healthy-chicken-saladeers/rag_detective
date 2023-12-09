@@ -112,7 +112,7 @@
 
     <script>
 
-    const API_URL = "localhost"
+    const API_URL = "34.123.94.245"
 
     document.addEventListener('DOMContentLoaded', function() { 
         // Populate the websites dropdown on initial load
@@ -221,11 +221,6 @@
                     const pagesMessage = url + ' has ' + data.count + ' pages available to scrape.'
                     scrapeResults.value += getCurrentTimestamp() + data.message + '\n';
                     scrapeResults.value += getCurrentTimestamp() + pagesMessage + '\n';
-
-
-                    // const pagesMessage = getCurrentTimestamp() + data.message + '\n'
-                    // scrapeResults.value += pagesMessage;
-                    // scrapeResults.value += getCurrentTimestamp() + url + ' has ' + data.count + ' pages to scrape.' + '\n';
                     showConfirmationModal(pagesMessage, url); // Pass the URL to the modal for confirmation
                 }
             }).catch(error => {
@@ -404,6 +399,15 @@
         });
     }
 
+    function preloadImage(url) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = url;
+        });
+    }
+
     function displayURLs(data, responseData) {
         // Assuming there's a container for URLs
         const urlsContainer = document.getElementById("urlsContainer");
@@ -440,39 +444,43 @@
             .then(sentimentData => {
                 // Display the sentiment data
                 const sentimentText = document.createElement("p");
-                const sentimentImg = document.createElement('img'); 
                 const canvas = document.createElement('canvas');
 
                 let sentiment = "Neutral";
 
                 const randomImageNumber = padNumber(getRandomNumber(1, 10));
-
+                
+                let imageUrl;
                 switch (sentimentData.sentiment) {
                     case 0:
                         sentiment = "Negative";
                         sentimentText.style.color = 'red';
-                        sentimentImg.src = `img/negative${randomImageNumber}.png`;  
+                        imageUrl = `img/negative${randomImageNumber}.png`;  
                         break;
                     case 1:
                         sentiment = "Neutral";
                         sentimentText.style.color = 'green';
-                        sentimentImg.src = `img/neutral${randomImageNumber}.png`;  
+                        imageUrl = `img/neutral${randomImageNumber}.png`;  
                         break;
                     case 2:
                         sentiment = "Positive";
                         sentimentText.style.color = 'blue';
-                        sentimentImg.src = `img/positive${randomImageNumber}.png`;  
+                        imageUrl = `img/positive${randomImageNumber}.png`;  
                         break;
                 }
 
                 sentimentText.textContent = `BERT says: ${sentiment}!`;
                 urlsContainer.appendChild(sentimentText);
 
-                // Add the 'popIn' animation class to the image
-                sentimentImg.classList.add('popIn');
+                // Preload the image and then display it with the pop-in effect
+                preloadImage(imageUrl).then(preloadedImg => {
+                    preloadedImg.classList.add('popIn');
 
-                // Insert the image at the end of 'buttonContainer'
-                document.getElementById("buttonContainer").insertAdjacentElement('beforeend', sentimentImg);  
+                    // Insert the preloaded image at the end of 'buttonContainer'
+                    document.getElementById("buttonContainer").insertAdjacentElement('beforeend', preloadedImg);
+                }).catch(error => {
+                    console.error('Image failed to load:', error);
+                }); 
 
                 // Append canvas to the container 
                 urlsContainer.appendChild(canvas);
