@@ -303,5 +303,5 @@ async def scrape_sitemap(request: Request):
 @app.get("/status")
 async def get_api_status():
     return {
-        "version": "1.0"
+        "version": "1.1"
     }
