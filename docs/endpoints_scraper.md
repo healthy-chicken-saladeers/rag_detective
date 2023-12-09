@@ -26,6 +26,16 @@ The `/sitemap` endpoint is specialized for retrieving sitemaps of websites and o
 
 The `/scrape_sitemap` endpoint extends this functionality by not only scraping sitemaps but also by streaming the scraping process, saving the scraped results to Google Cloud Storage, and finally storing the data in a vector store. This endpoint is the data collection step of an end-to-end solution that encompasses fetching web data, processing it through various stages of storage and handling, and finally indexing it for optimized retrieval.
 
+In certain cases, simply fetching web data through standard HTTP requests may not be sufficient due to dynamic content generation by JavaScript in modern websites. The `/scrape_sitemap` endpoint overcomes these barriers by utilizing the Selenium WebDriver, which enables the scraper to interact with web pages in a manner akin to a real user browsing a website with a full-fledged browser.
+
+When the scraper encounters a web page that cannot be effectively processed through direct HTTP requests, or if initial scraping efforts fail to gather a minimum threshold of data, the Selenium WebDriver is invoked. Selenium uses a headless Chrome browser, which operates without the GUI of a traditional browser window, to access the web page and execute any necessary JavaScript, allowing for the retrieval of content that is dynamically loaded.
+
+This approach makes the scraper more versatile, capable of handling a wide variety of web pages that would otherwise be inaccessible or yield incomplete data. The combination of `BeautifulSoup` for parsing initial HTML/CSS content and Selenium for dynamic interaction ensures that even the most complex web pages can be scraped accurately.
+
+Furthermore, the scraper is configured to avoid unnecessary overhead during the Selenium scrape, such as by not loading images. After the Selenium browser retrieves the page content, it passes the data back to BeautifulSoup to isolate and extract the textual information. This extracted data is subsequently processed, saved to Google Cloud Storage, and eventually pushed to a vector store.
+
+The integration of Selenium into the scraping process, therefore, represents an important enhancement to the system's scraping capabilities, allowing it to tackle both static and dynamically-generated web content and ensuring a more comprehensive data collection effort.
+
 ## API Endpoints
 
 ### Sitemap Endpoint
