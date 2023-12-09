@@ -22,7 +22,7 @@
 
 ## Combined Overview
 
-This API is designed for querying a vector store through the FastAPI framework. The service not only allows users to retrieve lists of website addresses and related timestamps stored in the vector store, but it also facilitates the retrieval of question-answering results using a Retrieve and Generate (RAG) methodology applied to vectorized data. Built to handle both GraphQL and prompt-driven queries, the API manages asynchronous requests, background tasks for post-processing, streaming responses to the client, and provides a versatile interface for extracting and processing structured data from vectorized sources.
+This API is designed for querying a vector store through the FastAPI framework. The service not only allows users to retrieve lists of website addresses and related timestamps stored in the vector store, but it also facilitates the retrieval of question-answering results using Retreival Augmented Generatil (RAG) methodology applied to vectorized data. Once the relevant information is retrieved from the Weaviate vector store, it is prepended to the prompt using the `LlamaIndex` library. Built to handle both GraphQL and prompt-driven queries, the API manages asynchronous requests, background tasks for post-processing, streaming responses to the client, and provides a versatile interface for extracting and processing structured data from vectorized sources.
 
 ## API Endpoints
 
@@ -89,7 +89,7 @@ This function performs a GraphQL query specifically designed to retrieve timesta
 
 ### Query Weaviate
 
-Constructs and executes a RAG-style query within the vector store, utilizing filters for `websiteAddress` and `timestamp`. A prompt template aids in managing context and identifying financial information. Returns a streaming response including query results and time taken.
+Constructs and executes a RAG-style query within the vector store, utilizing filters for `websiteAddress` and `timestamp`. A prompt template aids in managing context and identifying financial information. Returns a streaming response from GPT-3.5 answering the prompt using the relevant context, including query results and time taken.
 
 ### Extract Document URLs
 
