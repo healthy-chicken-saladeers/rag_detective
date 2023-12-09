@@ -48,5 +48,5 @@ jobs:
             -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
             -e GCP_PROJECT=rag-detective \
             -e GCP_ZONE=us-central1-a \
-            mushroom-app-deployment sh deploy-app.sh
+            rag-detective-app-deployment sh deploy-app.sh
       - run: echo "Job's status is ${{ job.status }}."
