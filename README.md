@@ -15,7 +15,7 @@ Project Organization
 
 
 --------
-# AC215 - Milestone4 - RAG Detective
+# AC215 - RAG Detective
 
 **Team Members**
 Ian Kelk, Alyssa Lutservitz, Nitesh Kumar, Mandy Wong
@@ -43,6 +43,18 @@ Our solutions has 3 major components:
 - A chatbot that uses scraped data from the website’s `sitemap.xml` file—a file intended to guide search engines to all scrapable links on the site—in a manner that’s more specific and insightful than using a search engine. The LLM should only use this context to answer the question and not insert its own training data or hallucinate an answer. This is simple to test with questions like “Who is Kim Kardashian?” which would be clearly known to the model, and ensure it replies that this answer “is not within the context provided.”
 - A real-time scraper of websites on the application through asynchronous calls to the API.
 - Financial sentiment analysis on relevant completions from the LLM. As part of the prompt to GPT-3.5, we ask if its response is financial in nature. If it says it is, then our fine-tuned BERT model is called on it, and gives the response as well as a plot of the probabilities and an appropriately cute non-copyright infringing Bert puppet.
+
+# Application Design
+
+We've put together a detailed design document outlining the application’s architecture, comprised of a Solution Architecture and Technical Architecture graphic to ensure all our components work together.
+
+![](img/solution_architecture_1.png)
+
+![](img/solution_architecture_2.png)
+
+## Technical Architecture:
+
+![](img/technical_architecture.png)
 
 # RAG Component
 
@@ -83,7 +95,6 @@ This API provides an endpoint for text classification, interfacing with Google's
 
 # BERT Component
 
-
 ## Fine-tuning BERT with Financial Data for Sentiment Analysis
 
 The use of the `financial_phrasebank` dataset has been important for sentiment analysis in the financial domain, especially given the scarcity of annotated financial data. The dataset encompasses 4846 sentences from English financial news annotated into three sentiment classes—Neutral, Positive, and Negative—based on annotator consensus levels ranging from 50% to unanimity.
@@ -106,4 +117,37 @@ Subsequent evaluations with the debiased dataset revealed different performance 
 
 This procedure underscored the significance of accounting for annotator biases in machine learning model development, particularly for sentiment analysis that involves subjective judgments.
 
+# FastAPI Service Summary
 
+This section hosts a Dockerized FastAPI service designed for deployment on Google Cloud. It features a range of files facilitating Docker containerization and FastAPI application management.
+
+## Key Components
+
+### Docker Setup
+- `Dockerfile`: Creates a Docker image for the FastAPI app, based on Debian with Python 3.9.
+- `docker-shell.sh`: Script to build and run the Docker container, mapping local directories and setting environment variables.
+- `docker-entrypoint.sh`: Script that initiates the Uvicorn server to serve the FastAPI app.
+
+### FastAPI Application
+- `api/service.py`: The core application file defining API endpoints and their functionalities.
+- `api/helper.py`: Provides support functions for the FastAPI routes.
+
+### Documentation and Instructions
+- `README.txt`: Basic instructions for Docker image and container operations, and FastAPI interaction.
+
+## API Endpoints Overview
+- `GET /`: Returns a welcome message.
+- `GET /streaming`: Demonstrates streaming responses using a dummy list of websites.
+- `POST /rag_query`: Handles queries with streaming response.
+- `GET /websites`: Lists website addresses.
+- `GET /timestamps/{website_address}`: Retrieves timestamps for a specific website.
+- `GET /get_urls/{query_id}`: Fetches URLs and financial flags for a query.
+- `POST /vertexai_predict`: Uses Vertex AI's Prediction API for sentiment analysis.
+ `GET /sitemap`: Processes input in various forms, such as straightforward website names, fully qualified URLs, direct sitemap links, or URLs ending with a slash, to ensure effective sitemap scraping. The response encapsulates the status, number of pages found, nested sitemap flags, and pertinent messages.
+- `POST /scrape_sitemap`: Initiates the scraping of sitemaps and sequentially performs procedures such as streaming, saving to Google Cloud storage, and insertion into a vector storage system. During this operation, real-time updates are streamed to the client, informing them of the progress and completion of each step.
+
+![](img/api_server_docs.jpg)
+
+The repository offers comprehensive guidance on setting up and running the Dockerized FastAPI service, alongside detailed documentation accessible through the FastAPI's interactive documentation feature.
+
+For more information and detailed instructions, see [api-service-documentation.md.](./docs/api-service-documentation.md)
