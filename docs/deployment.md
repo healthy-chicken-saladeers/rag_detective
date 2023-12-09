@@ -162,7 +162,8 @@ root@7a710e4f31f8:/app#
 export OPENAI_APIKEY=sk-OPENAI_APIKEY
 ```
 
-5. Add `ml-worflow.json` files to secrets/ within the `api_service` direcory.
+5. Add `ml-worflow.json` file to secrets/ within the `api_service` directory.
+
 
 ## Setup SSH
 
