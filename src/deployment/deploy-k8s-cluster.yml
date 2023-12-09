@@ -152,7 +152,7 @@
               containers:
               - image: "gcr.io/{{ gcp_project }}/mushroom-app-frontend-react:{{ tag.stdout}}"
                 imagePullPolicy: IfNotPresent
-                name: frontend
+                name: rag-detective-app-frontend
                 ports:
                 - containerPort: 80
                   protocol: TCP
@@ -187,7 +187,7 @@
               containers:
               - image: gcr.io/{{ gcp_project }}/rag-app-api-service:{{ tag.stdout}}
                 imagePullPolicy: IfNotPresent
-                name: api
+                name: rag-detective-app-api-service
                 ports:
                 - containerPort: 9000
                   protocol: TCP
