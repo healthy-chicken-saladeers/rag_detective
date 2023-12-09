@@ -151,3 +151,88 @@ This section hosts a Dockerized FastAPI service designed for deployment on Googl
 The repository offers comprehensive guidance on setting up and running the Dockerized FastAPI service, alongside detailed documentation accessible through the FastAPI's interactive documentation feature.
 
 For more information and detailed instructions, see [api-service-documentation.md.](./docs/api-service-documentation.md)
+
+# Frontend Service Summary
+
+This section contains a Dockerized frontend application, suitable for deployment with a web server. It includes essential files for building and running the application in a Docker container.
+
+## Key Components
+
+### Docker Setup
+- `Dockerfile`: Creates a Docker image using nginx, copies HTML and CSS files into the container, and exposes port 80.
+- `docker-shell.sh`: A script for building the Docker image and running a container, mapping the container's port 8080 to the host's port 8080.
+- `README.txt`: Documentation on building and running the Docker container for both simple and React frontends.
+
+### Frontend Application
+- `index.html`: The main HTML file for the app, setting up the layout and interactive elements for the "Rag Detective" web application.
+- `styles.css`: Defines the visual design of the application, including animations, color schemes, and responsive elements for a user-friendly interface.
+
+![](img/rag-detective-app.jpg)
+![](img/rag-detective-app2.jpg)
+
+## Detailed Overview
+
+### Dockerfile and Scripts
+- **Dockerfile**: Outlines steps for building the Docker image with a lightweight web server and deploying the frontend application.
+- **docker-shell.sh**: Automates the Docker image building and container running processes.
+- **README.txt**: Provides detailed instructions for Docker operations and frontend deployment.
+
+### index.html
+- Features interactive elements for selecting websites and timestamps, inputting queries, and displaying responses.
+- Implements API interactions for fetching website data, submitting queries, and retrieving URLs and sentiment analysis.
+- Displays dynamic content based on user interactions and server responses, including sentiment-driven images of a chatbot character, BERT.
+
+### styles.css
+- Applies modern styling to the web application, utilizing Google's Roboto font and various CSS animations.
+- Ensures a cohesive and appealing visual experience, with designated styles for different UI components.
+
+For a comprehensive guide on setting up and interacting with the frontend application, see [frontend.md.](./docs/frontend.md)
+
+# Financial Sentiment BERT Custom Model Container
+
+This section provides the setup for deploying a BERT model, fine-tuned for financial sentiment, using FastAPI, Docker, and Google Vertex AI.
+
+## Key Components
+
+### Files and Scripts
+- `predictor.py`: Handles pre-processing, model prediction, and post-processing.
+- `app.py`: A FastAPI wrapper for serving the model.
+- `Dockerfile`: Defines Docker commands for setting up the API's image.
+- `shell_script.sh`: Builds and runs the Docker image.
+
+### Detailed Descriptions
+
+#### Predictor.py
+- `CustomPredictor` class: Manages predictions, loading the model, and providing API readiness status.
+- `CustomModelPredictor` class: Handles model loading, prediction, and pre/post-processing tasks.
+
+#### App.py
+- Implements FastAPI endpoints for health checks (`/health`) and predictions (`/predict`).
+
+#### Dockerfile
+- Configures the TensorFlow image base, copies code, installs dependencies, and starts the API on port 8080.
+
+#### Shell Script
+- Automates Docker image building and container launching, binding the container's port 8000 to the host's port 8000.
+
+## Usage Instructions
+- Download the pre-trained model from Google Cloud Storage.
+- Build and run the Docker container using `docker-shell.sh`.
+- Test the API using `curl` commands.
+
+# Deployment to Google Cloud Vertex AI
+
+### Step-by-Step Guide
+1. **Build and Push Docker Image:** Set environment variables, build the Docker image, and push it to the Google Container Registry.
+2. **Upload Model to Vertex AI:** Use `gcloud` commands to upload the model to Vertex AI, specifying custom health and prediction routes.
+3. **Create Endpoint:** Generate an endpoint for model serving.
+4. **Deploy Model to Endpoint:** Deploy the model using `gcloud` commands and test via the cloud console or `curl`.
+
+![](img/instances.jpg)
+
+## Cloud Testing
+- Test the deployed model and endpoint on Google Cloud's console or using `curl` commands.
+
+This repository offers comprehensive guidance on setting up, testing, and deploying the BERT model for financial sentiment analysis using Docker and Google Vertex AI.
+
+For more information and detailed instructions, see [deploy-custom-container-BERT-vertex.md.](./docs/deploy-custom-container-BERT-vertex.md)
