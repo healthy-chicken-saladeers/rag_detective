@@ -117,7 +117,7 @@
             requests:
               storage: 5Gi
     when: cluster_state == "present"
-  
+
   - name: Importing credentials as a Secret
     shell: |
       #!/bin/bash
@@ -151,7 +151,7 @@
             spec:
               containers:
               - image: "gcr.io/{{ gcp_project }}/rag-detective-app-frontend:{{ tag.stdout}}"
-                imagePullPolicy: IfNotPresent
+                imagePullPolicy: Always
                 name: frontend
                 ports:
                 - containerPort: 80
@@ -186,22 +186,22 @@
                     secretName: gcp-service-key
               containers:
               - image: gcr.io/{{ gcp_project }}/rag-detective-app-api-service:{{ tag.stdout}}
-                imagePullPolicy: IfNotPresent
+                imagePullPolicy: Always
                 name: api
                 ports:
                 - containerPort: 9000
                   protocol: TCP
-                # volumeMounts:
-                #   - name: persistent-vol
-                #     mountPath: /persistent
-                #     #readOnly: false
-                #   - name: google-cloud-key
-                #     mountPath: /secrets
-                # env:
-                #   - name: GOOGLE_APPLICATION_CREDENTIALS
-                #     value: /secrets/gcp-service.json
-                #   - name: GCS_BUCKET_NAME
-                #     value: mushroom-app-models
+                volumeMounts:
+                  - name: persistent-vol
+                    mountPath: /persistent
+                    #readOnly: false
+                  - name: google-cloud-key
+                    mountPath: /secrets
+                env:
+                  - name: GOOGLE_APPLICATION_CREDENTIALS
+                    value: /secrets/gcp-service.json
+                  - name: GCS_BUCKET_NAME
+                    value: ac215_scraper_bucket
     when: cluster_state == "present"
 
   - name: "Create Service for Frontend"
