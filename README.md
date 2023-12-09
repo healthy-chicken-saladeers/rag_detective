@@ -143,7 +143,7 @@ This section hosts a Dockerized FastAPI service designed for deployment on Googl
 - `GET /timestamps/{website_address}`: Retrieves timestamps for a specific website.
 - `GET /get_urls/{query_id}`: Fetches URLs and financial flags for a query.
 - `POST /vertexai_predict`: Uses Vertex AI's Prediction API for sentiment analysis.
- `GET /sitemap`: Processes input in various forms, such as straightforward website names, fully qualified URLs, direct sitemap links, or URLs ending with a slash, to ensure effective sitemap scraping. The response encapsulates the status, number of pages found, nested sitemap flags, and pertinent messages.
+- `GET /sitemap`: Processes input in various forms, such as straightforward website names, fully qualified URLs, direct sitemap links, or URLs ending with a slash, to ensure effective sitemap scraping. The response encapsulates the status, number of pages found, nested sitemap flags, and pertinent messages.
 - `POST /scrape_sitemap`: Initiates the scraping of sitemaps and sequentially performs procedures such as streaming, saving to Google Cloud storage, and insertion into a vector storage system. During this operation, real-time updates are streamed to the client, informing them of the progress and completion of each step.
 
 ![](img/api_server_docs.jpg)
