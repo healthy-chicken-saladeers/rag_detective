@@ -7,8 +7,8 @@ all:
       gcp_auth_kind: "serviceaccount"
       gcp_scopes: "https://www.googleapis.com/auth/compute"
       gcp_project: "rag-detective"
-      gcp_region: "us-east1"
-      gcp_zone: "us-east1-b"
+      gcp_region: "us-central1"
+      gcp_zone: "us-central1-a"
       docker_network_name: "appnetwork"
       persistent_disk_name: "rag-app-demo-disk"
       persistent_disk_size: 50
@@ -19,4 +19,4 @@ all:
     children:
         appserver:
             hosts:
-                34.148.60.62:
+                34.123.94.245:

@@ -46,11 +46,6 @@ Before deploying, enable the required APIs in GCP. Use the GCP search bar to fin
     - Storage Object Viewer
 Create and downlaod a json key renamed `gcp-service.json`  and save to `secrets/`.
 
-8. Be sure to export your OPENAI_APIKEY as an environment variable.
-```
-export OPENAI_APIKEY=sk-OPENAI_APIKEY
-```
-
 ## Setup Docker Container
 
 We will use Docker to build a container with all required software. The container will allow you to connect to GCP and create VMs.
@@ -161,6 +156,14 @@ To set the active account, run:
 root@7a710e4f31f8:/app# 
 
 ```
+
+4. Be sure to export your OPENAI_APIKEY as an environment variable.
+```
+export OPENAI_APIKEY=sk-OPENAI_APIKEY
+```
+
+5. Add `ml-worflow.json` file to secrets/ within the `api_service` directory.
+
 
 ## Setup SSH
 
@@ -579,4 +582,4 @@ PLAY RECAP *********************************************************************
 34.73.94.251               : ok=4    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 ```
 
-Once the command runs go to http://34.73.94.251/.
+Once the command runs go to http://34.123.94.245/.
