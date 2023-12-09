@@ -288,6 +288,7 @@
             .then(response => response.json())
             .then(websites => {
                 const websiteDropdown = document.getElementById('websiteDropdown');
+                websiteDropdown.innerHTML = '';
                 websites.forEach(website => {
                     const option = document.createElement('option');
                     option.value = website;
