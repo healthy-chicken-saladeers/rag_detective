@@ -288,7 +288,13 @@
             .then(response => response.json())
             .then(websites => {
                 const websiteDropdown = document.getElementById('websiteDropdown');
+                const scrapeSessionDropdown = document.getElementById('scrapeSessionDropdown');
                 websiteDropdown.innerHTML = '';
+                scrapeSessionDropdown.innerHTML = '';
+                const defaultOption = document.createElement('option');
+                defaultOption.value ='Please select'
+                defaultOption.textContent = 'Please select';
+                websiteDropdown.appendChild(defaultOption);
                 websites.forEach(website => {
                     const option = document.createElement('option');
                     option.value = website;
