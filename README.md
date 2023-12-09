@@ -163,12 +163,17 @@ This section contains a Dockerized frontend application, suitable for deployment
 - `docker-shell.sh`: A script for building the Docker image and running a container, mapping the container's port 8080 to the host's port 8080.
 - `README.txt`: Documentation on building and running the Docker container for both simple and React frontends.
 
-### Frontend Application
+### Frontend Application: Using RAG with website data
 - `index.html`: The main HTML file for the app, setting up the layout and interactive elements for the "Rag Detective" web application.
 - `styles.css`: Defines the visual design of the application, including animations, color schemes, and responsive elements for a user-friendly interface.
 
 ![](img/rag-detective-app.jpg)
 ![](img/rag-detective-app2.jpg)
+
+### Frontend Application: Real-time scraping of website data
+
+![](img/rag-detective-app3.jpg)
+![](img/rag-detective-app4.jpg)
 
 ## Detailed Overview
 
