@@ -1,0 +1,51 @@
+name: Continuous Integration and Continuous Deployment
+run-name: ${{ github.actor }} submitted a CI CD Action
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  Explore-GitHub-Actions:
+    if: contains(github.event.head_commit.message, '/run-')
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Comment ${{ github.event.head_commit.message }}"
+      - run: echo "Job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "Job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "Branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - id: 'auth'
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+      - name: Configure Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+      - name: Configure Docker Client
+        run: |-
+          gcloud auth configure-docker # --quiet #authenticate to gcr
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+      - name: Build Deployment Container 
+        run: |-
+          cd ${{ github.workspace }}/src/deployment/
+          docker build -t rag-detective-app-deployment -f Dockerfile .
+      - name: Run Deploy App
+        if: contains(github.event.head_commit.message, '/run-deploy-app')
+        run: |-
+          docker run --rm --name rag-detective-app-deployment \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v $HOME/.ssh:/home/app/.ssh \
+            -v ${{ github.workspace }}/src/frontend:/frontend \
+            -v ${{ github.workspace }}/src/api_service:/api_service \
+            --volume $GITHUB_WORKSPACE:/workspace \
+            --mount type=bind,source=$GOOGLE_APPLICATION_CREDENTIALS,target=/secrets/deployment.json \
+            --env GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json \
+            -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
+            -e GCP_PROJECT=rag-detective \
+            -e GCP_ZONE=us-central1-a \
+            mushroom-app-deployment sh deploy-app.sh
+       - run: echo "Job's status is ${{ job.status }}."
