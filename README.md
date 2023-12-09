@@ -1,389 +1,109 @@
-AC215 Milestone5
+AC215 - RAG Detective
 ==============================
+
+### Presentation  Video
+ - \<Link Here>
+
+### Blog Post Link
+
+ - \<Link Here>
+
+---
 
 Project Organization
 ------------
-    .
-    └── ac215_healthychickensaladeers
-        ├── LICENSE
-        ├── README.md
-        ├── docker-compose.yml
-        ├── docs
-        │   ├── api-service-documentation.md
-        │   ├── deploy-custom-container-BERT-vertex.md
-        │   ├── deployment.md
-        │   ├── docker-gcsfuse.md
-        │   ├── experiment-bert.md
-        │   ├── frontend.md
-        │   ├── gc-function-instructions.md
-        │   ├── gcp-cli-instructions-macos.md
-        │   ├── gcp-docker-commands.md
-        │   ├── gcp-setup-instructions.md
-        │   ├── gcs-bucket-instructions.md
-        │   ├── notebooks_env_file_setup.md
-        │   ├── optimization.md
-        │   ├── vertex-ai-model-training.md
-        │   └── vscode-remote-ssh-extension-gcp-vm.md
-        ├── img
-        │   ├── ...
-        ├── ml_workflow
-        │   ├── data_collector
-        │   │   ├── Dockerfile
-        │   │   ├── Pipfile
-        │   │   ├── Pipfile.lock
-        │   │   ├── Untitled.ipynb
-        │   │   ├── cli.py
-        │   │   ├── data
-        │   │   │   └── v1.0.zip
-        │   │   ├── docker-entrypoint.sh
-        │   │   └── docker-shell.sh
-        │   ├── inference
-        │   │   ├── Dockerfile
-        │   │   ├── app.py
-        │   │   ├── docker-shell.sh
-        │   │   └── predictor.py
-        │   ├── model_training
-        │   │   ├── Dockerfile
-        │   │   ├── Pipfile
-        │   │   ├── Pipfile.lock
-        │   │   ├── cli.py
-        │   │   ├── docker-entrypoint.sh
-        │   │   ├── docker-shell.sh
-        │   │   ├── package
-        │   │   │   ├── setup.py
-        │   │   │   └── trainer
-        │   │   │       ├── __init__.py
-        │   │   │       └── task.py
-        │   │   ├── package-trainer.sh
-        │   │   └── ragdetective-app-trainer.tar.gz
-        │   └── workflow
-        │       ├── Dockerfile
-        │       ├── Pipfile
-        │       ├── Pipfile.lock
-        │       ├── cli.py
-        │       ├── docker-entrypoint.sh
-        │       ├── docker-shell.sh
-        │       ├── model.py
-        │       ├── model_training.yaml
-        │       └── sample-pipeline1.yaml
-        ├── model_training
-        │   ├── Dockerfile
-        │   ├── Pipfile
-        │   ├── Pipfile.lock
-        │   ├── cli.sh
-        │   ├── docker-entrypoint.sh
-        │   ├── docker-shell.sh
-        │   ├── package
-        │   │   ├── setup.py
-        │   │   └── trainer
-        │   │       ├── __init__.py
-        │   │       └── task.py
-        │   ├── package-trainer.sh
-        │   └── secrets
-        ├── notebooks
-        │   ├── BERT_fine-tune_financials
-        │   │   └── ...
-        │   ├── BERT_fine-tune_financials_balanced
-        │   │   ├── ...
-        │   │   ├── intial_debiasing
-        │   │   │   ├── ...
-        │   │   └── longer_debiasing_20_epochs
-        │   │       ├── ...
-        │   ├── distillation
-        │   │   ├── ...
-        │   ├── financial_data
-        │   │   ├── ...
-        │   └── ...
-        ├── reports
-        │   ├── milestone2.md
-        │   ├── milestone3.md
-        │   └── milestone4.md
-        └── src
-            ├── api_service
-            │   ├── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
-            │   ├── README.txt
-            │   ├── api
-            │   │   ├── helper.py
-            │   │   └── service.py
-            │   ├── docker-entrypoint.sh
-            │   ├── docker-shell.sh
-            │   └── secrets
-            ├── bert_financial
-            │   ├── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
-            │   ├── entrypoint.sh
-            │   ├── finetune_bert.py
-            │   └── gcsbucket
-            ├── deployment
-            │   ├── Dockerfile
-            │   ├── README.md
-            │   ├── deploy-create-instance.yml
-            │   ├── deploy-docker-images.yml
-            │   ├── deploy-provision-instance.yml
-            │   ├── deploy-setup-containers.yml
-            │   ├── deploy-setup-webserver.yml
-            │   ├── docker-entrypoint.sh
-            │   ├── docker-shell.sh
-            │   ├── inventory.yml
-            │   └── nginx-conf
-            │       └── nginx
-            │           └── nginx.conf
-            ├── frontend
-            │   ├── Dockerfile
-            │   ├── Dockerfile.dev
-            │   ├── README.txt
-            │   ├── docker-shell.sh
-            │   ├── img
-            │   │   └── ...
-            │   ├── index.html
-            │   └── styles.css
-            ├── llama_index
-            │   ├── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
-            │   ├── build_query.py
-            │   ├── data
-            │   │   └── ...
-            │   ├── entrypoint.sh
-            │   ├── gcf
-            │   │   ├── add_to_weaviate
-            │   │   │   ├── add_to_weaviate.py
-            │   │   │   └── requirements.txt
-            │   │   ├── create_weaviate_schema
-            │   │   │   ├── gcf_create_weaviate_schema.py
-            │   │   │   └── requirements.txt
-            │   │   ├── index_llama_index
-            │   │   │   ├── gcf_index_llamaindex.py
-            │   │   │   └── requirements.txt
-            │   │   └── query_llama_index
-            │   │       ├── gcf_query_llamaindex.py
-            │   │       └── requirements.txt
-            │   └── gcsbucket
-            ├── prompts
-            │   └── prompts.py
-            ├── scraper
-            │   ├── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
-            │   ├── chromedriver
-            │   ├── log
-            │   ├── scraper.py
-            │   ├── scraperlib.py
-            │   ├── scraping_notebook.ipynb
-            │   └── sitemap.csv
-            └── vector_store
-                ├── schema.json
-                ├── schema_old.json
-                ├── weaviate.schema.md
-                └── weaviate.schema.old.md
+
 
 --------
-# AC215 - Milestone5 - RAG Detective
+# AC215 - Milestone4 - RAG Detective
 
 **Team Members**
-Ian Kelk, Mandy Wong, Alyssa Lutservitz, Nitesh Kumar
+Ian Kelk, Alyssa Lutservitz, Nitesh Kumar, Mandy Wong
 
 **Group Name**
 Healthy Chicken Saladeers
 
-**Project**
-To develop an application that uses Retrieval Augmented Generation (RAG) with an LLM to create a chatbot that can answer specific questions about a company through the complete knowledge of all the information available publicly on their website in a manner that’s more specific and insightful than using a search engine.
+**Project - Problem Definition**
+Large language models like **GPT-3.5** have proven to be capable when asked about commonly known subjects or topics that they would have received a large quantity of training data for. However, when asked about topics that include data they have not been trained on, they either state that they do not possess the knowledge or, worse, can hallucinate plausible answers.
 
-# Application Design
+It is usually not possible to research current companies using an LLM, in order to directly compare their products and services, given that many of them are too new to have been used as training data for the LLM. We want to find a way to get up-to-date answers about companies that correspond to the information on their website.
 
-We've put together a detailed design document outlining the application’s architecture, comprised of a Solution Architecture and Technical Architecture graphic to ensure all our components work together.
+As well, in order to fulfill milestones for this course which would not otherwise be addressed, we fine-tune a BERT model to perform financial sentiment analysis when GPT-3.5 reports that the response may be financial in nature.
 
-![](img/solution_architecture_1.png)
+## Proposed Solution
 
-![](img/solution_architecture_2.png)
+There are two main ways of addressing this limitation: **fine-tuning** and **Retrieval Augmented Generation (RAG)**.
 
-## Technical Architecture:
+Fine-tuning is the process of continuing to train the model using your own data, with a significantly smaller learning rate. The newly-gained knowledge is then encapsulated in the model weights themselves. The problem with fine-tuning is that it requires another copy of the model and the associated costs of hosting it, as well as the risk of "catastrophic forgetting," where the model forgets previously learned information.
 
-![](img/technical_architecture.png)
+RAG, however, makes use of a source of knowledge, typically a vector store of embeddings and their associated texts. By comparing the predicted embeddings of the query to the embeddings in the vector store, we can form a prompt for the LLM that fits inside its context and contains the information needed to answer the question.
 
-## Quick look: The new documentation files for this milestone
-#### The full summaries of these documents are discussed below
-- [API Service Documentation](./docs/api-service-documentation.md)
-- [Frontend Documentation](./docs/frontend.md)
-- [Deploying Custom Container with BERT onto Vertex AI](./docs/deploy-custom-container-BERT-vertex.md)
-- [Deployment with Ansible](./docs/deployment.md)
-- [VS Code Remote SSH Extension Guide](./docs/vscode-remote-ssh-extension-gcp-vm.md)
+Our solutions has 3 major components:
 
-# FastAPI Service Summary
+- A chatbot that uses scraped data from the website’s `sitemap.xml` file—a file intended to guide search engines to all scrapable links on the site—in a manner that’s more specific and insightful than using a search engine. The LLM should only use this context to answer the question and not insert its own training data or hallucinate an answer. This is simple to test with questions like “Who is Kim Kardashian?” which would be clearly known to the model, and ensure it replies that this answer “is not within the context provided.”
+- A real-time scraper of websites on the application through asynchronous calls to the API.
+- Financial sentiment analysis on relevant completions from the LLM. As part of the prompt to GPT-3.5, we ask if its response is financial in nature. If it says it is, then our fine-tuned BERT model is called on it, and gives the response as well as a plot of the probabilities and an appropriately cute non-copyright infringing Bert puppet.
 
-This section hosts a Dockerized FastAPI service designed for deployment on Google Cloud. It features a range of files facilitating Docker containerization and FastAPI application management.
+# RAG Component
 
-## Key Components
+## FastAPI Web Scraper with Cloud and Vector Store Integration
 
-### Docker Setup
-- `Dockerfile`: Creates a Docker image for the FastAPI app, based on Debian with Python 3.9.
-- `docker-shell.sh`: Script to build and run the Docker container, mapping local directories and setting environment variables.
-- `docker-entrypoint.sh`: Script that initiates the Uvicorn server to serve the FastAPI app.
+The Web Scraper API is designed using FastAPI to facilitate the extraction of website sitemap data and integrate with cloud storage and vector databases. It provides endpoints for accessing sitemaps and performing web scraping, with a consideration for handling dynamic content generated by JavaScript. The API includes safeguards for error handling and auxiliary functions to streamline browser interactions, saving data to Google Cloud, and storing data in Weaviate vector stores. It offers solutions for capturing a comprehensive range of data from various types of web pages.
 
-### FastAPI Application
-- `api/service.py`: The core application file defining API endpoints and their functionalities.
-- `api/helper.py`: Provides support functions for the FastAPI routes.
+The scraper's output from each webpage is a CSV file that contains the text data extracted from the webpage. It is stored in a GCP bucket as well as inserted into a vector store.
 
-### Documentation and Instructions
-- `README.txt`: Basic instructions for Docker image and container operations, and FastAPI interaction.
+![](./img/bucket.jpg)
 
-## API Endpoints Overview
-- `GET /`: Returns a welcome message.
-- `GET /streaming`: Demonstrates streaming responses.
-- `POST /rag_query`: Handles queries with streaming response.
-- `GET /websites`: Lists website addresses.
-- `GET /timestamps/{website_address}`: Retrieves timestamps for a specific website.
-- `GET /get_urls/{query_id}`: Fetches URLs and financial flags for a query.
-- `POST /vertexai_predict`: Uses Vertex AI's Prediction API for sentiment analysis.
+## FastAPI Vector Store Query API
 
-![](img/api_server_docs.jpg)
+This Query API features capabilities for interfacing with a Weaviate vector store to retrieve and query information. Users can obtain lists of website addresses and timestamps, and perform complex queries using methods based on the Retrieval-Augmented Generation (RAG) technique. The API is constructed to handle asynchronous data processing, providing real-time streaming responses and executing background tasks for data post-processing. It's suitable for applications that require vectorized data retrieval and analysis.
 
-The repository offers comprehensive guidance on setting up and running the Dockerized FastAPI service, alongside detailed documentation accessible through the FastAPI's interactive documentation feature.
+Retrieval Augmented Generation (RAG) serves as a framework to enhance Language and Learning Models (LLM) using tailored data. This approach involves two primary phases:
 
-For more information and detailed instructions, see [api-service-documentation.md.](./docs/api-service-documentation.md)
+1. **Indexing Phase**: This is the initial stage where a knowledge base is developed and organized for future references.
 
-# Frontend Service Summary
+2. **Querying Phase**: In this phase, pertinent information is extracted from the prepared knowledge base to aid the LLM in formulating responses to inquiries.
 
-This section contains a Dockerized frontend application, suitable for deployment with a web server. It includes essential files for building and running the application in a Docker container.
+### Indexing Stage
 
-## Key Components
+In the initial indexing stage, text data must be first collected as documents and metadata. In this implementation, this is performed by the scraping of website. This data must be then split into "nodes", which is a represents a "chunk" or part of the data containing a certain portion of information. Nodes must are then indexed via an embedding model, where we plan on using OpenAI's `Ada v2` embedding model. The embeddings and metadata together create a rich representation to aid in retrieval.
 
-### Docker Setup
-- `Dockerfile`: Creates a Docker image using nginx, copies HTML and CSS files into the container, and exposes port 80.
-- `docker-shell.sh`: A script for building the Docker image and running a container, mapping the container's port 8080 to the host's port 8080.
-- `README.txt`: Documentation on building and running the Docker container for both simple and React frontends.
+![](img/indexing.png)
 
-### Frontend Application
-- `index.html`: The main HTML file for the app, setting up the layout and interactive elements for the "Rag Detective" web application.
-- `styles.css`: Defines the visual design of the application, including animations, color schemes, and responsive elements for a user-friendly interface.
+### Querying Stage
+In this stage, the RAG pipeline extracts the most pertinent context based on a user’s query and forwards it, along with the query, to the LLM to generate a response. This procedure equips the LLM with current knowledge that wasn’t included in its original training data. This also reduces the likelihood of hallucinations, a problem for LLMs when they invent answers for data they were insufficiently trained with. The pivotal challenges in this phase revolve around the retrieval, coordination, and analysis across one or several knowledge bases.
 
-![](img/rag-detective-app.jpg)
-![](img/rag-detective-app2.jpg)
+![](img/querying.png)
 
-## Detailed Overview
+LlamaIndex is a data framework to ingest, structure, and access private or domain-specific data. We use it to chunk our text data and combine it with the metadata to create nodes to insert into the Weaviate vector store.
 
-### Dockerfile and Scripts
-- **Dockerfile**: Outlines steps for building the Docker image with a lightweight web server and deploying the frontend application.
-- **docker-shell.sh**: Automates the Docker image building and container running processes.
-- **README.txt**: Provides detailed instructions for Docker operations and frontend deployment.
+## Vertex AI Text Classification
 
-### index.html
-- Features interactive elements for selecting websites and timestamps, inputting queries, and displaying responses.
-- Implements API interactions for fetching website data, submitting queries, and retrieving URLs and sentiment analysis.
-- Displays dynamic content based on user interactions and server responses, including sentiment-driven images of a chatbot character, BERT.
+This API provides an endpoint for text classification, interfacing with Google's Vertex AI and utilizing a fine-tuned BERT model. It accepts text input for categorization and outputs classification results along with probability scores. The service employs Google Cloud service account authentication and is intended for those needing to classify text for sentiment or thematic content. The results from the Vertex AI model are formatted into a structured JSON response for the client.
 
-### styles.css
-- Applies modern styling to the web application, utilizing Google's Roboto font and various CSS animations.
-- Ensures a cohesive and appealing visual experience, with designated styles for different UI components.
+# BERT Component
 
-For a comprehensive guide on setting up and interacting with the frontend application, see [frontend.md.](./docs/frontend.md)
 
-# Financial Sentiment BERT Custom Model Container
+## Fine-tuning BERT with Financial Data for Sentiment Analysis
 
-This section provides the setup for deploying a BERT model, fine-tuned for financial sentiment, using FastAPI, Docker, and Google Vertex AI.
+The use of the `financial_phrasebank` dataset has been important for sentiment analysis in the financial domain, especially given the scarcity of annotated financial data. The dataset encompasses 4846 sentences from English financial news annotated into three sentiment classes—Neutral, Positive, and Negative—based on annotator consensus levels ranging from 50% to unanimity.
 
-## Key Components
+A notable trend was observed where the BERT model's performance improved with the degree of consensus among annotators. This highlighted a potential bias; sentences agreed upon by more annotators tend to have clearer sentiment, thus are easier to classify, skewing the model’s perceived accuracy.
 
-### Files and Scripts
-- `predictor.py`: Handles pre-processing, model prediction, and post-processing.
-- `app.py`: A FastAPI wrapper for serving the model.
-- `Dockerfile`: Defines Docker commands for setting up the API's image.
-- `shell_script.sh`: Builds and runs the Docker image.
+### Debiasing Data for Fair Evaluation
 
-### Detailed Descriptions
+In recent developments, we addressed potential biases affecting the BERT classifier's performance, originally fine-tuned on the `financial_phrasebank`. The dataset categorizes financial news sentences into three sentiments with varying consensus levels: 50%, 66%, 75%, and 100% among annotators.
 
-#### Predictor.py
-- `CustomPredictor` class: Manages predictions, loading the model, and providing API readiness status.
-- `CustomModelPredictor` class: Handles model loading, prediction, and pre/post-processing tasks.
+An initial evaluation indicated that models trained on high-consensus data were biased towards easily recognizable sentiments, potentially reducing their real-world efficacy. Recognizing this, the dataset was debiased to balance sentiment distribution across consensus levels. Here is the plot displaying the previous biased results:
 
-#### App.py
-- Implements FastAPI endpoints for health checks (`/health`) and predictions (`/predict`).
+![Original biased experiment results](./img/experiment-results.jpg)
 
-#### Dockerfile
-- Configures the TensorFlow image base, copies code, installs dependencies, and starts the API on port 8080.
+The debiasing involved ensuring random distribution of data points, creating a diversified validation/testing subset from the `sentences_50agree` dataset, and proportionally allocating sentiments for validation and testing to prevent data leakage. The resulting balanced dataset distribution was meticulously confirmed.
 
-#### Shell Script
-- Automates Docker image building and container launching, binding the container's port 8000 to the host's port 8000.
+Subsequent evaluations with the debiased dataset revealed different performance trends, with models trained on the `66%` annotator consensus initially exhibiting the highest F1 score, while those trained on the `75%` consensus ultimately demonstrated superior performance over 20 epochs.
 
-## Usage Instructions
-- Download the pre-trained model from Google Cloud Storage.
-- Build and run the Docker container using `docker-shell.sh`.
-- Test the API using `curl` commands.
+![Debiased experiment results after 20 epochs](./img/experiment-results-20.jpg)
 
-# Deployment to Google Cloud Vertex AI
+This procedure underscored the significance of accounting for annotator biases in machine learning model development, particularly for sentiment analysis that involves subjective judgments.
 
-### Step-by-Step Guide
-1. **Build and Push Docker Image:** Set environment variables, build the Docker image, and push it to the Google Container Registry.
-2. **Upload Model to Vertex AI:** Use `gcloud` commands to upload the model to Vertex AI, specifying custom health and prediction routes.
-3. **Create Endpoint:** Generate an endpoint for model serving.
-4. **Deploy Model to Endpoint:** Deploy the model using `gcloud` commands and test via the cloud console or `curl`.
 
-![](img/instances.jpg)
-
-## Cloud Testing
-- Test the deployed model and endpoint on Google Cloud's console or using `curl` commands.
-
-This repository offers comprehensive guidance on setting up, testing, and deploying the BERT model for financial sentiment analysis using Docker and Google Vertex AI.
-
-For more information and detailed instructions, see [deploy-custom-container-BERT-vertex.md.](./docs/deploy-custom-container-BERT-vertex.md)
-
-# Deployment
-
-This section outlines the deployment procedures for the RAG Detective App using Ansible and Google Cloud Platform (GCP) services.
-
-## Key Components
-
-### Setup and Deployment
-- **Enable GCP APIs**: Compute Engine, Service Usage, Cloud Resource Manager, and Google Container Registry APIs.
-- **GCP Service Accounts**: Steps to create and configure service accounts like `deployment` and `gcp-service` with specific roles for deployment activities.
-
-### Docker Container Setup
-- Using Docker to build a container for connecting to GCP and creating VMs.
-- Detailed instructions for building and running the Docker container, including the expected output.
-
-### SSH Configuration
-- Enabling OS login and creating SSH keys for the service account.
-- Adding public SSH keys to instances for secure access.
-
-### Deployment Setup
-- **Build and Push Docker Containers to GCR**: Utilizing Ansible to automate the process.
-- **Create Compute Instance (VM) Server in GCP**: Steps to create a VM and update the inventory file with its external IP address.
-- **Provision Compute Instance in GCP**: Instructions for installing and setting up required deployment elements.
-- **Setup Docker Containers in the Compute Instance**: Configuring and launching necessary Docker containers.
-
-### Web Server Configuration
-- Creating and setting up an Nginx configuration file for the web server.
-- Deploying and restarting the Nginx container to reflect changes.
-
-## Testing and Verification
-- Commands to SSH into the server, check container statuses, and access logs.
-- Verification of the web server's functionality by accessing the deployed app via its external IP address.
-
-This repository provides a comprehensive guide for deploying the RAG Detective App using Ansible and GCP, ensuring a streamlined and secure deployment process.
-
-For more information and detailed instructions, see [deployment.md.](./docs/deployment.md)
-
-## Using VS Code Remote - SSH Extension to Connect to GCP VM
-
-We also provide documentation on this functionality [here.](./docs/vscode-remote-ssh-extension-gcp-vm.md)
-
-## We've archived the rest of the readme content from previous milestones
-
-This concludes what was shown in the [Milestone5](https://github.com/ac2152023/ac2152023_template/tree/milestone5) template, so to make this more organized we've moved all the previous content to [reports/milestone4.md.](reports/milestone4.md)
-
-### Appendix: More docs from previous milestones
-
-- [W&B Report on BERT fine-tuning](https://api.wandb.ai/links/iankelk/mmrp03k6)
-- [Static version of Report on BERT fine-tuning](./docs/experiment-bert.md)
-- [W&B Report on BERT into LSTM and 6-layer BERT](https://api.wandb.ai/links/iankelk/jpvsoack)
-- [Static version of Report on BERT into LSTM and 6-layer BERT](./docs/optimization.md)
-- [Setting Up a Google Cloud Function](./docs/gc-function-instructions.md)
-- [Serverless Model training with Vertex AI](./docs/vertex-ai-model-training.md)
-- [How to install the Google Cloud CLI ](./docs/gcp-cli-instructions-macos.md)
-- [How to set up a Google Cloud Storage bucket](./docs/gcs-bucket-instructions.md)
-- [Google Cloud Platform Setup](./docs/gcp-setup-instructions.md)
-- [How we launch `gcsfuse` upon container launch](./docs/docker-gcsfuse.md)
-- [Granular instructions on how to run the `scraper` container alone](./docs/gcp-docker-commands.md)
