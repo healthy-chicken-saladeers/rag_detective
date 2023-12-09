@@ -117,6 +117,14 @@ async def get_urls(query_id: str):
 @app.post("/vertexai_predict")
 async def vertexai_predict(request: Request):
 ...
+
+@app.get("/sitemap")
+def sitemap(website: str = Query(...)):
+...
+
+@app.post("/scrape_sitemap")
+async def scrape_sitemap(request: Request):
+...
 ```
 ## FastAPI Routes (Endpoints)
 
@@ -133,6 +141,10 @@ async def vertexai_predict(request: Request):
 - `"GET /get_urls/{query_id}"`: `get_urls`: A GET route that takes a `query_id` as a path parameter. It retrieves stored URLs and a financial flag for this query_id, and is called immediately after `rag_query`.
 
 - `"POST /vertexai_predict"`: `vertexai_predict`: This POST route accepts a request with a single text field in its body. It uses Vertex AI's Prediction API, using data from Google Cloud, to get the sentiment and probabilities for the text. 
+
+- `"GET /sitemap"`: `sitemap`: A GET route that flexibly handles various forms of website or URL input. It aims to retrieve and process a website's sitemap, returning information about the number of pages, status of the retrieval, presence of nested sitemaps, and other relevant messages.
+
+- `"POST /scrape_sitemap"`: `scrape_sitemap`: A POST route that initiates the scraping of a sitemap. It conducts a series of tasks including downloading pages, streaming updates, saving to Google Cloud storage, and storing data into a vector storage system. Updates on the scraping and saving progress, as well as any encountered errors, are streamed back to the client.
 
 ### api/helper.py
 

@@ -51,6 +51,8 @@ Access at http://localhost:8080/
 
 ## index.html
 
+### RAG functionality
+
 The index.html file is the main HTML document of the web app. It defines the structure and content of the web page.
 
 The `index.html` file sets up the layout for an interactive web application called "Rag Detective". When you load the webpage, you can select a scraped website and a specific timestamp, and then input a query for the application to analyze.
@@ -74,6 +76,33 @@ Additionally, an image of a chatbot named BERT is displayed that changes dependi
 
 ![](../img/rag-detective-app.jpg)
 
+### Scraping functionality
+
+The `tuneButton` is an interactive element that responds to click events. It's represented by a button with a "tune" icon. When a user clicks on this button, the `slideInPanel`—which is a side panel containing an input field and a "scrape site" button—toggles its display state. That means if the panel is not visible, it becomes visible by sliding in, and if it is visible, it slides out to become hidden.
+
+Once the panel is visible, the user can enter a website URL into the `website-to-scrape` input field. This field is styled with Material Design components and outlined text field presentation, giving it an aesthetically pleasing look and feel.
+
+After entering a valid URL, the user can click the "scrape site" button. Upon clicking this button, several actions occur in sequence:
+
+1. **Validation:** The `validateURL` function checks the inputted URL against a regular expression (regex) pattern to ensure it is properly formatted. If invalid, an error message is displayed in the `scrapeResults` textarea indicating "Invalid URL".
+
+2. **Loading Indicator:** A loading indicator (`loadingIndicator`) is displayed to provide feedback to the user that the application is processing their request.
+
+3. **Fetching Sitemap:** The application sends a GET request to an API endpoint (`/sitemap`) with the website URL as a parameter. This is designed to check how many pages are available to scrape from the website's sitemap.
+
+4. **Handling Response:**
+   - If the API returns a status indicating an error, the loading indicator is hidden, and the error message is appended to the `scrapeResults` textarea.
+   - If the status indicates success, the application retrieves the number of pages available for scraping from the returned data and displays a confirmation message. The confirmation modal (`confirmationModal`) is displayed, asking the user if they would like to proceed with scraping the pages of the website.
+
+5. **Scraping Initiation:** If the user clicks "Yes" on the confirmation modal, the `startScrapingStream` function is invoked. This function initiates the scraping process by sending a POST request to the `/scrape_sitemap` endpoint. This request includes the website URL as JSON content in the body.
+
+6. **Stream Handling:** The response from the POST request is a stream, which `startScrapingStream` reads and processes by chunks. As data is received incrementally from the server, it is appended to the `scrapeResults` textarea, allowing the user to see the real-time progress of the scraping activity.
+
+7. **Completion and Cleanup:** When the stream is complete, the loading indicator is hidden, and the final status, including the duration taken for scraping, is added to the `scrapeResults` textarea.
+
+In summary, the side panel acts as a user interface for submitting a scraping request to an API. This scraping request involves validating the website URL, indicating progress through a visual indicator, providing real-time feedback within the panel's textarea, and offering the user a choice to confirm or cancel the scraping operation.
+
+![](../img/rag-detective-app4.jpg)
 
 ## styles.css
 
