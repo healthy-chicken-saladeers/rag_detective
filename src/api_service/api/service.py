@@ -299,3 +299,9 @@ async def scrape_sitemap(request: Request):
                 yield f"The scraping process did not complete as expected for {sitemap}\n"
         yield f"All steps completed successfully.\n" 
     return StreamingResponse(scraping_process(), media_type="text/plain")
+
+@app.get("/status")
+async def get_api_status():
+    return {
+        "version": "1.0"
+    }
