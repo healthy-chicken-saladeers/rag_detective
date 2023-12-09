@@ -197,16 +197,18 @@ async def vertexai_predict(request: Request):
 
     return response_structure
 
-#scraper functionalities
+# Scraper Endpoints
 
-#Test call/usage
+# Test call/usage
 # 1. curl "http://localhost:9000/sitemap?website=ai21.com"
 # 2. curl "http://localhost:9000/sitemap?website=https://ai21.com"
-# 3.  curl "http://localhost:9000/sitemap?website=https://ai21.com/sitemap.xml"
+# 3. curl "http://localhost:9000/sitemap?website=https://ai21.com/sitemap.xml"
 # 4. curl "http://localhost:9000/sitemap?website=ai21.com/"
-#All the above 4 works. This helps if user just copy and paste some url with the
-#full link.
-
+# The endpoint is designed to flexibly accommodate various formats of user input.
+# It can process a simple website name, a fully qualified URL, a direct link to 
+# a sitemap (especially useful when the sitemap is not located in its default
+# location), or a website URL ending with a slash. This adaptability ensures
+# successful scraping across a range of possible URL variations provided by users.
 @app.get("/sitemap")
 def sitemap(website:str = Query(...)):
 
@@ -223,9 +225,9 @@ def sitemap(website:str = Query(...)):
     attribute_dict = helper.get_sitemap_attributes(sitemap)
     response_dict = {}
 
-    #If successful in retrieving urls in sitemap , returns status =0 (success),
-    #count: number of pages for the company website, nested_flag : indicates the sitemap had
-    #nested sitemaps,(1 for True 0 for false), and message (includes message about the process)
+    # If successful in retrieving urls in sitemap , returns status = 0 (success),
+    # count: number of pages for the company website, nested_flag : indicates the sitemap had
+    # nested sitemaps,(1 for True 0 for false), and message (includes message about the process)
     if attribute_dict['status'] ==0:
         response_dict['status'] =0
         response_dict['count'] = attribute_dict['df'].shape[0]
