@@ -582,4 +582,4 @@ PLAY RECAP *********************************************************************
 34.73.94.251               : ok=4    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 ```
 
-Once the command runs go to http://34.73.94.251/.
+Once the command runs go to http://34.123.94.245/.
