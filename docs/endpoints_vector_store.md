@@ -22,7 +22,7 @@
 
 ## Combined Overview
 
-This document serves as an operation guide for an API designed for querying a vector store through the FastAPI framework. The service not only allows users to retrieve lists of website addresses and related timestamps stored in the vector store, but it also facilitates the retrieval of question-answering results using a Retrieve and Generate (RAG) methodology applied to vectorized data. Built to handle both GraphQL and prompt-driven queries, the API manages asynchronous requests, background tasks for post-processing, streaming responses to the client, and provides a versatile interface for extracting and processing structured data from vectorized sources.
+This API is designed for querying a vector store through the FastAPI framework. The service not only allows users to retrieve lists of website addresses and related timestamps stored in the vector store, but it also facilitates the retrieval of question-answering results using a Retrieve and Generate (RAG) methodology applied to vectorized data. Built to handle both GraphQL and prompt-driven queries, the API manages asynchronous requests, background tasks for post-processing, streaming responses to the client, and provides a versatile interface for extracting and processing structured data from vectorized sources.
 
 ## API Endpoints
 
