@@ -6,7 +6,8 @@ on:
 
 jobs:
   Explore-GitHub-Actions:
-    if: contains(github.event.head_commit.message, '/run-')
+    if: |
+      contains(github.event.head_commit.message, '/run-')
     runs-on: ubuntu-latest
     steps:
       - run: echo "Comment ${{ github.event.head_commit.message }}"
