@@ -10,6 +10,8 @@ export SECRETS_DIR=$(pwd)/../../../secrets/
 export GCP_PROJECT="rag-detective" 
 export GCP_ZONE="us-central1-a"
 export GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json
+export GCS_BUCKET_NAME="ac215_scraper_bucket"
+export GCS_SERVICE_ACCOUNT="ml-workflow@rag-detective.iam.gserviceaccount.com"
 echo $OPENAI_APIKEY
 
 # Build the image based on the Dockerfile
@@ -29,4 +31,7 @@ docker run --rm --name $IMAGE_NAME -ti \
 -e GCP_PROJECT=$GCP_PROJECT \
 -e GCP_ZONE=$GCP_ZONE \
 -e OPENAI_APIKEY=$OPENAI_APIKEY \
+-e GCS_BUCKET_NAME=$GCS_BUCKET_NAME \
+-e GCS_SERVICE_ACCOUNT=$GCS_SERVICE_ACCOUNT \
+-e GOOGLE_APPLICATION_CREDENTIALS=/secrets/ml-workflow.json \
 $IMAGE_NAME
