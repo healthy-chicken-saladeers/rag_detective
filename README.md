@@ -459,9 +459,7 @@ This repository offers comprehensive guidance on setting up, testing, and deploy
 
 For more information and detailed instructions, see [deploy-custom-container-BERT-vertex.md.](./docs/deploy-custom-container-BERT-vertex.md)
 
-# Deployment with Ansible and Scaling with Kubernetes
-
-This section outlines the deployment of the app using Ansible and the scaling process with Google Kubernetes Engine (GKE).
+# Deployment with Ansible
 
 ## Key Components
 
@@ -487,7 +485,7 @@ This section outlines the deployment of the app using Ansible and the scaling pr
 - Creating and setting up an Nginx configuration file for the web server.
 - Deploying and restarting the Nginx container to reflect changes.
 
-### Scaling with Kubernetes
+# Scaling with Kubernetes
 Creating and deploying a Kubernetes cluster within GKE involves a few steps:
 
 - **Define the Cluster:** Using a YAML configuration file, define the specifications of the GKE cluster.
@@ -518,28 +516,30 @@ ansible-playbook deploy-docker-images.yml -i inventory.yml
 ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --extra-vars cluster_state=present
 ```
 
+Note: the Nginx IP address will print out to the screen after running the above command. You will use this to view the app in your browser.
+
 #### View the App
 Go to `http://<NGINX INGRESS IP>.sslip.io`
 
 ![](img/k8s-deployed-app.jpg)
 
-### Testing and Verification
+# Deployment Testing and Verification
 - Commands to SSH into the server or k8s cluster, check container statuses, and access logs.
 - Verification of the web server's functionality by accessing the deployed app via its external IP address.
 
-This repository provides a comprehensive guide for deploying the RAG Detective App using Ansible and scaling with Kubernetes, ensuring a streamlined and secure deployment process.
+Deploying the RAG Detective App using Ansible and scaling with Kubernetes ensuring a streamlined and secure deployment process.
 
 For more information and detailed instructions, see [deployment.md.](./docs/deployment.md)
 
-### Deploy using GitHub Actions
+# Deploy using GitHub Actions
 Additionally, we added CI/CD using GitHub Actions to trigger deployment. Our yaml file can be found under `.github/workflows/ci-cd.yml` in the project repo.
 
 The yaml file implements a CI/CD workflow that
 
-* Invokes docker image building and pushing to GCR on changes to code in the respective containers and a git commit has a comment "/run-deploy-app".
+* Invokes docker image building and pushing to GCR on changes to code in the respective containers and when committed to git with the comment "/run-deploy-app".
 * Deploy the updated containers to the k8s cluster in GKE.
 
-You can view the progress of the dpeloyment in GitHub under the Actions tab:
+You can view the progress of the deployment in GitHub under the Actions tab:
 
 ![](./img/github-actions.jpg)
 
