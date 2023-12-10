@@ -461,9 +461,7 @@ For more information and detailed instructions, see [deploy-custom-container-BER
 
 # Deployment with Ansible
 
-## Key Components
-
-### Setup and Deployment
+### Setup GCP for Deployment
 - **Enable GCP APIs**: Compute Engine, Service Usage, Cloud Resource Manager, Google Container Registry APIs, and Kubernetes Engine API
 - **GCP Service Accounts**: Steps to create and configure service accounts like `deployment` and `gcp-service` with specific roles for deployment activities.
 
@@ -475,7 +473,7 @@ For more information and detailed instructions, see [deploy-custom-container-BER
 - Enabling OS login and creating SSH keys for the service account.
 - Adding public SSH keys to instances for secure access.
 
-### Deployment Setup
+### Deployment with Ansible
 - **Build and Push Docker Containers to GCR**: Utilizing Ansible to automate the process.
 - **Create Compute Instance (VM) Server in GCP**: Steps to create a VM and update the inventory file with its external IP address.
 - **Provision Compute Instance in GCP**: Instructions for installing and setting up required deployment elements.
@@ -496,6 +494,34 @@ Creating and deploying a Kubernetes cluster within GKE involves a few steps:
 - **Monitoring & Management:** Monitor the performance of your workloads, set up alerts, and debug issues that arise.
 
 Deploying and scaling the RAG Detective App on a Kubernetes cluster managed by GKE allows for for load balancing, failover, and scalability. Ansible scripts help to keep track of our infrastructure and set up automated deployments.
+
+If our app were to go viral, Kubernetes would help our app scale with the increase increase in traffic. For example, if 10,000 people were using the site on a given day, the Kubernetes cluster on Google Kubernetes Engine (GKE) is designed to dynamically adjust and scale to meet the demand. Here's how the scaling process would likely occur: 
+
+#### Node Scaling:
+   - If your cluster is configured with Auto Scaling enabled, GKE will automatically add more nodes to the cluster to handle the increased load. These nodes are added based on resource utilization metrics, ensuring that there's enough computational capacity to run your application.
+
+#### Pod Scaling:
+   - Kubernetes Horizontal Pod Autoscaler (HPA) will come into play. HPA monitors the resource utilization of your pods (e.g., CPU or memory) and adjusts the number of pod replicas to maintain a specified target utilization. If the current utilization is high, HPA will scale up the number of pod replicas to distribute the load.
+
+#### Load Balancing:
+   - Kubernetes Services, combined with GKE's integration with Google Cloud Load Balancer, distribute incoming traffic among the available pod replicas. This ensures that no single pod or node becomes a bottleneck and that the load is evenly distributed across the cluster.
+
+#### Resource Allocation:
+   - With an increase in demand, Kubernetes will intelligently allocate resources to the newly created pods. This is crucial for maintaining performance and responsiveness as user traffic fluctuates.
+
+#### Monitoring and Alerts:
+   - GKE's integration with monitoring services like Stackdriver allows you to set up alerts based on predefined metrics or custom queries. If there are any performance issues or if resource utilization is reaching critical levels, you can be notified to take proactive measures.
+
+#### Cost Optimization:
+   - Node Pools in GKE allow you to optimize costs. Depending on your traffic patterns, you can dynamically adjust the size and type of nodes in different node pools to match the resource requirements of your application, ensuring cost-effectiveness.
+
+#### Logging and Debugging:
+   - In case of any issues, you can leverage the logging capabilities provided by GKE to troubleshoot and debug. The centralized logging helps you understand the behavior of your application and identify any bottlenecks or errors.
+
+#### Scaling Down:
+   - As traffic subsides, the HPA will monitor the reduced resource utilization. If the demand decreases, Kubernetes will scale down the number of pod replicas and, if needed, shrink the number of nodes in the cluster to optimize resource usage and reduce costs.
+
+By employing these Kubernetes and GKE features, your application can seamlessly handle variations in traffic, providing a scalable, reliable, and cost-efficient infrastructure that automatically adapts to the changing demands of your users.
 
 Here is our deployed application on a Kubernetes cluster in GCP:
 
