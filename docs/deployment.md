@@ -267,7 +267,7 @@ You can see the `rag-app-cluster` in the Google Kubernetes Engine console:
 ### View the App
 * Copy the `nginx_ingress_ip` from the terminal output .
 * Go to `http://<YOUR INGRESS IP>.sslip.io`
-* View here: http://34.69.27.180.sslip.io/
+* View here: http://35.238.85.13.sslip.io/
 
 ### Delete Cluster
 ```

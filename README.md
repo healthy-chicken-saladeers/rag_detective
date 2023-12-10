@@ -226,18 +226,58 @@ For more information and detailed instructions, see [deploy-custom-container-BER
 
 # Deployment with Ansible and Scaling with Kubernetes
 
-Detailed Steps:
-Enable GCP APIs
-Setup GCP Service Accounts
-Setup Deployment Docker Container
-Setup SSH
-Setup Deployment
-Configure Nginx
-For a more comprehensive explanation including images for each step, refer to [deployment.md.](./docs/deployment.md)
+This section outlines the deployment procedures for the RAG Detective App using Ansible and and the scaling process with Google Kubernetes Engine (GKE).
 
-Detailed Steps:
-Preflight Steps before Creating & Deploying the Cluster
-Create & Deploy Cluster
-View the App
+## Key Components
+
+### Setup and Deployment
+- **Enable GCP APIs**: Compute Engine, Service Usage, Cloud Resource Manager, Google Container Registry APIs, and Kubernetes Engine API
+- **GCP Service Accounts**: Steps to create and configure service accounts like `deployment` and `gcp-service` with specific roles for deployment activities.
+
+### Docker Container Setup
+- Using Docker to build a container for connecting to GCP and creating VMs.
+- Detailed instructions for building and running the Docker container, including the expected output.
+
+### SSH Configuration
+- Enabling OS login and creating SSH keys for the service account.
+- Adding public SSH keys to instances for secure access.
+
+### Deployment Setup
+- **Build and Push Docker Containers to GCR**: Utilizing Ansible to automate the process.
+- **Create Compute Instance (VM) Server in GCP**: Steps to create a VM and update the inventory file with its external IP address.
+- **Provision Compute Instance in GCP**: Instructions for installing and setting up required deployment elements.
+- **Setup Docker Containers in the Compute Instance**: Configuring and launching necessary Docker containers.
+
+### Web Server Configuration
+- Creating and setting up an Nginx configuration file for the web server.
+- Deploying and restarting the Nginx container to reflect changes.
+
+### Scaling with Kubernetes
+Creating and deploying a Kubernetes cluster within GKE involves a few steps:
+
+- **Define the Cluster:** Using a YAML configuration file, define the specifications of the GKE cluster.
+- **Create the Cluster:** Use Ansible playbooks to create and initialize the cluster on GKE.
+- **Deploying the Application:** Kubernetes deployment manifests are used to deploy and manage the application on the cluster. The manifests define the properties of the container like the Docker image to use, the number of replicas, networking rules, etc.
+- **Service & Ingress Configuration:** Specify the networking rules and load balancing for the application using Kubernetes Service and Ingress objects.
+- **Autoscaling:** Allow the application to meet traffic needs by automatically adjusting the number of running instances of the application. This is achieved through Kubernetes Deployment objects and Horizontal Pod Autoscaler configurations.
+- **Monitoring & Management:** Monitor the performance of your workloads, set up alerts, and debug issues that arise.
+
+Deploying and scaling the RAG Detective App on a Kubernetes cluster managed by GKE allows for high availability, scalability, and robustness of the application.
+
+Here is our deployed application on a Kubernetes cluster in GCP:
+
+![](img/gcp-gke.jpg)
+
+And in the borwser using the Nginx Ingress IP adress at `http://<NGINX INGRESS IP>.sslip.io`:
+
+![](img/k8s-deployed-app.jpg)
+
+## Testing and Verification
+- Commands to SSH into the server or k8s cluster, check container statuses, and access logs.
+- Verification of the web server's functionality by accessing the deployed app via its external IP address.
+
+This repository provides a comprehensive guide for deploying the RAG Detective App using Ansible, ensuring a streamlined and secure deployment process.
+
+For more information and detailed instructions, see [deployment.md.](./docs/deployment.md)
 
 
