@@ -12,6 +12,209 @@ AC215 - RAG Detective
 
 Project Organization
 ------------
+```
+.
+├── LICENSE
+├── README.md
+├── docker-compose.yml
+├── docs
+│   ├── api-service-documentation.md
+│   ├── deploy-custom-container-BERT-vertex.md
+│   ├── deployment.md
+│   ├── docker-gcsfuse.md
+│   ├── endpoints_scraper.md
+│   ├── endpoints_vector_store.md
+│   ├── endpoints_vertex.md
+│   ├── experiment-bert.md
+│   ├── frontend.md
+│   ├── gc-function-instructions.md
+│   ├── gcp-cli-instructions-macos.md
+│   ├── gcp-docker-commands.md
+│   ├── gcp-setup-instructions.md
+│   ├── gcs-bucket-instructions.md
+│   ├── github-actions.md
+│   ├── notebooks_env_file_setup.md
+│   ├── optimization.md
+│   ├── vertex-ai-model-training.md
+│   └── vscode-remote-ssh-extension-gcp-vm.md
+├── img
+│   ├── ...
+├── ml_workflow
+│   ├── data_collector
+│   │   ├── Dockerfile
+│   │   ├── Pipfile
+│   │   ├── Pipfile.lock
+│   │   ├── Untitled.ipynb
+│   │   ├── cli.py
+│   │   ├── data
+│   │   │   └── v1.0.zip
+│   │   ├── docker-entrypoint.sh
+│   │   └── docker-shell.sh
+│   ├── inference
+│   │   ├── Dockerfile
+│   │   ├── app.py
+│   │   ├── docker-shell.sh
+│   │   └── predictor.py
+│   ├── model_training
+│   │   ├── Dockerfile
+│   │   ├── Pipfile
+│   │   ├── Pipfile.lock
+│   │   ├── cli.py
+│   │   ├── docker-entrypoint.sh
+│   │   ├── docker-shell.sh
+│   │   ├── package
+│   │   │   ├── setup.py
+│   │   │   └── trainer
+│   │   │       ├── __init__.py
+│   │   │       └── task.py
+│   │   ├── package-trainer.sh
+│   │   └── ragdetective-app-trainer.tar.gz
+│   └── workflow
+│       ├── Dockerfile
+│       ├── Pipfile
+│       ├── Pipfile.lock
+│       ├── cli.py
+│       ├── docker-entrypoint.sh
+│       ├── docker-shell.sh
+│       ├── model.py
+│       ├── model_training.yaml
+│       └── sample-pipeline1.yaml
+├── model_training
+│   ├── Dockerfile
+│   ├── Pipfile
+│   ├── Pipfile.lock
+│   ├── cli.sh
+│   ├── docker-entrypoint.sh
+│   ├── docker-shell.sh
+│   ├── package
+│   │   ├── setup.py
+│   │   └── trainer
+│   │       ├── __init__.py
+│   │       └── task.py
+│   ├── package-trainer.sh
+│   └── secrets
+├── notebooks
+│   ├── BERT_fine-tune_financials
+│   │   ├── ...
+│   ├── BERT_fine-tune_financials_balanced
+│   │   ├── ...
+│   │   ├── intial_debiasing
+│   │   │   ├── ...
+│   │   └── longer_debiasing_20_epochs
+│   │       ├── ...
+│   ├── add_data_to_weaviate_old.ipynb
+│   ├── distillation
+│   │   ├── ...
+│   ├── financial_data
+│   │   ├── ...
+│   ├── gcs_to_weaviate.ipynb
+│   ├── indexing_with_llamaindex (copy).ipynb
+│   ├── indexing_with_llamaindex.ipynb
+│   ├── querying_with_llamaindex.ipynb
+│   ├── rag_with_llamaindex.ipynb
+│   ├── rag_with_weaviate.ipynb
+│   ├── rag_with_weaviate_API.ipynb
+│   ├── sample_data
+│   │   ├── ...
+│   ├── scraping_notebook_milestone4.ipynb
+│   ├── sitemap.csv
+│   ├── update_index_with_llamaindex.ipynb
+│   └── update_rag_with_weaviate.ipynb
+├── reports
+│   ├── milestone2.md
+│   ├── milestone3.md
+│   ├── milestone4.md
+│   └── milestone5.md
+└── src
+    ├── api_service
+    │   ├── Dockerfile
+    │   ├── Dockerfile.linux
+    │   ├── Pipfile
+    │   ├── Pipfile.lock
+    │   ├── README.txt
+    │   ├── api
+    │   │   ├── chromedriver
+    │   │   ├── dummy.py
+    │   │   ├── helper.py
+    │   │   └── service.py
+    │   ├── docker-entrypoint.sh
+    │   ├── docker-shell.sh
+    │   └── secrets
+    ├── bert_financial
+    │   ├── Dockerfile
+    │   ├── Pipfile
+    │   ├── Pipfile.lock
+    │   ├── entrypoint.sh
+    │   ├── finetune_bert.py
+    │   └── gcsbucket
+    ├── deployment
+    │   ├── Dockerfile
+    │   ├── README.md
+    │   ├── deploy-app.yml
+    │   ├── deploy-create-instance.yml
+    │   ├── deploy-docker-images.yml
+    │   ├── deploy-k8s-cluster.yml
+    │   ├── deploy-provision-instance.yml
+    │   ├── deploy-setup-containers.yml
+    │   ├── deploy-setup-webserver.yml
+    │   ├── docker-entrypoint.sh
+    │   ├── docker-shell.sh
+    │   ├── inventory-prod.yml
+    │   ├── inventory.yml
+    │   ├── nginx-conf
+    │   │   └── nginx
+    │   │       └── nginx.conf
+    │   └── update-k8s-cluster.yml
+    ├── frontend
+    │   ├── Dockerfile
+    │   ├── Dockerfile.dev
+    │   ├── README.txt
+    │   ├── docker-shell.sh
+    │   ├── favicon.ico
+    │   ├── img
+    │   │   └── ...
+    │   ├── index.html
+    │   └── styles.css
+    ├── llama_index
+    │   ├── Dockerfile
+    │   ├── Pipfile
+    │   ├── Pipfile.lock
+    │   ├── build_query.py
+    │   ├── data
+    │   │   └── paul_graham_essay.txt
+    │   ├── entrypoint.sh
+    │   ├── gcf
+    │   │   ├── add_to_weaviate
+    │   │   │   ├── add_to_weaviate.py
+    │   │   │   └── requirements.txt
+    │   │   ├── create_weaviate_schema
+    │   │   │   ├── gcf_create_weaviate_schema.py
+    │   │   │   └── requirements.txt
+    │   │   ├── index_llama_index
+    │   │   │   ├── gcf_index_llamaindex.py
+    │   │   │   └── requirements.txt
+    │   │   └── query_llama_index
+    │   │       ├── gcf_query_llamaindex.py
+    │   │       └── requirements.txt
+    │   └── gcsbucket
+    ├── prompts
+    │   └── prompts.py
+    ├── scraper
+    │   ├── Dockerfile
+    │   ├── Pipfile
+    │   ├── Pipfile.lock
+    │   ├── chromedriver
+    │   ├── log
+    │   ├── scraper.py
+    │   ├── scraperlib.py
+    │   ├── scraping_notebook.ipynb
+    │   └── sitemap.csv
+    └── vector_store
+        ├── schema.json
+        ├── schema_old.json
+        ├── weaviate.schema.md
+        └── weaviate.schema.old.md
+```
 
 Browse our various documentation files
 ------------
@@ -258,7 +461,7 @@ For more information and detailed instructions, see [deploy-custom-container-BER
 
 # Deployment with Ansible and Scaling with Kubernetes
 
-This section outlines the deployment procedures for the RAG Detective App using Ansible and and the scaling process with Google Kubernetes Engine (GKE).
+This section outlines the deployment of the app using Ansible and the scaling process with Google Kubernetes Engine (GKE).
 
 ## Key Components
 
@@ -334,15 +537,9 @@ Additionally, we added CI/CD using GitHub Actions to trigger deployment. Our yam
 The yaml file implements a CI/CD workflow that
 
 * Invokes docker image building and pushing to GCR on changes to code in the respective containers and a git commit has a comment "/run-deploy-app".
-
-```
-git add .
-git commit -m "/run-deploy-app"
-git push
-```
 * Deploy the updated containers to the k8s cluster in GKE.
 
-You can view the progress of in GitHub under the Actions tab:
+You can view the progress of the dpeloyment in GitHub under the Actions tab:
 
 ![](./img/github-actions.jpg)
 
