@@ -223,3 +223,21 @@ This section provides the setup for deploying a BERT model, fine-tuned for finan
 This repository offers comprehensive guidance on setting up, testing, and deploying the BERT model for financial sentiment analysis using Docker and Google Vertex AI.
 
 For more information and detailed instructions, see [deploy-custom-container-BERT-vertex.md.](./docs/deploy-custom-container-BERT-vertex.md)
+
+# Deployment with Ansible and Scaling with Kubernetes
+
+Detailed Steps:
+Enable GCP APIs
+Setup GCP Service Accounts
+Setup Deployment Docker Container
+Setup SSH
+Setup Deployment
+Configure Nginx
+For a more comprehensive explanation including images for each step, refer to [deployment.md.](./docs/deployment.md)
+
+Detailed Steps:
+Preflight Steps before Creating & Deploying the Cluster
+Create & Deploy Cluster
+View the App
+
+
