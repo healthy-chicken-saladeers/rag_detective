@@ -24,25 +24,7 @@ Ian Kelk, Alyssa Lutservitz, Nitesh Kumar, Mandy Wong
 Healthy Chicken Saladeers
 
 **Project - Problem Definition**
-Large language models like **GPT-3.5** have proven to be capable when asked about commonly known subjects or topics that they would have received a large quantity of training data for. However, when asked about topics that include data they have not been trained on, they either state that they do not possess the knowledge or, worse, can hallucinate plausible answers.
-
-It is usually not possible to research current companies using an LLM, in order to directly compare their products and services, given that many of them are too new to have been used as training data for the LLM. We want to find a way to get up-to-date answers about companies that correspond to the information on their website.
-
-As well, in order to fulfill milestones for this course which would not otherwise be addressed, we fine-tune a BERT model to perform financial sentiment analysis when GPT-3.5 reports that the response may be financial in nature.
-
-## Proposed Solution
-
-There are two main ways of addressing this limitation: **fine-tuning** and **Retrieval Augmented Generation (RAG)**.
-
-Fine-tuning is the process of continuing to train the model using your own data, with a significantly smaller learning rate. The newly-gained knowledge is then encapsulated in the model weights themselves. The problem with fine-tuning is that it requires another copy of the model and the associated costs of hosting it, as well as the risk of "catastrophic forgetting," where the model forgets previously learned information.
-
-RAG, however, makes use of a source of knowledge, typically a vector store of embeddings and their associated texts. By comparing the predicted embeddings of the query to the embeddings in the vector store, we can form a prompt for the LLM that fits inside its context and contains the information needed to answer the question.
-
-Our solutions has 3 major components:
-
-- A chatbot that uses scraped data from the website’s `sitemap.xml` file—a file intended to guide search engines to all scrapable links on the site—in a manner that’s more specific and insightful than using a search engine. The LLM should only use this context to answer the question and not insert its own training data or hallucinate an answer. This is simple to test with questions like “Who is Kim Kardashian?” which would be clearly known to the model, and ensure it replies that this answer “is not within the context provided.”
-- A real-time scraper of websites on the application through asynchronous calls to the API.
-- Financial sentiment analysis on relevant completions from the LLM. As part of the prompt to GPT-3.5, we ask if its response is financial in nature. If it says it is, then our fine-tuned BERT model is called on it, and gives the response as well as a plot of the probabilities and an appropriately cute non-copyright infringing Bert puppet.
+In this project we develop a question answering chatbot that uses scraped data from websites in a manner that's more specific and insightful than using a search engine. We also develop a real-time scraper of websites through asynchronous calls to the API. Finally to complete specific course milestones, we fine-tine a BERT model on financial sentiment to run against completions from the LLM.
 
 # Application Design
 

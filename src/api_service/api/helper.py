@@ -361,7 +361,7 @@ def download_blob_from_gcloud(filename):
         blob = bucket.blob(sourcefilename)
         blob.download_to_filename(destinationfilename)
         success = True
-        print(f"Downlod from gcloud succeeded")
+        print(f"Download from gcloud succeeded")
     except Exception as e:
         print("Error while downloading blob from gcloud",e)
 
