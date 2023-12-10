@@ -26,7 +26,7 @@ docker run --rm --name $IMAGE_NAME -ti \
 -v "$HOME/.ssh":/home/app/.ssh \
 -v "$BASE_DIR/../api_service":/api_service \
 -v "$BASE_DIR/../frontend":/frontend \
--e GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS \
+-e GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS:/secrets/ml-workflow.json \
 -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
 -e GCP_PROJECT=$GCP_PROJECT \
 -e GCP_ZONE=$GCP_ZONE \
