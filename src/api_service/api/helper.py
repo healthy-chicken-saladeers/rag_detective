@@ -24,6 +24,27 @@ import fitz  # PyMuPDF
 
 
 def query_weaviate(client, website, timestamp, query):
+    """
+    Executes a query against the Weaviate vector store with specific filters and returns a streaming response.
+
+    This function sets up a vector store and an index for querying, applies exact match filters for the
+    website address and timestamp, and uses a custom prompt template for question-answering. The query is executed
+    against the Weaviate vector store, and the response is streamed back.
+
+    Args:
+        client: A Weaviate client instance used to interact with the Weaviate vector store.
+        website (str): The website address to be used as a filter for the query.
+        timestamp (str): The timestamp to be used as a filter for the query.
+        query (str): The query string for the question-answering.
+
+    Returns:
+        A streaming response object containing the results of the executed query.
+
+    Note:
+        The function measures the execution time of the query and prints it. The prompt template includes
+        a specific format for handling financial information in the query response.
+    """
+
     # construct vector store
     vector_store = WeaviateVectorStore(weaviate_client=client, index_name="Pages", text_key="text")
 
@@ -84,6 +105,24 @@ def query_weaviate(client, website, timestamp, query):
     return streaming_response
 
 def get_website_addresses(client):
+    """
+    Queries a Weaviate database to retrieve all unique website addresses stored in the Pages class.
+
+    This function constructs and executes a GraphQL query to fetch the 'websiteAddress' field from
+    all entries in the 'Pages' class of a Weaviate database. It ensures the uniqueness of the website
+    addresses by storing them in a set before converting them back to a sorted list for the return value.
+
+    Args:
+        client: A Weaviate client instance used to execute the GraphQL query.
+
+    Returns:
+        list: A sorted list of unique website addresses retrieved from the Weaviate database.
+
+    Raises:
+        HTTPException: If any error occurs during the query execution or data processing,
+                       an HTTPException with status code 500 is raised.
+    """
+
     # Construct the GraphQL query to fetch all websiteAddress values from the Pages class
     graphql_query = '''
     {
@@ -117,6 +156,25 @@ def get_website_addresses(client):
         return []
 
 def get_all_timestamps_for_website(client, website_address: str):
+    """
+    Fetches all unique timestamps for a specified website address from a Weaviate database.
+
+    This function constructs a GraphQL query to retrieve the 'timestamp' field from entries
+    in the 'Pages' class that match a given website address. It ensures the uniqueness of
+    timestamps by using a set, and returns them as a sorted list in reverse order (most recent first).
+
+    Args:
+        client: A Weaviate client instance for executing the GraphQL query.
+        website_address (str): The website address for which timestamps are to be retrieved.
+
+    Returns:
+        list: A sorted list (in reverse order) of unique timestamps associated with the given website address.
+
+    Raises:
+        HTTPException: If any error occurs during the query execution or data processing,
+                       an HTTPException with status code 500 is raised, including the error details.
+    """
+
     # GraphQL query that fetches timestamps for a particular websiteAddress
     graphql_query = f'''
     {{
@@ -156,6 +214,19 @@ def get_all_timestamps_for_website(client, website_address: str):
         return []
 
 def extract_document_urls(streaming_response):
+    """
+   Extracts and collects document URLs from a given streaming response.
+
+   This function iterates over the nodes within a streaming response, specifically looking for
+   nodes that represent documents (identified by a node type of "4", corresponding to ObjectType.DOCUMENT).
+   It collects the URLs (node IDs) of these document nodes and returns them in a list.
+
+   Args:
+       streaming_response: A streaming response object that contains source nodes with relationship information.
+
+   Returns:
+       list: A list of URLs (node IDs) extracted from the document nodes in the streaming response.
+    """
     urls = []
     for node_with_score in streaming_response.source_nodes:
         relationships = node_with_score.node.relationships
@@ -166,10 +237,12 @@ def extract_document_urls(streaming_response):
 
 
 #Scraper code
+#defines a header, that is required for scraping with selenium.
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
 }
 
+#google cloud bucket name where csv's for company data are stored
 bucket_name = "ac215_scraper_bucket"
 
 def set_chrome_options() -> ChromiumOptions:
@@ -208,6 +281,25 @@ def extract_error_message_from_exception(exception):
     return match.group(1) if match else message
 
 def get_sitemap_attributes(url):
+    """
+    Extracts attributes from a sitemap URL, including nested sitemaps.
+
+    This function processes a given sitemap URL to extract URLs and identify if the sitemap is nested.
+    It filters out image URLs and checks for nested sitemaps, making additional requests as necessary.
+    The function returns a dictionary with the status of the operation, a pandas Series of URLs, a flag
+    indicating if the sitemap is nested, and a message describing the outcome.
+
+    Args:
+        url (str): The URL of the sitemap to be processed.
+
+    Returns:
+        dict: A dictionary containing the status (0 for success, 1 for failure), a pandas Series of extracted URLs,
+              a nested flag (1 for nested sitemap, 0 otherwise), and a message detailing the process or errors.
+
+    Raises:
+        requests.RequestException: If a request to fetch a URL fails, the error is caught and
+                                   details are included in the returned dictionary.
+    """
 
     image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg']
 
@@ -275,9 +367,45 @@ def get_sitemap_attributes(url):
         return attribute_dict  # Returns status =1 (i.e. some failure happened)
 
 def is_image_url(url, image_extensions):
+    """
+   Determines whether a given URL is an image URL based on its file extension.
+
+   This function checks if the URL ends with any of the provided image file extensions.
+   It's useful for filtering out image URLs when processing a list of mixed URLs.
+
+   Args:
+       url (str): The URL to be checked.
+       image_extensions (list): A list of image file extensions (e.g., ['.jpg', '.png']) to check against.
+
+   Returns:
+       bool: True if the URL ends with any of the specified image file extensions, False otherwise.
+    """
     return any(url.lower().endswith(ext) for ext in image_extensions)
 
 def scrape_link(link):
+    """
+    Scrapes text content from a given URL, handling both HTML and PDF formats.
+
+    This function attempts to scrape text from the provided URL. For PDF content, it extracts text using PyMuPDF.
+    For HTML content, it uses BeautifulSoup for initial scraping. If the content is too short, it then attempts
+    scraping with Selenium to render JavaScript-based pages. The function returns a dictionary mapping the URL to
+    the scraped text.
+
+    Args:
+       link (str): The URL of the webpage or PDF to be scraped.
+
+    Returns:
+       dict: A dictionary with the URL as the key and the scraped text as the value. If an error occurs,
+             the value will be an empty string.
+
+    Raises:
+       requests.RequestException: If there's an issue with the HTTP request to the URL.
+
+    Note:
+    Selenium is used as a fallback for pages that require JavaScript rendering or if the initial scrape does
+    not return sufficient content. The function handles headers, footers, and navigational elements by removing
+    them from the scraped text.
+    """
     print(link)
     text_dict = {}
     wait_condition = (By.TAG_NAME, ['html', 'div', 'body'])
@@ -336,6 +464,28 @@ def scrape_link(link):
     return text_dict
 
 def save_to_gcloud(df, filename):
+    """
+    Saves a pandas DataFrame to Google Cloud Storage as a CSV file.
+
+    This function attempts to save the provided DataFrame to a specified bucket in Google Cloud Storage.
+    It converts the DataFrame into CSV format and uploads it using the given filename. The function
+    returns a boolean flag indicating the success or failure of the operation.
+
+    Args:
+       df (pandas.DataFrame): The DataFrame to be saved.
+       filename (str): The name of the file to be used when saving the DataFrame in the storage bucket.
+
+    Returns:
+       bool: True if the DataFrame is successfully saved to Google Cloud Storage, False otherwise.
+
+    Raises:
+       Exception: If any error occurs during the saving process, it is caught and printed. No exception
+                  is raised to the caller.
+
+    Note:
+       The function requires access to a Google Cloud Storage bucket and appropriate permissions to write data.
+       Ensure that the storage client and bucket are correctly configured and accessible.
+    """
     flag = False
     try:
         storage_client = storage.Client()
@@ -351,6 +501,26 @@ def save_to_gcloud(df, filename):
     return flag
 
 def download_blob_from_gcloud(filename):
+    """
+    Downloads a file from Google Cloud Storage to a local directory.
+
+    This function fetches a file specified by the filename from Google Cloud Storage
+    and saves it to a local directory. It returns a boolean flag indicating whether
+    the download was successful.
+
+    Args:
+       filename (str): The name of the file to be downloaded from Google Cloud Storage.
+                       Assumes the file is located in a 'data' subdirectory within the storage bucket.
+
+    Returns:
+       bool: True if the file is successfully downloaded, False otherwise.
+
+    Raises:
+       Exception: Catches any exceptions that occur during the download process and prints an error message.
+    Note:
+       The function expects the storage client and bucket to be correctly configured and accessible.
+       The destination path for the downloaded file is set to '/home/downloads/'.
+    """
     sourcefilename = f"data/{filename}"
     destinationfilename = f"/home/downloads/{filename}"
 
@@ -370,6 +540,26 @@ def download_blob_from_gcloud(filename):
 
 # Write to weaviate part
 def store_to_weaviate(filename):
+    """
+    Stores documents into a Weaviate vector store and yields progress updates.
+
+    This function reads a CSV file specified by the filename, extracts documents, and stores them
+    into a Weaviate vector store. It uses the filename to extract metadata (websiteAddress and timestamp)
+    for each document. The function yields updates on the number of documents inserted into the vector store.
+
+    Args:
+       filename (str): The name of the CSV file containing documents to be stored.
+
+    Yields:
+       str: Progress updates on the number of documents inserted into the vector store.
+
+    Raises:
+       Exception: Catches any exceptions that occur during the process and prints an error message.
+
+    Note:
+       The function expects the Weaviate instance to be accessible at the given IP address and the
+       OpenAI API key to be set as an environment variable.
+    """
     success = False
 
     # Retrieve the OpenAI API key from the environment variables
@@ -429,6 +619,24 @@ def store_to_weaviate(filename):
     yield "All documents inserted successfully.\n"
 
 def cleanup_files(filewithpath):
+    """
+    Deletes a file from the given file path.
+
+    This function checks if the specified file exists at the given path. If it does, the function
+    attempts to delete it. It prints a confirmation message upon successful deletion or an error
+    message if the deletion fails. If the file does not exist, it prints a message indicating so.
+
+    Args:
+        filewithpath (str): The complete path of the file to be deleted, including the filename.
+
+    Note:
+        This function uses the os module to interact with the file system. It handles any exceptions
+        raised during file deletion and prints relevant messages.
+
+    Example:
+        cleanup_files("/path/to/file.txt")
+        # This will attempt to delete 'file.txt' from '/path/to/' and print a message regarding the outcome.
+        """
     if os.path.exists(filewithpath):
         try:
             os.remove(filewithpath)
