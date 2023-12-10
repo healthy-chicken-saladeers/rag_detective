@@ -495,7 +495,7 @@ Creating and deploying a Kubernetes cluster within GKE involves a few steps:
 
 Deploying and scaling the RAG Detective App on a Kubernetes cluster managed by GKE allows for for load balancing, failover, and scalability. Ansible scripts help to keep track of our infrastructure and set up automated deployments.
 
-If our app were to go viral, Kubernetes would help our app scale with the increase increase in traffic. For example, if 10,000 people were using the site on a given day, the Kubernetes cluster on Google Kubernetes Engine (GKE) is designed to dynamically adjust and scale to meet the demand. Here's how the scaling process would likely occur: 
+If our app were to go viral, Kubernetes would help our app scale with the increase in traffic. For example, if 10,000 people were using the site on a given day, the Kubernetes cluster on Google Kubernetes Engine (GKE) is designed to dynamically adjust and scale to meet the demand. Here's how the scaling process would likely occur: 
 
 #### Node Scaling:
    - If your cluster is configured with Auto Scaling enabled, GKE will automatically add more nodes to the cluster to handle the increased load. These nodes are added based on resource utilization metrics, ensuring that there's enough computational capacity to run your application.
