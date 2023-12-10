@@ -262,7 +262,7 @@ Creating and deploying a Kubernetes cluster within GKE involves a few steps:
 - **Autoscaling:** Allow the application to meet traffic needs by automatically adjusting the number of running instances of the application. This is achieved through Kubernetes Deployment objects and Horizontal Pod Autoscaler configurations.
 - **Monitoring & Management:** Monitor the performance of your workloads, set up alerts, and debug issues that arise.
 
-Deploying and scaling the RAG Detective App on a Kubernetes cluster managed by GKE allows for high availability, scalability, and robustness of the application.
+Deploying and scaling the RAG Detective App on a Kubernetes cluster managed by GKE allows for for load balancing, failover, and scalability. Ansible scripts help to keep track of our infrastructure and set up automated deployments.
 
 Here is our deployed application on a Kubernetes cluster in GCP:
 
