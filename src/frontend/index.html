@@ -141,24 +141,68 @@
 
     });
 
+    /**
+     * Generates a current timestamp as a string.
+     *
+     * This function creates a new Date object representing the current moment, then
+     * converts it to a localized string representation, appending a colon and a space
+     * at the end. It's useful for timestamping logs or other time-sensitive outputs.
+     *
+     * @returns {string} The current timestamp in localized string format followed by ': '.
+     */
     function getCurrentTimestamp() {
         const now = new Date();
         return now.toLocaleString() + ': ';
     }
 
+    /**
+     * Generates a random number between the specified minimum and maximum values, inclusive.
+     *
+     * @param {number} min - The minimum value in the range.
+     * @param {number} max - The maximum value in the range.
+     * @returns {number} A random number between min and max, inclusive.
+     */
     function getRandomNumber(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
+    /**
+     * Pads a number with a leading zero if it is less than 10.
+     *
+     * @param {number} number - The number to be padded.
+     * @returns {string} The padded number as a string. If the number is less than 10, it is prefixed with '0'.
+     *
+     */
     function padNumber(number) {
         return number.toString().padStart(2, '0');
     }
 
+    /**
+     * Validates a given URL against a regular expression pattern.
+     *
+     * This function tests the provided URL string against a regular expression pattern to determine
+     * if it is a well-formed URL. The pattern checks for optional 'http://' or 'https://', optional 'www.',
+     * followed by the domain name and an optional path.
+     *
+     * @param {string} url - The URL string to be validated.
+     * @returns {boolean} True if the URL matches the pattern, false otherwise.
+     *
+     */
     function validateURL(url) {
         const regexPattern = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+)(\/[a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
         return regexPattern.test(url);
     }
 
+    /**
+     * Displays an error modal with a specified message.
+     *
+     * This function sets the text content of an element with the ID 'errorMessage' to the provided message,
+     * and then displays a modal with the ID 'errorModal' by adding the 'show' class to it. It also attaches
+     * an event listener to a button with the ID 'okButton', which calls the `hideErrorModal` function when clicked.
+     *
+     * @param {string} message - The error message to display in the modal.
+     *
+     */
     function showErrorModal(message) {
         document.getElementById('errorMessage').textContent = message;
         var modal = document.getElementById('errorModal');
@@ -170,11 +214,31 @@
         };
     }
 
+    /**
+     * Hides the error modal.
+     *
+     * This function removes the 'show' class from the modal with the ID 'errorModal',
+     * effectively hiding it from view. It is typically used to hide the modal after
+     * an error message has been displayed to the user.
+     */
     function hideErrorModal() {
         var modal = document.getElementById('errorModal');
         modal.classList.remove('show');
     }
 
+    /**
+     * Displays a confirmation modal with a specific message and attaches event listeners to its buttons.
+     *
+     * This function sets the text content of an element with the ID 'modalMessage' to the provided message,
+     * then appends additional text asking for confirmation to scrape pages. It displays a modal with the ID
+     * 'confirmationModal' by adding the 'show' class. Event listeners are attached to buttons with IDs
+     * 'confirmButton' and 'cancelButton'. The 'confirmButton' triggers the `startScrapingStream` function
+     * with the provided URL and then hides the modal. The 'cancelButton' simply hides the modal.
+     *
+     * @param {string} message - The message to be displayed in the modal.
+     * @param {string} url - The URL to be passed to the `startScrapingStream` function.
+     *
+    */
     function showConfirmationModal(message, url) {
         document.getElementById('modalMessage').textContent = message + ' Would you like to scrape these pages?';
         var modal = document.getElementById('confirmationModal');
@@ -188,6 +252,14 @@
         document.getElementById('cancelButton').onclick = hideConfirmationModal;
     }
 
+    /**
+     * Hides the confirmation modal.
+     *
+     * This function removes the 'show' class from the modal with the ID 'confirmationModal',
+     * effectively hiding it from view. It is typically used to close the modal after the user
+     * has made a decision or an action has been completed.
+     *
+     */
     function hideConfirmationModal() {
         var modal = document.getElementById('confirmationModal');
         modal.classList.remove('show');
@@ -229,6 +301,17 @@
             });
     });
 
+    /**
+     * Initiates the scraping process for the provided URL and streams the results to a UI element.
+     *
+     * This function sends a POST request to start the scraping process for the given URL. It updates
+     * a UI element (scrapeResultsElement) with the progress and final result of the scraping. It also
+     * displays a loading indicator while the scraping is in progress. If an error occurs during the
+     * stream, it logs the error and updates the UI with the error message.
+     *
+     * @param {string} url - The URL to be scraped.
+     *
+     */
     // Renamed from streamResponse to startScrapingStream for better clarity
     function startScrapingStream(url) {
         const scrapeResultsElement = document.getElementById('scrapeResults');
@@ -283,6 +366,15 @@
         });
     }
 
+    /**
+     * Fetches a list of websites from a server and populates dropdown menus with the data.
+     *
+     * This function sends a GET request to fetch a list of websites. Upon successful retrieval,
+     * it updates the contents of two dropdown menus - one for websites and another for scrape sessions.
+     * It first clears any existing options in these dropdowns, adds a default 'Please select' option, and
+     * then appends new options based on the fetched website data.
+     *
+     */
     function fetchWebsites() {
         fetch(`http://${API_URL}:9000/websites`)
             .then(response => response.json())
@@ -305,6 +397,15 @@
             .catch(error => console.error('Error fetching websites:', error));
     }
 
+    /**
+     * Updates the scrape session dropdown based on the selected website.
+     *
+     * This function fetches a list of timestamps (scrape sessions) for the selected website
+     * from a server. It then updates the scrape session dropdown with these timestamps. If no
+     * website is selected, or the default 'Please select' option is chosen, the function exits early.
+     * In case of a successful fetch, it populates the scrape session dropdown with the retrieved timestamps.
+     *
+     */
     function updateScrapeSession() {
         const websiteDropdown = document.getElementById('websiteDropdown');
         const website = websiteDropdown.value;
@@ -332,7 +433,15 @@
             .catch(error => console.error('Error fetching timestamps:', error));
     }
 
-    // Update this to use the website, timestamp, and query fields
+    /**
+     * Initiates a request to generate a response based on a user's query and selected website and timestamp.
+     *
+     * This function retrieves user inputs from dropdown menus and an input field, validates these inputs,
+     * and sends a POST request to a specified endpoint with the website, timestamp, and query data.
+     * It then processes and displays the streaming response. The function also manages UI elements to
+     * show loading indicators and to display the response. Errors are handled and displayed in the output element.
+     *
+     */
     function generate_response() {
         // Get the overlay, spinner, and output elements
         const loadingOverlay = document.getElementById('loadingOverlay');
@@ -406,6 +515,17 @@
         });
     }
 
+    /**
+     * Preloads an image from a given URL and returns a Promise.
+     *
+     * This function creates a new Image object and sets its source to the provided URL. It returns a Promise
+     * that resolves with the Image object upon successful loading or rejects if an error occurs during loading.
+     * This is useful for preloading images before adding them to the document to reduce rendering delays.
+     *
+     * @param {string} url - The URL of the image to be preloaded.
+     * @returns {Promise<HTMLImageElement>} A promise that resolves with the loaded Image object.
+     *
+     */
     function preloadImage(url) {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -415,6 +535,18 @@
         });
     }
 
+    /**
+     * Displays URLs and sentiment analysis results based on the response data.
+     *
+     * This function updates a container element with a list of URLs used for generating an answer.
+     * It also checks for a financial flag in the response data. If the flag is true, it initiates a sentiment
+     * analysis request and displays the results, including a dynamically loaded image based on the sentiment
+     * and a bar chart visualization of the sentiment probabilities.
+     *
+     * @param {Object} data - The object containing URLs and a financial flag.
+     * @param {string} responseData - The response data used for sentiment analysis.
+     *
+     */
     function displayURLs(data, responseData) {
         // Assuming there's a container for URLs
         const urlsContainer = document.getElementById("urlsContainer");
@@ -519,7 +651,17 @@
         }
     }
 
-
+    /**
+     * Fetches URLs associated with a given query ID and displays them using the displayURLs function.
+     *
+     * This function sends a GET request to retrieve URLs related to a specific query ID. On successful
+     * retrieval, it calls the `displayURLs` function to display these URLs and handle any related
+     * sentiment analysis. If the URLs are not found, or if the query ID is not provided, it logs an error.
+     *
+     * @param {string} queryId - The query ID used to fetch related URLs.
+     * @param {string} responseData - The response data used for further processing in the displayURLs function.
+     *
+     */
     function fetchURLs(queryId, responseData) {
         if (queryId) {
             // Make the GET request to the get_urls endpoint
