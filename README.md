@@ -16,27 +16,34 @@ Project Organization
 Browse our various documentation files
 ------------
 
-- [W&B Report on BERT fine-tuning](https://api.wandb.ai/links/iankelk/mmrp03k6)
-- [Static version of Report on BERT fine-tuning](./docs/experiment-bert.md)
-- [W&B Report on BERT into LSTM and 6-layer BERT](https://api.wandb.ai/links/iankelk/jpvsoack)
-- [Static version of Report on BERT into LSTM and 6-layer BERT](./docs/optimization.md)
-- [Deploy custom container for BERT](deploy-custom-container-BERT-vertex.md)
-- [Setup a Google Cloud Function](./docs/gc-function-instructions.md)
-- [Serverless Model training with Vertex AI](./docs/vertex-ai-model-training.md)
-- [Install Google Cloud CLI ](./docs/gcp-cli-instructions-macos.md)
-- [Setup a Google Cloud Storage bucket](./docs/gcs-bucket-instructions.md)
-- [Google Cloud Platform Setup](./docs/gcp-setup-instructions.md)
-- [How to launch `gcsfuse` upon container launch](./docs/docker-gcsfuse.md)
-- [Granular instructions on how to run the `scraper` container alone](./docs/gcp-docker-commands.md)
-- [Jupyter notebook environment variable set up](./docs/notebooks_env_file_setup.md)
-- [FastAPI Service Container Setup](./docs/api-service-documentation.md)
-- [Frontend Container Setup](./docs/frontend.md)
-- [Deployment Container Setup](./docs/deployment.md)
-- [Setting up GitHub Actions](./docs/github-actions.md)
-- [FastAPI Web Scraper with Cloud and Vector Store Integration Endpoints](./docs/endpoints_scraper.md)
-- [FastAPI Vector Store Query API Endpoints](./docs/endpoints_vector_store.md)
-- [Vertex AI Text Classification Endpoints](./docs/endpoints_vertex.md)
-- [Setup VS Code Remote - SSH Extension to Connect to GCP VM](./docs/vscode-remote-ssh-extension-gcp-vm.md)
+- Endpoints
+	- [FastAPI Service Container Setup](./docs/api-service-documentation.md)
+	- [FastAPI Web Scraper with Cloud and Vector Store Integration Endpoints](./docs/endpoints_scraper.md)
+	- [FastAPI Vector Store Query API Endpoints](./docs/endpoints_vector_store.md)
+	- [Vertex AI Text Classification Endpoints](./docs/endpoints_vertex.md)
+- Google Cloud Guides
+	- [Google Cloud Platform Setup](./docs/gcp-setup-instructions.md)
+	- [Install Google Cloud CLI ](./docs/gcp-cli-instructions-macos.md)
+	- [Setup a Google Cloud Storage bucket](./docs/gcs-bucket-instructions.md)
+	- [Setup a Google Cloud Function](./docs/gc-function-instructions.md)
+- Container Guides
+	- [Frontend Container Setup](./docs/frontend.md)
+	- [How to launch `gcsfuse` upon container launch](./docs/docker-gcsfuse.md)
+	- [Granular instructions on how to run the `scraper` container alone](./docs/gcp-docker-commands.md)
+- Deployment
+	- [Deployment Container Setup](./docs/deployment.md)
+	- [Setting up GitHub Actions](./docs/github-actions.md)
+- Google Vertex
+	- [Deploy custom container for BERT](deploy-custom-container-BERT-vertex.md)
+	- [Serverless Model training with Vertex AI](./docs/vertex-ai-model-training.md)
+- Fine-tuning and distillation of BERT
+	- [W&B Report on BERT fine-tuning](https://api.wandb.ai/links/iankelk/mmrp03k6)
+		- [Static version](./docs/experiment-bert.md)
+	- [W&B Report on BERT into LSTM and 6-layer BERT](https://api.wandb.ai/links/iankelk/jpvsoack)
+		- [Static version](./docs/optimization.md)
+- Misc
+	- [Jupyter notebook environment variable set up](./docs/notebooks_env_file_setup.md)
+	- [Setup VS Code Remote - SSH Extension to Connect to GCP VM](./docs/vscode-remote-ssh-extension-gcp-vm.md)
 
 
 --------
