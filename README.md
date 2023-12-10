@@ -268,16 +268,50 @@ Here is our deployed application on a Kubernetes cluster in GCP:
 
 ![](img/gcp-gke.jpg)
 
-And in the borwser using the Nginx Ingress IP adress at `http://<NGINX INGRESS IP>.sslip.io`:
+To run the deployment container with Kubernetes locally:
+
+```
+cd src/deployment
+run sh docker-shell.sh
+```
+#### Build and Push Docker Containers to GCR 
+```
+ansible-playbook deploy-docker-images.yml -i inventory.yml
+```
+#### Create and Deploy K8s Cluster
+```
+ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --extra-vars cluster_state=present
+```
+
+#### View the App
+Go to `http://<NGINX INGRESS IP>.sslip.io`
 
 ![](img/k8s-deployed-app.jpg)
 
-## Testing and Verification
+### Testing and Verification
 - Commands to SSH into the server or k8s cluster, check container statuses, and access logs.
 - Verification of the web server's functionality by accessing the deployed app via its external IP address.
 
-This repository provides a comprehensive guide for deploying the RAG Detective App using Ansible, ensuring a streamlined and secure deployment process.
+This repository provides a comprehensive guide for deploying the RAG Detective App using Ansible and scaling with Kubernetes, ensuring a streamlined and secure deployment process.
 
 For more information and detailed instructions, see [deployment.md.](./docs/deployment.md)
 
+### Deploy using GitHub Actions
+Additionally, we added CI/CD using GitHub Actions to trigger deployment. Our yaml file can be found under `.github/workflows/ci-cd.yml` in the project repo.
 
+The yaml file implements a CI/CD workflow that
+
+* Invokes docker image building and pushing to GCR on changes to code in the respective containers and a git commit has a comment "/run-deploy-app".
+
+```
+git add .
+git commit -m "/run-deploy-app"
+git push
+```
+* Deploy the updated containers to the k8s cluster in GKE.
+
+You can view the progress of in GitHub under the Actions tab:
+
+![](./img/github-actions.jpg)
+
+For more information and detailed instructions, see [github-actions.md.](./docs/github-actions.md)
