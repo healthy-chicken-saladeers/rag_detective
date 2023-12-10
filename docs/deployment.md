@@ -269,6 +269,12 @@ You can see the `rag-app-cluster` in the Google Kubernetes Engine console:
 * Go to `http://<YOUR INGRESS IP>.sslip.io`
 * View here: http://35.238.85.13.sslip.io/
 
+`sslip.io` is a service that allows you to create wildcard DNS entries for any IP address. When running on Google Kubernetes Engine (GKE) or similar environments, you can use sslip.io to map IP addresses to domain names easily.
+
+For example, if your application is running on GKE with a specific IP address (let's say `35.238.85.13`), you can access it using a domain like `35.238.85.13.sslip.io`. The sslip.io service interprets the IP address in the domain and resolves it to the corresponding IP.
+
+This can be helpful in scenarios where you don't have a registered domain or want a quick and convenient way to access your services via a domain without dealing with manual DNS configurations.
+
 ### Delete Cluster
 ```
 ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --extra-vars cluster_state=absent
