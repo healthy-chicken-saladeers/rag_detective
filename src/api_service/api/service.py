@@ -16,37 +16,87 @@ import uuid
 from google.cloud import aiplatform
 from google.auth import exceptions
 from google.oauth2 import service_account
+# Suppress Pydantic warnings in LlamaIndex
+import warnings
+warnings.simplefilter(action='ignore', category=Warning)
 
-# Classes to encapsulate state and functionalities
 class FinancialStatus:
+    """
+    A class to encapsulate and manage the financial status.
+
+    Attributes:
+        _is_financial (bool): A flag indicating whether the financial status is set.
+    """
+
     def __init__(self):
+        """Initializes the financial status to False by default."""
         self._is_financial = False
 
     def set_financial(self, status: bool):
+        """
+        Sets the financial status flag.
+        
+        Args:
+            status (bool): The new status to be set, indicating whether the context is financial.
+        """
         self._is_financial = status
 
     def is_financial(self) -> bool:
+        """
+        Checks if the current status is financial.
+
+        Returns:
+            bool: The current value of the financial status flag.
+        """
         return self._is_financial
 
 class QueryStorage:
+    """
+    A class for storing and retrieving queries in a thread-safe manner.
+
+    Attributes:
+        _storage (dict): A dictionary storing the queries with their IDs as keys.
+        _lock (Lock): An asyncio lock to ensure thread-safe access to the storage.
+    """
+
     def __init__(self):
+        """Initializes an empty storage for queries and an asyncio lock for synchronization."""
         self._storage = {}
         self._lock = Lock()
 
     async def store_query(self, query_id: str, financial: bool, urls: List[str]):
+        """
+        Stores a query with its associated financial status and URLs in the storage.
+
+        This method is thread-safe and uses an asyncio lock to protect the access to the storage.
+        
+        Args:
+            query_id (str): The unique identifier for the query.
+            financial (bool): The financial status associated with the query.
+            urls (List[str]): A list of URLs associated with the query.
+        """
         async with self._lock:
             self._storage[query_id] = (financial, urls)
 
-    async def retrieve_query(self, query_id: str):
+    async def retrieve_query(self, query_id: str) -> tuple:
+        """
+        Retrieves and deletes a query from the storage.
+
+        This method safely pops the query information based on the query ID, if it exists,
+        and returns the financial status and associated URLs. Otherwise, returns (None, None).
+        
+        Args:
+            query_id (str): The unique identifier for the query to be retrieved.
+        
+        Returns:
+            tuple: A tuple containing the financial status and list of URLs for the query, or (None, None) if not found.
+        """
         async with self._lock:
             return self._storage.pop(query_id, (None, None))
 
+
 # Test using this line of curl:
 # curl -N -H "Content-Type: application/json" -d "{\"website\": \"ai21.com\", \"query\": \"How was AI21 Studio a game changer\", \"timestamp\": \"2023-10-06T18-11-24\"}" http://localhost:9000/rag_query
-
-# Suppress Pydantic warnings since it's based in llamaindex
-import warnings
-warnings.simplefilter(action='ignore', category=Warning)
 
 # Set the OpenAI key as an Environment Variable (the different underscore notation is weaviate vs llamaindex)
 os.environ["OPENAI_API_KEY"] = os.environ.get('OPENAI_APIKEY')
@@ -69,21 +119,31 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     """
-    Initializes the Weaviate client and stores it in the application state at startup.
+    Initializes application components and stores them in the application state at startup.
 
-    This function is executed automatically when the FastAPI application starts. It creates a
-    Weaviate client using the Weaviate instance's IP address specified in the environment variable
-    WEAVIATE_IP_ADDRESS. The client is then stored in the application's state for global access
-    throughout the application lifecycle.
+    This function is executed automatically when the FastAPI application starts. It establishes connections
+    and configurations for the Weaviate client and also initializes the classes for managing financial status
+    and URL storage.
+    
+    The Weaviate client is created using the IP address specified by the WEAVIATE_IP_ADDRESS environment variable
+    and is stored in the application state for accessibility throughout the application lifecycle.
+    
+    Two instances of custom classes, QueryStorage and FinancialStatus, are also created and stored in the application's
+    state. These instances handle financial flag status checks and URL storage management, respectively, enabling thread-safe
+    encapsulation of functionality across API endpoints.
 
-    Note: The WEAVIATE_IP_ADDRESS environment variable must be set prior to starting the application.
+    Note:
+    - The WEAVIATE_IP_ADDRESS environment variable must be set prior to starting the application.
+    - QueryStorage encapsulates the storage and retrieval of query-related information.
+    - FinancialStatus encapsulates the checking and setting of the financial status associated with query processing.
+
     Example usage:
-    curl http://localhost:9000/startup
+    This function is not meant to be triggered manually; it is an event handler for application startup.
     """
     app.state.weaviate_client = weaviate.Client(url=f"http://{WEAVIATE_IP_ADDRESS}:8080")
-    # Initialize query storage and financial status instances for the app
     app.state.query_storage = QueryStorage()
     app.state.financial_status = FinancialStatus()
+
 
 # Routes
 @app.get("/")
@@ -131,24 +191,31 @@ async def streaming_endpoint():
 
 async def process_streaming_response(local_streaming_response, financial_status: FinancialStatus):
     """
-    Processes streaming response from a local source and yields text segments.
+    Processes streaming response from a local source, checks for financial markers, 
+    and yields processed text segments.
 
     This asynchronous function iterates over a generator of streaming responses,
-    processing each text segment. It checks for a specific flag ("QQ") in each text segment,
-    indicating a financial context. If this flag is found, it sets a global 'financial' variable
-    to True and modifies the text by removing the flag.
+    examining each text segment for a specific marker ("QQ"). "QQ" was chosen since for
+    reasons only known to itself, GPT-3.5 seems to struggle with more complex flags.
+    If such a marker is found, it indicates a financial context and the financial status 
+    is set to True using the financial_status instance provided. The marker is then removed
+    from the text.
 
-    The function yields each processed text segment. It also handles `asyncio.CancelledError` to
-    gracefully handle cancellation of the streaming.
+    The function yields each processed text segment. It handles `asyncio.CancelledError` to
+    gracefully manage the cancellation of the streaming.
 
     Args:
-        local_streaming_response: A streaming response object with a 'response_gen' generator attribute.
+        local_streaming_response: An instance of a streaming response object with a 'response_gen'
+                                  generator attribute, which is a generator yielding text segments.
+        financial_status (FinancialStatus): An instance of FinancialStatus to manage the financial
+                                            status throughout the processing.
 
     Yields:
-        Each processed text segment as a string.
-
+        str: Processed text segments without the financial marker.
+    
     Raises:
-        asyncio.CancelledError: If the streaming is cancelled during processing.
+        asyncio.CancelledError: If the streaming process is cancelled. This is caught and handled 
+                                to allow for a graceful shutdown of the generator.
     """
     try:
         for text in local_streaming_response.response_gen:
@@ -190,7 +257,7 @@ def check_required(data: Dict[str, str], keys: List[str]):
 @app.post("/rag_query")
 async def rag_query(request: Request, background_tasks: BackgroundTasks):
     """
-    Processes a RAG (Retrieve, Analyze, Generate) query and returns a streaming response.
+    Processes a RAG query and returns a streaming response.
 
     This asynchronous endpoint accepts a JSON payload containing the parameters 'website', 'timestamp',
     and 'query'. It generates a unique ID for the query, performs a query using Weaviate, and initiates
@@ -208,15 +275,14 @@ async def rag_query(request: Request, background_tasks: BackgroundTasks):
         HTTPException: If any required fields are missing in the request.
 
     Note:
-        The endpoint uses a global 'financial' variable during URL processing. The response includes a custom
-        'X-Query-ID' header to track the query ID for reference retrieval.
+        The endpoint interacts with the `financial_status` instance during URL processing to manage the financial flag.
+        The response includes a custom 'X-Query-ID' header to track the query ID for reference retrieval.
 
     Example usage:
     curl -X POST http://localhost:9000/rag_query \
      -H "Content-Type: application/json" \
      -d {"website": "example.com", "timestamp": "2021-01-01T12:00:00", "query": "example query"}
     """
-    global financial
     data = await request.json()
 
     # Check if the required parameters are provided
@@ -234,7 +300,7 @@ async def rag_query(request: Request, background_tasks: BackgroundTasks):
     streaming_response = helper.query_weaviate(app.state.weaviate_client, website, timestamp, query)
 
     # Add the URL processing function as a background task
-    background_tasks.add_task(process_url_extraction, query_id, streaming_response, financial)
+    background_tasks.add_task(process_url_extraction, query_id, streaming_response, financial_status_instance, request.app.state.query_storage)
 
     # Generate the streaming response and return it
     headers = {
@@ -250,23 +316,24 @@ async def rag_query(request: Request, background_tasks: BackgroundTasks):
         headers=headers
     )
 
-async def process_url_extraction(query_id: str, streaming_response, financial: bool):
+async def process_url_extraction(query_id: str, streaming_response, financial_status: FinancialStatus, query_storage: QueryStorage):
     """
     Processes the given streaming response to extract and store unique URLs.
 
     This asynchronous function takes a streaming response, extracts URLs from the
-    documents in the stream, and stores them in a global storage. It ensures that the URLs
-    are unique and maintains their order. It also associates the extracted URLs with a query ID and
-    a financial flag.
+    documents in the stream, and uses the `query_storage` instance to store them. It ensures
+    that the URLs are unique and maintains their order. The extracted URLs, along with the financial
+    status, are associated with the provided `query_id`.
 
     Args:
         query_id (str): The unique identifier for the query.
         streaming_response: The streaming response object to process.
-        financial (bool): A flag indicating whether the query is financial in nature.
+        financial_status (FinancialStatus): An instance representing the financial status checker.
+        query_storage (QueryStorage): An instance for managing query-related URL storage.
 
     Note:
-        This function modifies a global storage (`query_url_storage`) which is protected by a lock
-        (`storage_lock`) to ensure thread-safe operations. The storage format for each query is a tuple
+        URLs extraction and storage are managed by a `query_storage` instance which employs an asynchronous
+        lock to ensure thread-safe operations. The storage format for each query is a tuple
         of the financial flag and the list of unique URLs.
     """
     extracted_urls = helper.extract_document_urls(streaming_response)
@@ -275,9 +342,9 @@ async def process_url_extraction(query_id: str, streaming_response, financial: b
     for url in extracted_urls:
         if url not in unique_urls:
             unique_urls.append(url)
-    # Store the ordered, unique URLs in the storage
-    async with storage_lock:
-        query_url_storage[query_id] = financial, unique_urls
+    
+    # Use the provided instance to store the ordered, unique URLs
+    await query_storage.store_query(query_id, financial_status.is_financial(), unique_urls)
 
 @app.get("/websites", response_model=List[str])
 def read_websites():
@@ -303,87 +370,88 @@ def read_websites():
 @app.get("/timestamps/{website_address}", response_model=List[str])
 def read_timestamps(website_address: str):
     """
-   Retrieves a list of timestamps associated with the specified website address.
+    Retrieves a list of timestamps associated with the specified website address.
 
-   This endpoint accepts a website address as a path parameter and returns a list of timestamps
-   for that website. It uses a helper function that interacts with the Weaviate client (stored in the
-   application's state) to fetch the timestamps.
+    This endpoint accepts a website address as a path parameter and returns a list of timestamps
+    for that website. It uses a helper function that interacts with the Weaviate client (stored in the
+    application's state) to fetch the timestamps.
 
-   Args:
+    Args:
        website_address (str): The website address for which timestamps are requested.
 
-   Returns:
+    Returns:
        List[str]: A list of timestamp strings associated with the given website address.
 
-   Note:
+    Note:
        The actual data retrieval is managed by the `helper.get_all_timestamps_for_website` function.
 
-   Example usage:
+    Example usage:
        curl -X 'GET' 'http://localhost:9000/timestamps/ai21.com' -H 'accept: application/json'
     """
 
     return helper.get_all_timestamps_for_website(app.state.weaviate_client, website_address)
 
 @app.get("/get_urls/{query_id}")
-async def get_urls(query_id: str):
+async def get_urls(request: Request, query_id: str):
     """
-   Retrieves the URLs and financial flag associated with the provided query ID.
+    Retrieves the URLs and financial flag associated with the provided query ID.
 
-   This asynchronous endpoint takes a query ID as a path parameter, looks up the associated
-   URLs and financial flag in a global storage, and returns them. If the URLs are not available or the
-   query ID is invalid, it responds with an error message and a 404 status code. The URLs and flag are
-   deleted from storage after retrieval to maintain simplicity.
+    This asynchronous endpoint takes a query ID as a path parameter, looks up the associated
+    URLs and financial flag within the application's query storage, and returns them. If the URLs 
+    are not available or the query ID is invalid, it responds with an error message and a 404 status code. 
+    The URLs and flag are deleted from storage after retrieval to maintain simplicity.
 
-   Args:
-       query_id (str): The unique identifier for the query.
+    Args:
+        request (Request): The incoming HTTP request object.
+        query_id (str): The unique identifier for the query.
 
-   Returns:
-       JSONResponse: A response object containing the URLs and financial flag if available,
-                     or an error message with a 404 status code if not.
+    Returns:
+        JSONResponse: A response object containing the URLs and financial flag if available,
+                      or an error message with a 404 status code if not.
 
-   Raises:
-       HTTPException: If the query ID is invalid or URLs are not available yet.
+    Raises:
+        HTTPException: If the query ID is invalid or URLs are not available yet.
 
-   Note:
-       This function interacts with a global storage (`query_url_storage`) protected by an
-       asynchronous lock (`storage_lock`), ensuring thread-safe operations.
-    Example usage :
-    curl http://localhost:9000/get_urls/{query_id}
+    Note:
+        This function interacts with the query storage encapsulated by an instance of 
+        'QueryStorage' class, part of the application's state, which is protected by 
+        an asynchronous lock to ensure thread-safe operations.
+    Example usage:
+        curl http://localhost:9000/get_urls/{query_id}
     """
-    async with storage_lock:
-        # Use the query_id to retrieve the stored URLs
-        financial_flag, urls = await request.app.state.query_storage.retrieve_query(query_id)
-        if urls is None:
-            # Correctly format the response with a custom status code
-            return JSONResponse(content={"error": "URLs not available yet or invalid query ID"}, status_code=404)
-        print(urls)
+    financial_flag, urls = await request.app.state.query_storage.retrieve_query(query_id)
+    if urls is None:
+        # Correctly format the response with a custom status code
+        return JSONResponse(content={"error": "URLs not available yet or invalid query ID"}, status_code=404)
+
     return {"urls": urls, "financial_flag": financial_flag}
+
 
 
 
 @app.post("/vertexai_predict")
 async def vertexai_predict(request: Request):
     """
-   Performs sentiment analysis using Google Cloud's Vertex AI based on the provided text.
+    Performs sentiment analysis using Google Cloud's Vertex AI based on the provided text.
 
-   This endpoint accepts a request containing text data and sends it to a pre-configured Vertex AI endpoint
-   for sentiment analysis. It requires authentication with Google Cloud using a service account. The response
-   from Vertex AI, including the sentiment and probabilities, is parsed and returned in a structured format.
+    This endpoint accepts a request containing text data and sends it to a pre-configured Vertex AI endpoint
+    for sentiment analysis. It requires authentication with Google Cloud using a service account. The response
+    from Vertex AI, including the sentiment and probabilities, is parsed and returned in a structured format.
 
-   Args:
+    Args:
        request (Request): The incoming HTTP request containing the text data for prediction.
 
-   Returns:
+    Returns:
        dict: A dictionary containing the sentiment analysis results, including sentiment value and probabilities.
 
-   Raises:
+    Raises:
        HTTPException: If authentication with Google Cloud fails or other request-related issues occur.
 
-   Note:
+    Note:
        The Vertex AI endpoint ID, project ID, and the location of the service account key are hard-coded in this
        function. Ensure these values are correctly set before deployment.
 
-   Example usage:
+    Example usage:
        curl -N -H "Content-Type: application/json" -d "{\"text\": \"Turnover surged to EUR61 .8 m from EUR47 .6 m due to increasing service demand , especially in the third quarter , and the overall growth of its business .\"}" "http://localhost:9000/vertexai_predict"
        """
     ENDPOINT_ID = "7054451210648027136"
@@ -565,15 +633,16 @@ async def scrape_sitemap(request: Request):
 @app.get("/status")
 async def get_api_status():
     """
-   Retrieves the current version of the API.
+    Retrieves the current version of the API.
 
-   This endpoint is a quick way to check the API version. It returns a JSON object containing
-   the version number. This can be useful for debugging, logging, or ensuring compatibility
-   with client applications.
+    This endpoint is a quick way to check the API version. It returns a JSON object containing
+    the version number. This can be useful for debugging, logging, or ensuring compatibility
+    with client applications.
 
-   Returns:
+    Returns:
        dict: A dictionary with the API version number.
-    Example usage :
+       
+    Example usage:
     curl http://localhost:9000/status
     """
     return {
