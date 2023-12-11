@@ -18,25 +18,7 @@ Project Organization
 ├── README.md
 ├── docker-compose.yml
 ├── docs
-│   ├── api-service-documentation.md
-│   ├── deploy-custom-container-BERT-vertex.md
-│   ├── deployment.md
-│   ├── docker-gcsfuse.md
-│   ├── endpoints_scraper.md
-│   ├── endpoints_vector_store.md
-│   ├── endpoints_vertex.md
-│   ├── experiment-bert.md
-│   ├── frontend.md
-│   ├── gc-function-instructions.md
-│   ├── gcp-cli-instructions-macos.md
-│   ├── gcp-docker-commands.md
-│   ├── gcp-setup-instructions.md
-│   ├── gcs-bucket-instructions.md
-│   ├── github-actions.md
-│   ├── notebooks_env_file_setup.md
-│   ├── optimization.md
-│   ├── vertex-ai-model-training.md
-│   └── vscode-remote-ssh-extension-gcp-vm.md
+│   ├── ... <Documentation contents below this tree>
 ├── img
 │   ├── ...
 ├── ml_workflow
@@ -44,7 +26,6 @@ Project Organization
 │   │   ├── Dockerfile
 │   │   ├── Pipfile
 │   │   ├── Pipfile.lock
-│   │   ├── Untitled.ipynb
 │   │   ├── cli.py
 │   │   ├── data
 │   │   │   └── v1.0.zip
@@ -102,24 +83,15 @@ Project Organization
 │   │   │   ├── ...
 │   │   └── longer_debiasing_20_epochs
 │   │       ├── ...
-│   ├── add_data_to_weaviate_old.ipynb
 │   ├── distillation
 │   │   ├── ...
 │   ├── financial_data
 │   │   ├── ...
-│   ├── gcs_to_weaviate.ipynb
-│   ├── indexing_with_llamaindex (copy).ipynb
-│   ├── indexing_with_llamaindex.ipynb
-│   ├── querying_with_llamaindex.ipynb
-│   ├── rag_with_llamaindex.ipynb
-│   ├── rag_with_weaviate.ipynb
-│   ├── rag_with_weaviate_API.ipynb
+│   ├── RAG
+│   │   ├── ...
 │   ├── sample_data
 │   │   ├── ...
-│   ├── scraping_notebook_milestone4.ipynb
-│   ├── sitemap.csv
-│   ├── update_index_with_llamaindex.ipynb
-│   └── update_rag_with_weaviate.ipynb
+│   └── sitemap.csv
 ├── reports
 │   ├── milestone2.md
 │   ├── milestone3.md
@@ -211,9 +183,7 @@ Project Organization
     │   └── sitemap.csv
     └── vector_store
         ├── schema.json
-        ├── schema_old.json
-        ├── weaviate.schema.md
-        └── weaviate.schema.old.md
+        └── weaviate.schema.md
 ```
 
 Browse our various documentation files
