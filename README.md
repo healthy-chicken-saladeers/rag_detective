@@ -21,7 +21,7 @@ Project Organization
 │   ├── ... <Documentation contents below this tree>
 ├── img
 │   ├── ...
-├── ml_workflow	 <- workflow for vertex ai pipeline.
+├── ml_workflow	 <- workflow for vertex ai pipeline
 │   ├── data_collector
 │   │   ├── Dockerfile
 │   │   ├── Pipfile
@@ -60,7 +60,7 @@ Project Organization
 │       ├── model.py
 │       ├── model_training.yaml
 │       └── sample-pipeline1.yaml
-├── model_training	<- model training without pipeline.
+├── model_training	<- model training without pipeline
 │   ├── Dockerfile
 │   ├── Pipfile
 │   ├── Pipfile.lock
@@ -97,7 +97,7 @@ Project Organization
 │   ├── milestone3.md
 │   ├── milestone4.md
 │   └── milestone5.md
-└── src	  <- production code for the app.
+└── src	  <- production code for the app
     ├── api_service
     │   ├── Dockerfile
     │   ├── Dockerfile.linux
@@ -119,7 +119,7 @@ Project Organization
     │   ├── entrypoint.sh
     │   ├── finetune_bert.py
     │   └── gcsbucket
-    ├── deployment   <- application container deployment with kubernetes.
+    ├── deployment   <-scaling & deployment with kubernetes
     │   ├── Dockerfile
     │   ├── README.md
     │   ├── deploy-app.yml
