@@ -299,6 +299,8 @@ async def rag_query(request: Request, background_tasks: BackgroundTasks):
     # Query Weaviate
     streaming_response = helper.query_weaviate(app.state.weaviate_client, website, timestamp, query)
 
+    financial_status_instance = request.app.state.financial_status
+
     # Add the URL processing function as a background task
     background_tasks.add_task(process_url_extraction, query_id, streaming_response, financial_status_instance, request.app.state.query_storage)
 
@@ -308,7 +310,6 @@ async def rag_query(request: Request, background_tasks: BackgroundTasks):
         'Access-Control-Expose-Headers': 'X-Query-ID',  # Ensure the custom header is exposed
         'X-Query-ID': query_id  # set the header to track the query_id for the reference retrieval
     }
-    financial_status_instance = request.app.state.financial_status
 
     return StreamingResponse(
         process_streaming_response(streaming_response, financial_status_instance),
@@ -641,7 +642,7 @@ async def get_api_status():
 
     Returns:
        dict: A dictionary with the API version number.
-       
+
     Example usage:
     curl http://localhost:9000/status
     """
