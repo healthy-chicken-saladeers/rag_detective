@@ -16,9 +16,30 @@ import uuid
 from google.cloud import aiplatform
 from google.auth import exceptions
 from google.oauth2 import service_account
-query_url_storage = {}
-storage_lock = Lock()
-financial = False
+
+# Classes to encapsulate state and functionalities
+class FinancialStatus:
+    def __init__(self):
+        self._is_financial = False
+
+    def set_financial(self, status: bool):
+        self._is_financial = status
+
+    def is_financial(self) -> bool:
+        return self._is_financial
+
+class QueryStorage:
+    def __init__(self):
+        self._storage = {}
+        self._lock = Lock()
+
+    async def store_query(self, query_id: str, financial: bool, urls: List[str]):
+        async with self._lock:
+            self._storage[query_id] = (financial, urls)
+
+    async def retrieve_query(self, query_id: str):
+        async with self._lock:
+            return self._storage.pop(query_id, (None, None))
 
 # Test using this line of curl:
 # curl -N -H "Content-Type: application/json" -d "{\"website\": \"ai21.com\", \"query\": \"How was AI21 Studio a game changer\", \"timestamp\": \"2023-10-06T18-11-24\"}" http://localhost:9000/rag_query
@@ -60,6 +81,9 @@ async def startup_event():
     curl http://localhost:9000/startup
     """
     app.state.weaviate_client = weaviate.Client(url=f"http://{WEAVIATE_IP_ADDRESS}:8080")
+    # Initialize query storage and financial status instances for the app
+    app.state.query_storage = QueryStorage()
+    app.state.financial_status = FinancialStatus()
 
 # Routes
 @app.get("/")
@@ -105,7 +129,7 @@ async def streaming_endpoint():
             await asyncio.sleep(0.1)
     return StreamingResponse(event_generator(), media_type="text/plain")
 
-async def process_streaming_response(local_streaming_response):
+async def process_streaming_response(local_streaming_response, financial_status: FinancialStatus):
     """
     Processes streaming response from a local source and yields text segments.
 
@@ -126,17 +150,16 @@ async def process_streaming_response(local_streaming_response):
     Raises:
         asyncio.CancelledError: If the streaming is cancelled during processing.
     """
-    global financial
     try:
         for text in local_streaming_response.response_gen:
             # Check for the financial flag at the end of the text
             if "QQ" in text:
-                financial = True
+                financial_status.set_financial(True)
                 text = text.replace("QQ", "")  # remove the "%%"
             if text:   # Check for null character or empty string
                 print(f"Yielding: [{text}]")
                 yield text  
-        if financial:
+        if financial_status.is_financial():
             print(" Financial flag set!", flush=True)
     except asyncio.CancelledError as e:
         print('Streaming cancelled', flush=True)
@@ -219,8 +242,10 @@ async def rag_query(request: Request, background_tasks: BackgroundTasks):
         'Access-Control-Expose-Headers': 'X-Query-ID',  # Ensure the custom header is exposed
         'X-Query-ID': query_id  # set the header to track the query_id for the reference retrieval
     }
+    financial_status_instance = request.app.state.financial_status
+
     return StreamingResponse(
-        process_streaming_response(streaming_response),
+        process_streaming_response(streaming_response, financial_status_instance),
         media_type="text/plain",
         headers=headers
     )
@@ -327,12 +352,10 @@ async def get_urls(query_id: str):
     """
     async with storage_lock:
         # Use the query_id to retrieve the stored URLs
-        financial_flag, urls = query_url_storage.get(query_id)
+        financial_flag, urls = await request.app.state.query_storage.retrieve_query(query_id)
         if urls is None:
             # Correctly format the response with a custom status code
             return JSONResponse(content={"error": "URLs not available yet or invalid query ID"}, status_code=404)
-        # Once retrieved, delete the entry to keep things simple
-        del query_url_storage[query_id]
         print(urls)
     return {"urls": urls, "financial_flag": financial_flag}
 
