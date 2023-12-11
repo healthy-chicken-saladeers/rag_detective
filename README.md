@@ -355,11 +355,13 @@ This section contains a Dockerized frontend application, suitable for deployment
 - `styles.css`: Defines the visual design of the application, including animations, color schemes, and responsive elements for a user-friendly interface.
 
 ![](img/rag-detective-app.jpg)
+---
 ![](img/rag-detective-app2.jpg)
 
 ### Frontend Application: Real-time scraping of website data
 
 ![](img/rag-detective-app3.jpg)
+---
 ![](img/rag-detective-app4.jpg)
 
 ## Detailed Overview
