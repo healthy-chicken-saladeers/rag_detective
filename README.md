@@ -2,7 +2,7 @@ AC215 - RAG Detective
 ==============================
 
 ### Presentation  Video
- - \<Link Here>
+ - [YouTube](https://www.youtube.com/watch?v=L2hfkp8DXBU)
 
 ### Blog Post Link
 
@@ -242,6 +242,11 @@ We've put together a detailed design document outlining the application’s arch
 ## Technical Architecture:
 
 ![](img/technical_architecture.png)
+
+# Tech Stack
+
+![](img/tech-stack.png)
+
 
 # RAG Component
 
