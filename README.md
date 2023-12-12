@@ -463,17 +463,17 @@ Creating and deploying a Kubernetes cluster within GKE involves a few steps:
 - **Deploying the Application:** Kubernetes deployment manifests are used to deploy and manage the application on the cluster. The manifests define the properties of the container like the Docker image to use, the number of replicas, networking rules, etc.
 - **Service & Ingress Configuration:** Specify the networking rules and load balancing for the application using Kubernetes Service and Ingress objects.
 - **Autoscaling:** Allow the application to meet traffic needs by automatically adjusting the number of running instances of the application. This is achieved through Kubernetes Deployment objects and Horizontal Pod Autoscaler configurations.
-- **Monitoring & Management:** Monitor the performance of your workloads, set up alerts, and debug issues that arise.
+- **Monitoring & Management:** Monitor the performance of workloads, set up alerts, and debug issues that arise.
 
 Deploying and scaling the RAG Detective App on a Kubernetes cluster managed by GKE allows for for load balancing, failover, and scalability. Ansible scripts help to keep track of our infrastructure and set up automated deployments.
 
 If our app were to go viral, Kubernetes would help our app scale with the increase in traffic. For example, if 10,000 people were using the site on a given day, the Kubernetes cluster on Google Kubernetes Engine (GKE) is designed to dynamically adjust and scale to meet the demand. Here's how the scaling process would likely occur: 
 
 #### Node Scaling:
-   - If your cluster is configured with Auto Scaling enabled, GKE will automatically add more nodes to the cluster to handle the increased load. These nodes are added based on resource utilization metrics, ensuring that there's enough computational capacity to run your application.
+   - If the cluster is configured with Auto Scaling enabled, GKE will automatically add more nodes to the cluster to handle the increased load. These nodes are added based on resource utilization metrics, ensuring that there's enough computational capacity to run the application.
 
 #### Pod Scaling:
-   - Kubernetes Horizontal Pod Autoscaler (HPA) will come into play. HPA monitors the resource utilization of your pods (e.g., CPU or memory) and adjusts the number of pod replicas to maintain a specified target utilization. If the current utilization is high, HPA will scale up the number of pod replicas to distribute the load.
+   - Kubernetes Horizontal Pod Autoscaler (HPA) will come into play. HPA monitors the resource utilization of the pods (e.g., CPU or memory) and adjusts the number of pod replicas to maintain a specified target utilization. If the current utilization is high, HPA will scale up the number of pod replicas to distribute the load.
 
 #### Load Balancing:
    - Kubernetes Services, combined with GKE's integration with Google Cloud Load Balancer, distribute incoming traffic among the available pod replicas. This ensures that no single pod or node becomes a bottleneck and that the load is evenly distributed across the cluster.
@@ -482,18 +482,20 @@ If our app were to go viral, Kubernetes would help our app scale with the increa
    - With an increase in demand, Kubernetes will intelligently allocate resources to the newly created pods. This is crucial for maintaining performance and responsiveness as user traffic fluctuates.
 
 #### Monitoring and Alerts:
-   - GKE's integration with monitoring services like Stackdriver allows you to set up alerts based on predefined metrics or custom queries. If there are any performance issues or if resource utilization is reaching critical levels, you can be notified to take proactive measures.
+   - GKE's integration with monitoring services like Stackdriver allows easy setup of alerts based on predefined metrics or custom queries. If there are any performance issues or if resource utilization is reaching critical levels, a notification can be sent to take proactive measures.
 
 #### Cost Optimization:
-   - Node Pools in GKE allow you to optimize costs. Depending on your traffic patterns, you can dynamically adjust the size and type of nodes in different node pools to match the resource requirements of your application, ensuring cost-effectiveness.
+   - Node Pools in GKE allow cost optimization. Depending on traffic patterns, we can dynamically adjust the size and type of nodes in different node pools to match the resource requirements of our application, ensuring cost-effectiveness.
 
 #### Logging and Debugging:
-   - In case of any issues, you can leverage the logging capabilities provided by GKE to troubleshoot and debug. The centralized logging helps you understand the behavior of your application and identify any bottlenecks or errors.
+   - In case of any issues, we can leverage the logging capabilities provided by GKE to troubleshoot and debug. The centralized logging helps understand the behavior of the application and identify any bottlenecks or errors.
 
 #### Scaling Down:
    - As traffic subsides, the HPA will monitor the reduced resource utilization. If the demand decreases, Kubernetes will scale down the number of pod replicas and, if needed, shrink the number of nodes in the cluster to optimize resource usage and reduce costs.
 
-By employing these Kubernetes and GKE features, your application can seamlessly handle variations in traffic, providing a scalable, reliable, and cost-efficient infrastructure that automatically adapts to the changing demands of your users.
+By employing these Kubernetes and GKE features, our application can automatically handle variations in traffic, providing a scalable, reliable, and cost-efficient infrastructure that automatically adapts to the changing demands of our users.
+
+One thing to note is that our Weaviate instance will not scale with our other containers, and implementing database scaling is beyond the scope of the course and a science in its own right. For scaling Weaviate, horizontal scaling is the primary approach, involving the addition of more nodes to the cluster to distribute the workload evenly. Alongside this is load balancing, which helps in evenly distributing incoming requests across the available nodes. Data sharding can be done as well, where data is partitioned across multiple nodes, allowing for efficient processing of queries. Kubernetes can also be used to automate the scaling and management of Weaviate instances, ensuring that the system remains robust and efficient as it grows to meet rising demands. 
 
 Here is our deployed application on a Kubernetes cluster in GCP:
 
