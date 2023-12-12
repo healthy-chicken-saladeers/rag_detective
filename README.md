@@ -50,7 +50,7 @@ Project Organization
 │   │   │       └── task.py
 │   │   ├── package-trainer.sh
 │   │   └── ragdetective-app-trainer.tar.gz
-│   └── workflow	                              <- Vertex AI pipeline using Kubeflow
+│   └── workflow	                          <- Vertex AI pipeline using Kubeflow
 │       ├── Dockerfile
 │       ├── Pipfile
 │       ├── Pipfile.lock
@@ -60,7 +60,7 @@ Project Organization
 │       ├── model.py
 │       ├── model_training.yaml
 │       └── sample-pipeline1.yaml
-├── model_training	                              <- Model training without pipeline
+├── model_training	                          <- Model training without pipeline
 │   ├── Dockerfile
 │   ├── Pipfile
 │   ├── Pipfile.lock
@@ -92,7 +92,7 @@ Project Organization
 │   ├── sample_data
 │   │   ├── ...
 │   └── sitemap.csv
-├── reports	                                      <- Reports for each milestone
+├── reports	                                  <- Reports for each milestone
 │   ├── milestone2.md
 │   ├── milestone3.md
 │   ├── milestone4.md
