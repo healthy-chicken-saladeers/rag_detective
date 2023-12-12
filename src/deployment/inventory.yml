@@ -10,9 +10,9 @@ all:
       gcp_region: "us-central1"
       gcp_zone: "us-central1-a"
       docker_network_name: "appnetwork"
-      persistent_disk_name: "rag-app-demo-disk"
+      persistent_disk_name: "rag-app-1-disk"
       persistent_disk_size: 50
-      machine_instance_name: "rag-app-demo"
+      machine_instance_name: "rag-app-1"
       machine_type: "n2d-standard-2"
       machine_disk_size: 50
 

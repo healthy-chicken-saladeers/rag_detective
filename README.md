@@ -21,7 +21,7 @@ Project Organization
 │   ├── ... <Documentation contents below this tree>
 ├── img
 │   ├── ...
-├── ml_workflow	 <- workflow for vertex ai pipeline
+├── ml_workflow	                                 <- workflow for vertex ai pipeline
 │   ├── data_collector
 │   │   ├── Dockerfile
 │   │   ├── Pipfile
@@ -50,7 +50,7 @@ Project Organization
 │   │   │       └── task.py
 │   │   ├── package-trainer.sh
 │   │   └── ragdetective-app-trainer.tar.gz
-│   └── workflow	<- vertex ai pipeline using kubeflow
+│   └── workflow	                                 <- vertex ai pipeline using kubeflow
 │       ├── Dockerfile
 │       ├── Pipfile
 │       ├── Pipfile.lock
@@ -60,7 +60,7 @@ Project Organization
 │       ├── model.py
 │       ├── model_training.yaml
 │       └── sample-pipeline1.yaml
-├── model_training	<- model training without pipeline
+├── model_training	                              <- model training without pipeline
 │   ├── Dockerfile
 │   ├── Pipfile
 │   ├── Pipfile.lock
@@ -74,7 +74,7 @@ Project Organization
 │   │       └── task.py
 │   ├── package-trainer.sh
 │   └── secrets
-├── notebooks  <- jupyter notebooks for proof of concept
+├── notebooks                                      <- jupyter notebooks for proof of concept
 │   ├── BERT_fine-tune_financials
 │   │   ├── ...
 │   ├── BERT_fine-tune_financials_balanced
@@ -92,12 +92,12 @@ Project Organization
 │   ├── sample_data
 │   │   ├── ...
 │   └── sitemap.csv
-├── reports	 <- reports for each milestone
+├── reports	                                       <- reports for each milestone
 │   ├── milestone2.md
 │   ├── milestone3.md
 │   ├── milestone4.md
 │   └── milestone5.md
-└── src	  <- production code for the app
+└── src	                                          <- production code for the app
     ├── api_service
     │   ├── Dockerfile
     │   ├── Dockerfile.linux
@@ -119,7 +119,7 @@ Project Organization
     │   ├── entrypoint.sh
     │   ├── finetune_bert.py
     │   └── gcsbucket
-    ├── deployment   <-scaling & deployment with kubernetes
+    ├── deployment                                    <- scaling & deployment with kubernetes
     │   ├── Dockerfile
     │   ├── README.md
     │   ├── deploy-app.yml
