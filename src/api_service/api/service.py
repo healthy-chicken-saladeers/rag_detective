@@ -604,11 +604,19 @@ async def scrape_sitemap(request: Request):
 
         else:
             text_dict = {}
-            i=0
+            i = 0
             for item in list(attribute_dict['df']):
-                i =i+1
+                # Check if the item is a relative link and prepend the base URL
+                if item.startswith('/'):
+                    item = f"https://{website_name}{item}"
+                i += 1
                 yield f"{i} of {attribute_dict['df'].shape[0]}: {item}\n"
-                text_dict[item] = helper.scrape_link(item)[item]
+                try:
+                    scraped_data = helper.scrape_link(item)
+                    text_dict[item] = scraped_data[item]
+                except Exception as e:
+                    yield f"Failed to scrape {item}: {e}\n"
+                    continue  # Skip this link and continue with the next one
 
             timestamp = datetime.now().strftime('%Y-%m-%dT%H-%M-%S')
             df = pd.DataFrame(list(text_dict.items()), columns=['key', 'text'])
