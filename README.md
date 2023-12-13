@@ -8,7 +8,7 @@ AC215 - RAG Detective
 
  - [Medium Post](https://medium.com/@iankelk/rag-detective-retrieval-augmented-generation-with-website-data-5a748b063040)
 
- Note: The Medium post is currently published under the @iankelk account, as we didn't know to keep it as a draft and it's not possible to "unpublish" a Medium post. It shouldn't be a problem adding it to the publication regardless. This link may not work once it's accepted into the `institute-for-applied-computational-science` publication, since publications change the URL.
+ Note: The Medium post is currently published under the @iankelk account, as we didn't know we should keep it as a draft, and it's not possible to "unpublish" a Medium post. This shouldn't present a problem for adding it to the IACS publication regardless. This link may not work once it's accepted into the `institute-for-applied-computational-science` publication, since publications change the URL.
 
 ---
 
