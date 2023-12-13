@@ -6,7 +6,9 @@ AC215 - RAG Detective
 
 ### Blog Post Link
 
- - \<Link Here>
+ - [Medium Post](https://medium.com/@iankelk/rag-detective-retrieval-augmented-generation-with-website-data-5a748b063040)
+
+ Note: The Medium post is currently published under my own account, and this link may not work once it's accepted into the `institute-for-applied-computational-science` publication.
 
 ---
 
