@@ -10,7 +10,53 @@ AC215 - RAG Detective
 
  Note: The Medium post is currently published under the @iankelk account, as we didn't know we should keep it as a draft, and it's not possible to "unpublish" a Medium post. This shouldn't present a problem for adding it to the IACS publication regardless. This link may not work once it's accepted into the `institute-for-applied-computational-science` publication, since publications change the URL.
 
+We're going to keep the app running for at least the next week at http://ragdetective.com if you want to try it! We still have credits left that will expire on Dec 24, so it's not costing us anything. Any site that you scrape does need to have a `sitemap.xml`to scrape properly.
+
 ---
+# Table of Contents
+- [Project Organization](#project-organization)
+- [Browse our various documentation files](#browse-our-various-documentation-files)
+  - [Endpoints](#endpoints)
+  - [Google Cloud Guides](#google-cloud-guides)
+  - [Container Guides](#container-guides)
+  - [Deployment](#deployment)
+  - [Google Vertex](#google-vertex)
+  - [Fine-tuning and distillation of BERT](#fine-tuning-and-distillation-of-bert)
+  - [Misc](#misc)
+- [Team Members](#team-members)
+- [Application Design](#application-design)
+- [Tech Stack](#tech-stack)
+- [RAG Component](#rag-component)
+  - [FastAPI Web Scraper with Cloud and Vector Store Integration](#fastapi-web-scraper-with-cloud-and-vector-store-integration)
+  - [FastAPI Vector Store Query API](#fastapi-vector-store-query-api)
+  - [Indexing Stage](#indexing-stage)
+  - [Querying Stage](#querying-stage)
+  - [Vertex AI Text Classification](#vertex-ai-text-classification)
+- [BERT Component](#bert-component)
+  - [Fine-tuning BERT with Financial Data for Sentiment Analysis](#fine-tuning-bert-with-financial-data-for-sentiment-analysis)
+  - [Debiasing Data for Fair Evaluation](#debiasing-data-for-fair-evaluation)
+- [FastAPI Service Summary](#fastapi-service-summary)
+  - [Key Components](#key-components)
+  - [API Endpoints Overview](#api-endpoints-overview)
+- [Frontend Service Summary](#frontend-service-summary)
+  - [Key Components](#key-components-1)
+  - [Detailed Overview](#detailed-overview)
+- [Financial Sentiment BERT Custom Model Container](#financial-sentiment-bert-custom-model-container)
+  - [Key Components](#key-components-2)
+  - [Detailed Descriptions](#detailed-descriptions)
+  - [Usage Instructions](#usage-instructions)
+- [Deployment to Google Cloud Vertex AI](#deployment-to-google-cloud-vertex-ai)
+  - [Step-by-Step Guide](#step-by-step-guide)
+  - [Cloud Testing](#cloud-testing)
+- [Deployment with Ansible](#deployment-with-ansible)
+  - [Setup GCP for Deployment](#setup-gcp-for-deployment)
+  - [Docker Container Setup](#docker-container-setup)
+  - [SSH Configuration](#ssh-configuration)
+  - [Deployment with Ansible](#deployment-with-ansible-1)
+  - [Web Server Configuration](#web-server-configuration)
+- [Scaling with Kubernetes](#scaling-with-kubernetes)
+- [Deployment Testing and Verification](#deployment-testing-and-verification)
+- [Deploy using GitHub Actions](#deploy-using-github-actions)
 
 Project Organization
 ------------
