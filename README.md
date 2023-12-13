@@ -16,13 +16,6 @@ We're going to keep the app running for at least the next week at http://ragdete
 # Table of Contents
 - [Project Organization](#project-organization)
 - [Browse our various documentation files](#browse-our-various-documentation-files)
-  - [Endpoints](#endpoints)
-  - [Google Cloud Guides](#google-cloud-guides)
-  - [Container Guides](#container-guides)
-  - [Deployment](#deployment)
-  - [Google Vertex](#google-vertex)
-  - [Fine-tuning and distillation of BERT](#fine-tuning-and-distillation-of-bert)
-  - [Misc](#misc)
 - [Team Members](#team-members)
 - [Application Design](#application-design)
 - [Tech Stack](#tech-stack)
