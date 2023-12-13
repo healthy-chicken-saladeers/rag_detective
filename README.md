@@ -16,7 +16,6 @@ We're going to keep the app running for at least the next week at http://ragdete
 # Table of Contents
 - [Project Organization](#project-organization)
 - [Browse our various documentation files](#browse-our-various-documentation-files)
-- [Team Members](#team-members)
 - [Application Design](#application-design)
 - [Tech Stack](#tech-stack)
 - [RAG Component](#rag-component)
