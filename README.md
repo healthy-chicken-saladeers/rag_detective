@@ -57,6 +57,7 @@ We're going to keep the app running for at least the next week at http://ragdete
 - [Scaling with Kubernetes](#scaling-with-kubernetes)
 - [Deployment Testing and Verification](#deployment-testing-and-verification)
 - [Deploy using GitHub Actions](#deploy-using-github-actions)
+---
 
 Project Organization
 ------------
