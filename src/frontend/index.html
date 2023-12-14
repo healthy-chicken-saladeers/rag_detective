@@ -194,6 +194,25 @@
     }
 
     /**
+     * Checks if the provided URL contains any blacklisted words in a case-insensitive manner.
+     *
+     * This function takes a URL and an array of blacklisted words, converts both to lowercase,
+     * and then utilizes the `Array.prototype.some` method to determine if any of the blacklisted
+     * words are included within the URL string. The comparison is case-insensitive, meaning it 
+     * does not matter if the characters are in upper case or lower case. If any word from the
+     * blacklist is found within the URL, it returns true, indicating that the URL is indeed blacklisted.
+     *
+     * @param {string} url - The URL string to be checked against the blacklist.
+     * @param {string[]} blacklist - An array of strings representing blacklisted terms.
+     * @returns {boolean} True if the URL includes any blacklisted word, false otherwise.
+     *
+     */
+    function isBlacklisted(url, blacklist) {
+        const lowerCaseUrl = url.toLowerCase();
+        return blacklist.some(word => lowerCaseUrl.includes(word.toLowerCase()));
+    }
+
+    /**
      * Displays an error modal with a specified message.
      *
      * This function sets the text content of an element with the ID 'errorMessage' to the provided message,
@@ -269,9 +288,17 @@
         const url = document.getElementById('website-to-scrape').value;
         const loadingIndicator = document.getElementById('loadingIndicator');
         const scrapeResults = document.getElementById('scrapeResults');
+        const blacklist = ['google', 'amazon', 'wikipedia'];
 
+        // Check if the URL is valid
         if (!validateURL(url)) {
             scrapeResults.value += getCurrentTimestamp() + 'Invalid URL\n';
+            return;
+        }
+
+        // Check if the URL is blacklisted
+        if (isBlacklisted(url, blacklist)) {
+            scrapeResults.value += getCurrentTimestamp() + ' URL contains a blacklisted term. This is why you can\'t have nice things.\n';
             return;
         }
 
