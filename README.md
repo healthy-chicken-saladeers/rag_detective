@@ -1,4 +1,4 @@
-AC215 - RAG Detective
+RAG Detective
 ==============================
 
 ### Presentation  Video
